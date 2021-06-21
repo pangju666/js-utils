@@ -4,36 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a68f0324-f18d-4898-9dbe-7e555599d42f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.npmignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/jestconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/AreaDataUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ArrayUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ConvertUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DateUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/NumberUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ObjectUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/RegexUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/StringUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/request/AxiosRequest.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/request/BaseRequest.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/request/XhrRequest.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tslint.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="a68f0324-f18d-4898-9dbe-7e555599d42f" name="Default Changelist" comment="项目重构，使用ts语言进行编写">
+      <change afterPath="$PROJECT_DIR$/ .eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ErrorMessage.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HttpRequestUtils.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ObjectVerificaiton.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TimeUtils.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pathMatch.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AreaDataUtils.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +22,37 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="dev" />
+                    <option name="lastUsedInstant" value="1623999220" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1623999219" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="JsBowerSettings">
     <bower-package value="" />
@@ -58,7 +69,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="D:\nodejs\node_global\node_modules\cnpm" />
     <property name="prettierjs.PrettierConfiguration.Package" value="D:\workspace\project\personal\jc-utils\node_modules\prettier" />
@@ -71,6 +84,7 @@
       <recent name="D:\workspace\project\personal\jc-utils\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\workspace\project\personal\jc-utils" />
       <recent name="D:\workspace\project\personal\jc-utils\src" />
     </key>
   </component>
@@ -102,8 +116,17 @@
       <workItem from="1623996367476" duration="631000" />
       <workItem from="1623997090129" duration="713000" />
       <workItem from="1623997970564" duration="544000" />
-      <workItem from="1623998554253" duration="599000" />
+      <workItem from="1623998554253" duration="703000" />
+      <workItem from="1624234149154" duration="3064000" />
     </task>
+    <task id="LOCAL-00001" summary="项目重构，使用ts语言进行编写">
+      <created>1623999241674</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1623999241674</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -124,5 +147,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="项目重构，使用ts语言进行编写" />
+    <option name="LAST_COMMIT_MESSAGE" value="项目重构，使用ts语言进行编写" />
   </component>
 </project>
