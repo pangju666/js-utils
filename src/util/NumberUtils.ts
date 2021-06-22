@@ -1,8 +1,8 @@
-﻿import StringUtils from '@/utils/StringUtils'
-import RegexUtils from '@/utils/RegexUtils'
+﻿import StringUtils from './StringUtils'
+import RegexUtils from './RegexUtils'
 
 export default class NumberUtils {
-  static isFloat(val) {
+  static isFloat(val: string): boolean {
     return RegexUtils.isValid(val, RegexUtils.REGEX_EXPRESSION.FLOAT)
   }
 
