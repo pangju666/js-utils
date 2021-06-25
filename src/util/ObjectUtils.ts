@@ -5,9 +5,7 @@
  * @version 1.0 2021-6-21
  */
 export default class ObjectUtils {
-  // 防止实例化
-  protected constructor() {
-  }
+  protected static readonly BASIC_TYPES: ["string", "number", "bigint", "boolean", "undefined", "symbol"]
 
   /**
    * 值是否存在
@@ -260,7 +258,7 @@ export default class ObjectUtils {
         } else {
           objectCopy[propertyName] = ''
         }
-      } else if (ObjectUtils.isObject(objectCopy[propertyName])) {
+      } else if (ObjectUtils.isType(objectCopy[propertyName], Object)) {
         if (propertyDefaultValMap.has(propertyName)) {
           const defaultObj = propertyDefaultValMap.get(propertyName)
           objectCopy[propertyName] = this.getSafeObject(objectCopy[propertyName], defaultObj)
@@ -279,7 +277,7 @@ export default class ObjectUtils {
     const newObject = {}
     for (const propertyName of Object.getOwnPropertyNames(object)) {
       const propertyValue = object[propertyName]
-      if (this.isObject(propertyValue)) {
+      if (this.isType(propertyValue, Object)) {
         newObject[propertyName] = this.deepClone(object[propertyName])
       } else {
         newObject[propertyName] = object[propertyName]
@@ -289,58 +287,45 @@ export default class ObjectUtils {
   }
 
   /**
-   * 判断值是否为字符串
+   * 是否为基础类型
+   *
+   * @param value 待判断的值
    */
-  public static isString(value: any): boolean {
-    return value instanceof String || typeof value === 'string'
-  }
-
-  /**
-   * 判断对象是否为数字
-   */
-  public static isNumber(value: any): boolean {
-    return value instanceof Number || typeof value === 'number'
+  public static isBasicType(value: any): boolean {
+    return this.isNull(value)
+      || typeof value === "string"
+      || typeof value === "number"
+      || typeof value ==="bigint"
+      || typeof value ==="boolean"
+      || typeof value ==="symbol"
   }
 
   /**
    * 判断对象是否为对象
+   *
+   * @param value 对象值，不可以为空或未定义
+   * @param type 待比较类型
    */
-  public static isObject(value: any): boolean {
-    return value instanceof Object || typeof value === 'object'
+  public static isType(value: any, type: Function): boolean {
+    return value instanceof type
   }
 
   /**
-   * 判断对象是否为布尔值
+   * 判断对象是否为对象
+   *
+   * @param value 对象值，不可以为空或未定义
+   * @param types 待比较类型
    */
-  public static isBoolean(value: any): boolean {
-    return value instanceof Boolean || typeof value === 'boolean'
+  public static isAnyType(value: any, types: Function[]): boolean {
+    for (const type of types) {
+      if (value instanceof type) {
+        return true
+      }
+    }
+    return false
   }
 
-  /**
-   * 判断对象是否为数组
-   */
-  public static isArray(value: any): boolean {
-    return Array.isArray(value)
-  }
-
-  /**
-   * 判断对象是否为正则表达式
-   */
-  public static isRegExp(value: any): boolean {
-    return value instanceof RegExp
-  }
-
-  /**
-   * 判断对象是否为日期
-   */
-  public static isDate(value: any): boolean {
-    return value instanceof Date || new Date(value) !== undefined
-  }
-
-  /**
-   * 判断对象是否为函数
-   */
-  public static isFunction(value: any): boolean {
-    return value instanceof Function || typeof value === 'function'
+  // 防止实例化
+  protected constructor() {
   }
 }

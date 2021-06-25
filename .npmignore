@@ -1,4 +1,10 @@
-﻿src
+﻿src/
+test/
 tsconfig.json
-tslint.json
-.prettierrc
+jestconfig.json
+.eslintrc.js
+.prettierrc.js
+.editorconfig
+.gitignore
+
+
