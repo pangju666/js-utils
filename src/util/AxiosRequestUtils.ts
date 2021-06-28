@@ -4,6 +4,7 @@ import AxiosRequestConfigBuilder from './axios/AxiosRequestConfigBuilder';
 import { ObjectUtils } from '../ index';
 import qs from 'qs';
 import { HttpMethod } from './axios/HttpEnums';
+import { ContentType, HttpHeaders } from '../../lib/util/axios/HttpEnums';
 
 /**
  * axios请求工具类
@@ -91,20 +92,25 @@ export default class AxiosRequestUtils {
             return qs.stringify(params, { arrayFormat: 'brackets' });
         })
         builder.transformRequest((data, headers) => {
-          /*  if (data instanceof Blob) {
+            if (typeof FormData !== 'undefined') {
+                if (data instanceof FormData) {
+                    headers[HttpHeaders.CONTENT_TYPE] = ContentType.FORM_DATA
                     return data
-            } */
-            if (!ObjectUtils.isBasicType(data)) {
-                const formData = new FormData()
-                let isForm = false
-                Object.keys(data).forEach(key => {
-                    formData.append(key, data[key])
-                   /* if (data[key] instanceof Blob) {
+                }
+                if (!ObjectUtils.isBasicType(data)) {
+                    const formData = new FormData()
+                    let isForm = false
+                    Object.keys(data).forEach(key => {
+                        formData.append(key, data[key])
+                        if (data[key] instanceof File || data[key] instanceof Blob) {
                             isForm = true
-                    } */
-                })
-                return isForm ? formData : data
+                            headers[HttpHeaders.CONTENT_TYPE] = ContentType.FORM_DATA
+                        }
+                    })
+                    return isForm ? formData : data
+                }
             }
+            return data
         })
         // TODO: 后续计划对响应数据进行处理
         /* builder.transformResponse((data, headers) => {

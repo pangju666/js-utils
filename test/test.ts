@@ -21,7 +21,7 @@ describe("axios function", () => {
     it("axiosGet", async () => {
         const config = AxiosRequestUtils.getDefaultConfig()
         const request = new AxiosRequest(config)
-        AxiosRequestUtils.setDefaultRequest(request)
+        AxiosRequestUtils.setDefault(request)
         const res = await AxiosRequestUtils.get('127.0.0.1/test', {id: 'test'}, null)
         console.log(res);
     });

@@ -4,29 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a68f0324-f18d-4898-9dbe-7e555599d42f" name="Default Changelist" comment="npm包发布成功，项目结构固定">
-      <change afterPath="$PROJECT_DIR$/.prettierrc.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util/AxiosRequestUtils.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util/axios/AxiosRequest.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util/axios/AxiosRequestConfigBuilder.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util/axios/HttpEnums.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
+    <list default="true" id="a68f0324-f18d-4898-9dbe-7e555599d42f" name="Default Changelist" comment="增加axios请求封装类">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.npmignore" beforeDir="false" afterPath="$PROJECT_DIR$/.npmignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.prettierrc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/ index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/ArrayUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/ArrayUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/ConvertUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/ConvertUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/DateUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/DateUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/NumberUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/NumberUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/ObjectUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/ObjectUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/RegexUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/RegexUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/StringUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/StringUtils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/AxiosRequestUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/AxiosRequestUtils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,12 +78,11 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="js.linters.configure.manually.selectedeslint" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/util/axios" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.selected.package.eslint" value="D:\workspace\project\personal\jc-utils\node_modules\eslint" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.standard" value="" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs.jest.jest_package" value="$PROJECT_DIR$/node_modules/jest" />
@@ -225,7 +205,9 @@
       <workItem from="1624343953296" duration="10891000" />
       <workItem from="1624407053078" duration="9407000" />
       <workItem from="1624494897102" duration="1529000" />
-      <workItem from="1624580008857" duration="8374000" />
+      <workItem from="1624580008857" duration="10839000" />
+      <workItem from="1624839458888" duration="135000" />
+      <workItem from="1624839601664" duration="756000" />
     </task>
     <task id="LOCAL-00001" summary="项目重构，使用ts语言进行编写">
       <created>1623999241674</created>
@@ -248,7 +230,14 @@
       <option name="project" value="LOCAL" />
       <updated>1624331918627</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="增加axios请求封装类">
+      <created>1624607426908</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1624607426908</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,7 +262,19 @@
     <MESSAGE value="重新修改配置文件" />
     <MESSAGE value="增加package-lock文件" />
     <MESSAGE value="npm包发布成功，项目结构固定" />
-    <option name="LAST_COMMIT_MESSAGE" value="npm包发布成功，项目结构固定" />
+    <MESSAGE value="增加axios请求封装类" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加axios请求封装类" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/test/test.ts</url>
+          <line>25</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
