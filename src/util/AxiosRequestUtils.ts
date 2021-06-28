@@ -4,7 +4,7 @@ import AxiosRequestConfigBuilder from './axios/AxiosRequestConfigBuilder';
 import { ObjectUtils } from '../ index';
 import qs from 'qs';
 import { HttpMethod } from './axios/HttpEnums';
-import { ContentType, HttpHeaders } from '../../lib/util/axios/HttpEnums';
+import { ContentType, HttpHeaders } from './axios/HttpEnums';
 
 /**
  * axios请求工具类
