@@ -14,6 +14,7 @@ export default class RegexUtils {
     return expression.test(str)
   }
 
-  protected RegexUtils() {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected constructor() {
   }
 }

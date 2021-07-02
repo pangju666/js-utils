@@ -10,28 +10,28 @@ export default class ObjectUtils {
   /**
    * 值是否存在
    */
-  public static isExist(value: any): boolean {
+  public static isExist(value: unknown): boolean {
     return value !== undefined
   }
 
   /**
    * 值是否不存在
    */
-  public static isNotExist(value: any): boolean {
+  public static isNotExist(value: unknown): boolean {
     return value === undefined
   }
 
   /**
    * 判断对象是否不为空
    */
-  public static isNotNull(value: any): boolean {
+  public static isNotNull(value: unknown): boolean {
     return value !== undefined && value !== null
   }
 
   /**
    * 判断对象是否为空
    */
-  public static isNull(value: any): boolean {
+  public static isNull(value: unknown): boolean {
     return value === undefined || value === null
   }
 
@@ -41,6 +41,7 @@ export default class ObjectUtils {
    * @param object 待判断对象
    * @param propertyExpression 属性表达式
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static isExistProperty(object: object, propertyExpression: string): boolean {
     if (ObjectUtils.isNotExist(object)) {
       return false
@@ -61,6 +62,7 @@ export default class ObjectUtils {
    * @param object 待判断对象
    * @param propertyExpression 属性表达式
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static isNotExistProperty(object: object, propertyExpression: string): boolean {
     return !this.isExistProperty(object, propertyExpression)
   }
@@ -97,6 +99,7 @@ export default class ObjectUtils {
    * @param expression 获取属性表达式
    * @return{boolean} 对象属性为空则返回false, 否则返回true
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static isNotNullProperty(object: object, expression: string): boolean {
     if (ObjectUtils.isNull(object)) {
       return false
@@ -145,6 +148,7 @@ export default class ObjectUtils {
    * @param expression 获取属性表达式
    * @return{boolean} 对象属性为空则返回true, 否则返回false
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static isNullProperty(object: object, expression: string): boolean {
     return !this.isNotNullProperty(object, expression)
   }
@@ -204,7 +208,8 @@ export default class ObjectUtils {
    * @param expression 获取属性表达式
    * @return{any} 对象属性值或默认值
    */
-  public static getSafeProperty(object: object, defaultVal: any, expression: string): any {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public static getSafeProperty(object: object, defaultVal: unknown, expression: string): unknown {
     if (ObjectUtils.isNullProperty(object, expression)) {
       return defaultVal
     }
@@ -247,11 +252,12 @@ export default class ObjectUtils {
    * @param defaultObject 默认对象
    * @return{object} 对象为空时会直接返回默认对象，否则进行安全获取操作
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static getSafeObject(object: object, defaultObject: object = {}): object {
     const propertyDefaultValMap = new Map(Object.entries(defaultObject))
     const objectCopy = { ...object }
     const propertyNames = Object.getOwnPropertyNames(objectCopy)
-    for (let propertyName of propertyNames) {
+    for (const propertyName of propertyNames) {
       if (ObjectUtils.isNull(objectCopy[propertyName])) {
         if (propertyDefaultValMap.has(propertyName)) {
           objectCopy[propertyName] = propertyDefaultValMap.get(propertyName)
@@ -273,7 +279,8 @@ export default class ObjectUtils {
    *
    * @param object 待拷贝对象
    */
-  public static deepClone(object: object) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public static deepClone<T>(object: T): T {
     const newObject = {}
     for (const propertyName of Object.getOwnPropertyNames(object)) {
       const propertyValue = object[propertyName]
@@ -283,7 +290,7 @@ export default class ObjectUtils {
         newObject[propertyName] = object[propertyName]
       }
     }
-    return newObject
+    return newObject as T
   }
 
   /**
@@ -291,7 +298,7 @@ export default class ObjectUtils {
    *
    * @param value 待判断的值
    */
-  public static isBasicType(value: any): boolean {
+  public static isBasicType(value: unknown): boolean {
     return this.isNull(value)
       || typeof value === "string"
       || typeof value === "number"
@@ -306,7 +313,8 @@ export default class ObjectUtils {
    * @param value 对象值，不可以为空或未定义
    * @param type 待比较类型
    */
-  public static isType(value: any, type: Function): boolean {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public static isType(value: unknown, type: Function): boolean {
     return value instanceof type
   }
 
@@ -316,7 +324,8 @@ export default class ObjectUtils {
    * @param value 对象值，不可以为空或未定义
    * @param types 待比较类型
    */
-  public static isAnyType(value: any, types: Function[]): boolean {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public static isAnyType(value: unknown, types: Function[]): boolean {
     for (const type of types) {
       if (value instanceof type) {
         return true
@@ -326,6 +335,7 @@ export default class ObjectUtils {
   }
 
   // 防止实例化
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected constructor() {
   }
 }

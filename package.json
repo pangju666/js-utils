@@ -1,76 +1,76 @@
 {
-    "name": "@pangju666/js-utils",
-    "version": "1.0.0-alpha",
-    "author": "pangju",
-    "description": "将常用js函数整合为工具类，并将一些好用的库进行二次封装",
-    "keywords": [
-        "utils",
-        "tools"
-    ],
-    "private": false,
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint src/**/*.{js,ts}",
-        "test": "jest --config jestconfig.json",
-        "clean": "rimraf ./lib/**",
-        "build": "tsc",
-        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-        "prepare": "npm run build",
-        "prepublishOnly": "npm run test"
-    },
-    "bakScripts": {
-        "prepublishOnly": "npm run test && npm run lint",
-        "preversion": "npm run lint",
-        "version": "npm run format && git add -A src",
-        "postversion": "git push && git push --tags"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*./src/**/*.{js,ts,json,css,less,md}": [
-            "prettier --write",
-            "npm run lint"
-        ]
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/pangju666/js-utils.git"
-    },
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/pangju666/js-utils/issues"
-    },
-    "homepage": "https://github.com/pangju666/js-utils#readme",
-    "dependencies": {
-        "qs": "^6.10.1",
-        "dateformat": "^4.5.1",
-        "axios": "^0.21.1"
-    },
-    "devDependencies": {
-        "@types/jest": "^26.0.23",
-        "@typescript-eslint/eslint-plugin": "^4.28.0",
-        "@typescript-eslint/parser": "^4.28.0",
-        "eslint": "^7.29.0",
-        "eslint-config-alloy": "^4.1.0",
-        "husky": "^6.0.0",
-        "jest": "^27.0.4",
-        "lint-staged": "^11.0.0",
-        "npm-run-all": "^4.1.5",
-        "prettier": "^2.3.1",
-        "rimraf": "^3.0.2",
-        "ts-jest": "^27.0.3",
-        "typescript": "^4.3.4"
-    },
-    "files": [
-        "lib/**/*"
-    ],
-    "jest": {
-        "preset": "ts-jest",
-        "testEnvironment": "node"
+  "name": "@pangju666/js-utils",
+  "version": "1.0.0-beta",
+  "author": "pangju",
+  "description": "将常用js函数整合为工具类，并将一些好用的库进行二次封装",
+  "keywords": [
+    "utils",
+    "tools"
+  ],
+  "private": false,
+  "main": "dist/js-utils.cjs.js",
+  "module": "dist/js-utils.esm.js",
+  "browser": "dist/js-utils.umd.js",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "pretest": "npm run build",
+    "lint": "eslint src/**/*.{js,ts}",
+    "test": "jest --config jestconfig.json",
+    "clean": "rimraf dist/**",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test"
+  },
+  "files": [
+    "dist"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*./src/**/*.{js,ts,json,css,less,md}": [
+      "prettier --write",
+      "npm run lint"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pangju666/js-utils.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pangju666/js-utils/issues"
+  },
+  "homepage": "https://github.com/pangju666/js-utils#readme",
+  "dependencies": {
+    "dateformat": "^4.5.1",
+    "ms": "^2.1.3"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
+    "@types/jest": "^26.0.23",
+    "@types/ms": "^0.7.31",
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
+    "eslint": "^7.29.0",
+    "eslint-config-alloy": "^4.1.0",
+    "husky": "^6.0.0",
+    "jest": "^27.0.4",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.1",
+    "rollup": "^2.52.7",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  }
 }

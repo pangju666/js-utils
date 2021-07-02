@@ -1,7 +1,9 @@
 module.exports = {
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
   extends: [
-    'alloy',
-    'alloy/typescript',
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
   env: {
     // 您的环境变量（包含多个预定义的全局变量）
@@ -11,11 +13,7 @@ module.exports = {
     jest: true,
     // jquery: true
   },
-  globals: {
-    // 您的全局变量（设置为 false 表示它不允许被重新赋值）
-    myGlobal: false
-  },
   rules: {
-    // 自定义您的规则
-  }
+    "ban-types": 0
+  },
 }
