@@ -4,7 +4,7 @@
  * @author pangju
  * @version 1.0 2021-7-2
  */
-export default class BooleanUtils {
+export class BooleanUtils {
     /**
      * 判断是否至少有一个条件成立
      * @param conditions 判断条件

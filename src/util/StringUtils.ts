@@ -4,7 +4,7 @@
  * @author pangju
  * @version 1.0 2021-6-21
  */
-export default class StringUtils {
+export class StringUtils {
     /**
      * 判断是否为大写字母
      *

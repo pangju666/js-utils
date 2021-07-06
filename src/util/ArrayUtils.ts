@@ -1,5 +1,5 @@
-﻿import ObjectUtils from './ObjectUtils';
-import BooleanUtils from "./BooleanUtils";
+﻿import { ObjectUtils } from "./ObjectUtils";
+import { BooleanUtils } from "./BooleanUtils";
 
 /**
  * 数组工具类
@@ -7,7 +7,7 @@ import BooleanUtils from "./BooleanUtils";
  * @author pangju
  * @version 1.0 2021-6-21
  */
-export default class ArrayUtils {
+export class ArrayUtils {
   /**
    * 判断数组是否为空
    *
@@ -37,7 +37,7 @@ export default class ArrayUtils {
    * @param array 待过滤数组
    * @param condition 过滤条件
    */
-  public static filterByCondition<T>(array: T[], condition: (item) => boolean): T[] {
+  public static filterByCondition<T>(array: T[], condition: (item: T) => boolean): T[] {
     const result = []
     for (const item of array) {
       if (condition(item)) {

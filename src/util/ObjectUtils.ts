@@ -4,7 +4,7 @@
  * @author pangju
  * @version 1.0 2021-6-21
  */
-export default class ObjectUtils {
+export class ObjectUtils {
   protected static readonly BASIC_TYPES: ["string", "number", "bigint", "boolean", "undefined", "symbol"]
 
   /**

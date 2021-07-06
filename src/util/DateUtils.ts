@@ -1,5 +1,7 @@
-﻿import ObjectUtils from './ObjectUtils'
-import dateformat from 'dateformat'
+﻿import { ObjectUtils } from "./ObjectUtils";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import dateformat from "dateformat";
 
 /**
  * 日期工具类
@@ -7,7 +9,7 @@ import dateformat from 'dateformat'
  * @author pangju
  * @version 1.0 2021-6-21
  */
-export default class DateUtils {
+export class DateUtils {
   /**
    * 日期转为时间戳
    *

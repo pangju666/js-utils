@@ -1,5 +1,5 @@
-﻿import StringUtils from './StringUtils';
-import ObjectUtils from './ObjectUtils';
+﻿import { StringUtils } from "./StringUtils";
+import { ObjectUtils } from "./ObjectUtils";
 
 /**
  * 对象转换工具类
@@ -7,7 +7,7 @@ import ObjectUtils from './ObjectUtils';
  * @author pangju
  * @version 1.0 2021-6-21
  */
-export default class ConvertUtils {
+export class ConvertUtils {
   /**
    * 转换对象属性名称
    *

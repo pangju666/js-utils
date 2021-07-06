@@ -2,9 +2,8 @@
 test/
 tsconfig.json
 jestconfig.json
-.eslintrc.cjs
+.eslintrc
 .prettierrc.js
 .editorconfig
 .gitignore
-
 

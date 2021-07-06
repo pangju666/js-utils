@@ -1,39 +1,60 @@
-import resolve from '@rollup/plugin-node-resolve';
+﻿import nodeResolve from '@rollup/plugin-node-resolve';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
+import dts from 'rollup-plugin-dts';
+import path from 'path';
+import { babel } from "@rollup/plugin-babel";
 import pkg from './package.json';
 
-export default [
-	// browser-friendly UMD build
-	{
-		input: 'src/index.ts',
-		output: {
-			name: 'js-utils',
-			file: pkg.browser,
-			format: 'umd'
-		},
-		plugins: [
-			resolve(),   // so Rollup can find `ms`
-			commonjs(),  // so Rollup can convert `ms` to an ES module
-			typescript() // so Rollup can convert TypeScript to JavaScript
-		]
-	},
+const extensions = ['.js', '.ts'];
+const resolvePath = (...args) => path.resolve(__dirname, ...args); // 适应不同环境，封装path.resolve，少写一点代码
 
-	// CommonJS (for Node) and ES module (for bundlers) build.
-	// (We could have three entries in the configuration array
-	// instead of two, but it's quicker to generate multiple
-	// builds from a single configuration where possible, using
-	// an array for the `output` option, where we can specify
-	// `file` and `format` for each target)
-	{
-		input: 'src/index.ts',
-		external: ['ms'],
-		plugins: [
-			typescript() // so Rollup can convert TypeScript to JavaScript
-		],
-		output: [
-			{ file: pkg.main, format: 'cjs' },
-			{ file: pkg.module, format: 'es' }
-		]
-	}
+export default [
+  // browser-friendly UMD build
+  /*{
+    input: 'src/index.ts',
+    output: {
+      name: 'js-utils',
+      file: pkg.browser,
+      format: 'umd'
+    },
+    plugins: [
+      nodeResolve({extensions}),   // so Rollup can find `ms`
+      babel({
+        babelHelpers: 'runtime',
+        exclude: 'node_modules/!**',
+        extensions,
+      }),
+      commonjs(),  // so Rollup can convert `ms` to an ES module
+    ]
+  },*/
+  // esm，cjs格式打包
+  {
+    input: resolvePath('./src/index.ts'),
+    output: [
+      { file: resolvePath('./', pkg.exports.require), format: 'cjs' },
+      { file: resolvePath('./', pkg.exports.import), format: 'es' }
+    ],
+    external: ['dateformat'],
+    plugins: [
+      nodeResolve({
+        extensions,
+        modulesOnly: true,
+      }),
+      babel({
+        babelHelpers: 'runtime',
+        exclude: 'node_modules/**',
+        extensions,
+      }),
+    ]
+  },
+  // 生成 .d.ts 类型声明文件
+  {
+    input: resolvePath('src/index.ts'),
+    output: {
+      file: resolvePath('./', pkg.types),
+      format: 'es',
+    },
+    plugins: [dts()],
+  },
 ];

@@ -1,6 +1,6 @@
-﻿import ObjectUtils from "./ObjectUtils";
+﻿import { ObjectUtils } from "./ObjectUtils";
 
-export default class NumberUtils {
+export class NumberUtils {
   /**
    * 生成随机整数
    *
