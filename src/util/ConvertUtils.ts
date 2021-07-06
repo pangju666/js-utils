@@ -16,11 +16,10 @@ export class ConvertUtils {
    * @param excludeTypes 转换时需要排除的对象类型，如File, Blob, Date 等非自定义类型
    * @return {} 转换后的新对象
    */
-
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static convertObjectPropertyName(object: object, convertFunc: (propertyName)=> string,
+  public static convertObjectPropertyName(object: object, convertFunc: (propertyName) => string,
                                           // eslint-disable-next-line @typescript-eslint/ban-types
-                                          excludeTypes: Function[] = []): object {
+                                          excludeTypes: Function[] = []): unknown {
     if (ObjectUtils.isNotNull(object)) {
       // 判断是否为数组
       if (Array.isArray(object)) {
@@ -59,7 +58,7 @@ export class ConvertUtils {
    * @return {} 转换后的对象
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static propertyNamesToCamlCase(object: object, excludeTypes?: Function[]): object {
+  public static propertyNamesToCamlCase(object: object, excludeTypes?: Function[]): unknown {
     return this.convertObjectPropertyName(object,
         propertyName => StringUtils.underLineToCamelCase(propertyName), excludeTypes)
   }
@@ -72,7 +71,7 @@ export class ConvertUtils {
    * @return {} 转换后的对象
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static propertyNamesToUnderLine(object: object, excludeTypes?: Function[]): object {
+  public static propertyNamesToUnderLine(object: object, excludeTypes?: Function[]): unknown {
     return this.convertObjectPropertyName(object,
         propertyName => StringUtils.camelCaseToUnderLine(propertyName), excludeTypes)
   }

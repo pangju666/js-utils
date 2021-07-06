@@ -281,16 +281,15 @@ export class ObjectUtils {
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   public static deepClone<T>(object: T): T {
-    const newObject = {}
-    for (const propertyName of Object.getOwnPropertyNames(object)) {
-      const propertyValue = object[propertyName]
-      if (this.isType(propertyValue, Object)) {
-        newObject[propertyName] = this.deepClone(object[propertyName])
-      } else {
-        newObject[propertyName] = object[propertyName]
+      if (this.isBasicType(object)) {
+          const newValue = object
+          return newValue
       }
-    }
-    return newObject as T
+      const newObject = {}
+      for (const propertyName of Object.getOwnPropertyNames(object)) {
+          newObject[propertyName] = this.deepClone(object[propertyName])
+      }
+      return newObject as T
   }
 
   /**
@@ -302,9 +301,8 @@ export class ObjectUtils {
     return this.isNull(value)
       || typeof value === "string"
       || typeof value === "number"
-      || typeof value ==="bigint"
-      || typeof value ==="boolean"
-      || typeof value ==="symbol"
+      || typeof value === "boolean"
+      || typeof value === "symbol"
   }
 
   /**
