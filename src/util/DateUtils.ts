@@ -1,5 +1,6 @@
 ﻿import { ObjectUtils } from "./ObjectUtils";
-import dateformat from "dateformat";
+import * as dateFns from 'date-fns'
+import { StringUtils } from "./StringUtils";
 
 /**
  * 日期工具类
@@ -12,10 +13,20 @@ export class DateUtils {
      * 日期转为时间戳
      *
      * @param date 日期
-     * @return {number} 时间戳
+     * @param format 时间字符串格式，具体请参考{@link https://date-fns.org/v2.22.1/docs/parse#description}
+     * @return {number} 时间戳, 转换错误时返回-1
      */
-    public static dateToTimestamp(date: Date): number {
-        return new Date(date).getTime()
+    public static getTimestamp(date: Date | string, format = 'yyyy-MM-dd'): number {
+        if (ObjectUtils.isNull(date)) {
+            return -1
+        }
+        if (typeof date === 'string') {
+            if (StringUtils.isAnyEmpty(date, format)) {
+                return -1
+            }
+            return dateFns.getTime(dateFns.parse(date, format, new Date()))
+        }
+        return dateFns.getTime(date)
     }
 
     /**
@@ -24,26 +35,28 @@ export class DateUtils {
      * @param timestamp 时间戳，可接受字符串形式时间戳
      * @return {Date} 解析出的日期对象
      */
-    public static timestampToDate(timestamp: number | string): Date {
-        let timeStampVal = timestamp
+    public static fromTimeStamp(timestamp: number | string): Date {
         if (typeof timestamp === 'string') {
-          timeStampVal = parseInt(timestamp, 10);
+          return dateFns.fromUnixTime(parseInt(timestamp, 10));
         }
-        return new Date(timeStampVal)
+        return dateFns.fromUnixTime(timestamp);
     }
 
     /**
      * 时间格式化
      *
      * @param {any} date 日期
-     * @param formatStr 格式化字符串
+     * @param formatStr 时间字符串格式，具体请参考{@link https://date-fns.org/v2.22.1/docs/parse#description}
      * @return {string} 格式化后的时间字符串
      */
-    public static dateFormat(date: Date | number, formatStr = 'yyyy-mm-dd'): string {
+    public static formatDate(date: Date | number | string, formatStr = 'yyyy-MM-dd'): string {
        if (ObjectUtils.isNull(date)) {
             return ''
        }
-       return dateformat(new Date(date), formatStr)
+       if (typeof date === 'string') {
+           return ObjectUtils.getSafeValue(dateFns.format(parseInt(date, 10), formatStr), '', StringUtils.isNotEmpty)
+       }
+       return dateFns.format(date, formatStr)
     }
 
     // 防止实例化
@@ -51,3 +64,5 @@ export class DateUtils {
     protected constructor() {
     }
 }
+
+Reflect.setPrototypeOf(DateUtils, dateFns)

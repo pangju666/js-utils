@@ -1,4 +1,7 @@
-﻿/**
+﻿import { ObjectUtils } from "./ObjectUtils";
+import { BooleanUtils } from "./BooleanUtils";
+
+/**
  * 字符串工具类
  *
  * @author pangju
@@ -13,7 +16,7 @@ export class StringUtils {
      */
     public static isUpperCase(ch: string): boolean {
         const code = ch.charCodeAt(0);
-        return code >= 65 && code <= 90;
+        return BooleanUtils.and(code >= 65, code <= 90);
     }
 
     /**
@@ -24,84 +27,88 @@ export class StringUtils {
      */
     public static isLowerCase(ch: string): boolean {
         const code = ch.charCodeAt(0);
-        return code >= 97 && code <= 122;
+        return BooleanUtils.and(code >= 97, code <= 122);
     }
 
     /**
      * 判断字符串是否为空
      */
     public static isEmpty(str: string): boolean {
-        return str === undefined || str === null || str.length === 0;
+        return ObjectUtils.isNull(str) || str.length === 0;
     }
 
     /**
      * 判断字符串是否不为空
      */
     public static isNotEmpty(str: string): boolean {
-        return str !== undefined && str !== null && str.length !== 0;
+        return ObjectUtils.isNotNull(str) && str.length !== 0;
     }
 
     /**
-     * 在一个字符串数组中，是否至少有一个为空
+     * 在一个字符串数组中，是否任意一个为空
      */
     public static isAnyEmpty(...strArr: string[]): boolean {
-        for (const str of strArr) {
-            if (this.isEmpty(str)) {
-                return true;
-            }
-        }
-        return false;
+        return strArr.some(str => this.isEmpty(str))
     }
 
     /**
-     * 在一个字符串数组中，是否有一些为空
-     *
-     * @return{} 将为空的索引集合返回
+     * 在一个字符串数组中，是否任意一个不为空
      */
-    public static isSomeEmpty(...strArr: string[]): number[] {
-        const indexArr: number[] = [];
-        strArr.forEach((str, index) => {
-            if (this.isEmpty(str)) {
-                indexArr.push(index);
-            }
-        });
-        return indexArr;
+    public static isAnyNotEmpty(...strArr: string[]): boolean {
+        return strArr.some(str => this.isNotEmpty(str))
     }
 
     /**
-     * 在一个字符串数组中，是否全部为空
+     * 在一个字符串数组中，是否所有字符串都不为空
      */
-    public static isAllEmpty(...strArr: string[]): boolean {
-        for (const str of strArr) {
-            if (this.isNotEmpty(str)) {
-                return false;
-            }
-        }
-        return true;
+    public static isNoneEmpty(...strArr: string[]): boolean {
+        return strArr.every(str => this.isNotEmpty(str))
     }
 
     /**
      * 判断一个字符串，是否与一个字符串数组中的任意一个相等
      */
     public static isAnyEqual(str: string, ...strArr: string[]): boolean {
-        for (const item of strArr) {
-            if (str === item) {
-                return true;
-            }
-        }
-        return false;
+        return strArr.some(item => this.equals(str, item));
     }
 
     /**
-     * 判断一个字符串，是否与一个字符串数组中的全部字符串都不相等
+     * 判断一个字符串，是否与一个字符串数组中的任意一个相等（忽略大小写）
      */
-    public static isAllNotEqual(str: string, ...strArr: string[]): boolean {
-        for (const item of strArr) {
-            if (str === item) {
-                return false;
+    public static isAnyEqualsIgnoreCase(str: string, ...strArr: string[]): boolean {
+        return strArr.some(item => this.equalsIgnoreCase(str, item))
+    }
+
+    /**
+     * 比较两个字符串是否相等
+     */
+    public static equals(leftStr: string, rightStr: string): boolean {
+       if (ObjectUtils.isNull(leftStr)) {
+           if (ObjectUtils.isNull(rightStr)) {
+               return true
+           }
+       } else {
+           if (ObjectUtils.isNotNull(rightStr)) {
+               return leftStr === rightStr
+           }
+       }
+       return false
+    }
+
+    /**
+     * 比较两个字符串是否相等，忽略大小写
+     */
+    public static equalsIgnoreCase(leftStr: string, rightStr: string): boolean {
+        if (ObjectUtils.isNull(leftStr)) {
+            if (ObjectUtils.isNull(rightStr)) {
+                return true
+            }
+        } else {
+            if (ObjectUtils.isNotNull(rightStr)) {
+                return leftStr.toLowerCase() === rightStr.toLowerCase()
             }
         }
-        return true;
+        return false
     }
 
     /**

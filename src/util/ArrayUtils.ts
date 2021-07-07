@@ -4,8 +4,9 @@ import { BooleanUtils } from "./BooleanUtils";
 /**
  * 数组工具类
  *
- * @author pangju
- * @version 1.0 2021-6-21
+ * @author 胖橘
+ * @version 1.0-alpha 2021-6-21
+ * @version 1.0-beta 2021-7-5
  */
 export class ArrayUtils {
     /**

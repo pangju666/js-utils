@@ -35,7 +35,7 @@ export default [
       { file: resolvePath('./', pkg.exports.require), format: 'cjs' },
       { file: resolvePath('./', pkg.exports.import), format: 'es' }
     ],
-    external: ['dateformat'],
+    // external: ['date-fns'],
     plugins: [
       nodeResolve({
         extensions,

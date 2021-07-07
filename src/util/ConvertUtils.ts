@@ -1,5 +1,6 @@
 ﻿import { StringUtils } from "./StringUtils";
 import { ObjectUtils } from "./ObjectUtils";
+import { BooleanUtils } from "./BooleanUtils";
 
 /**
  * 对象转换工具类
@@ -25,25 +26,27 @@ export class ConvertUtils {
       if (Array.isArray(object)) {
         return object.map(curVal => {
           // 判断是否为基础类型或需排除类型
-          if (ObjectUtils.isBasicType(curVal) || ObjectUtils.isAnyType(curVal, excludeTypes)) {
-            return curVal
-          }
-          // 执行转换操作
-          return this.convertObjectPropertyName(curVal, convertFunc, excludeTypes)
+            if (BooleanUtils.or(ObjectUtils.isBasicType(curVal),
+                ObjectUtils.isAnyType(curVal, excludeTypes))) {
+                return curVal
+             }
+            // 执行转换操作
+            return this.convertObjectPropertyName(curVal, convertFunc, excludeTypes)
         })
       }
       // 不为数组则直接执行对象转换
       const newObj = {}
       // 遍历属性名称
-      Object.keys(object).forEach(propertyName => {
-        const newPropertyName = convertFunc(propertyName)
-        const val = object[propertyName]
-        // 判断是否为基础类型或需排除类型
-        if (ObjectUtils.isBasicType(val) || ObjectUtils.isAnyType(val, excludeTypes)) {
-          newObj[newPropertyName] = val
-        } else {
-          newObj[newPropertyName] = this.convertObjectPropertyName(val, convertFunc, excludeTypes)
-        }
+        Object.keys(object).forEach(propertyName => {
+          const newPropertyName = convertFunc(propertyName)
+          const val = object[propertyName]
+          // 判断是否为基础类型或需排除类型
+          if (BooleanUtils.or(ObjectUtils.isBasicType(val),
+              ObjectUtils.isAnyType(val, excludeTypes))) {
+              newObj[newPropertyName] = val
+          } else {
+              newObj[newPropertyName] = this.convertObjectPropertyName(val, convertFunc, excludeTypes)
+          }
       })
       return newObj
     }
@@ -72,8 +75,7 @@ export class ConvertUtils {
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   public static propertyNamesToUnderLine(object: object, excludeTypes?: Function[]): unknown {
-    return this.convertObjectPropertyName(object,
-        propertyName => StringUtils.camelCaseToUnderLine(propertyName), excludeTypes)
+    return this.convertObjectPropertyName(object, propertyName => StringUtils.camelCaseToUnderLine(propertyName), excludeTypes)
   }
 
   // 防止实例化
