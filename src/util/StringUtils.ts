@@ -11,7 +11,7 @@ export class StringUtils {
     /**
      * 判断是否为大写字母
      *
-     * @param ch 待判断字符
+     * @param {String} ch 待判断字符
      * @returns {boolean} 为大写字母返回true，否则返回false
      */
     public static isUpperCase(ch: string): boolean {

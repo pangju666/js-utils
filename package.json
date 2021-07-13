@@ -13,7 +13,7 @@
         "import": "./lib/js-utils.js",
         "require": "./lib/js-utils.cjs"
     },
-    "browser": "lib/js-utils.umd.js",
+    "iife": "lib/js-utils.iife.js",
     "types": "lib/js-utils.d.ts",
     "type": "module",
     "scripts": {

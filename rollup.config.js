@@ -10,24 +10,23 @@ const extensions = ['.js', '.ts'];
 const resolvePath = (...args) => path.resolve(__dirname, ...args); // 适应不同环境，封装path.resolve，少写一点代码
 
 export default [
-  // browser-friendly UMD build
-  /*{
+  {
     input: 'src/index.ts',
     output: {
-      name: 'js-utils',
-      file: pkg.browser,
-      format: 'umd'
+      name: 'jsUtils',
+      file: pkg.iife,
+      format: 'iife'
     },
     plugins: [
-      nodeResolve({extensions}),   // so Rollup can find `ms`
       babel({
         babelHelpers: 'runtime',
-        exclude: 'node_modules/!**',
+        exclude: 'node_modules/**',
         extensions,
       }),
-      commonjs(),  // so Rollup can convert `ms` to an ES module
+      nodeResolve({extensions}),   // so Rollup can find `ms`
+      commonjs({extensions}),  // so Rollup can convert `ms` to an ES module
     ]
-  },*/
+  },
   // esm，cjs格式打包
   {
     input: resolvePath('./src/index.ts'),
@@ -37,10 +36,7 @@ export default [
     ],
     // external: ['date-fns'],
     plugins: [
-      nodeResolve({
-        extensions,
-        modulesOnly: true,
-      }),
+      nodeResolve({extensions}),
       babel({
         babelHelpers: 'runtime',
         exclude: 'node_modules/**',
