@@ -49,6 +49,7 @@ export class ObjectUtils {
     if (typeof expression !== "string") {
      throw new TypeError('参数expression必须为string类型')
     }
+
     let propertyVal
     for (const propertyName of expression.split('.')) {
       propertyVal = object[propertyName]
@@ -81,6 +82,9 @@ export class ObjectUtils {
   public static isNotNullProperty(object: object, expression: string = ''): boolean {
     if (ObjectUtils.isNull(object)) {
       return false
+    }
+    if (typeof expression !== "string") {
+      throw new TypeError('参数expression必须为string类型')
     }
 
     let objectCopy = object
@@ -131,6 +135,10 @@ export class ObjectUtils {
     if (ObjectUtils.isNullProperty(object, expression)) {
       return defaultVal
     }
+    if (typeof expression !== "string") {
+      throw new TypeError('参数expression必须为string类型')
+    }
+
     let objectCopy = object
     const propertyNames = expression.split('.')
     for (const propertyName of propertyNames) {
