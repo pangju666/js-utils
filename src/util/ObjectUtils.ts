@@ -42,9 +42,12 @@ export class ObjectUtils {
    * @param expression 属性表达式
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static isExistProperty(object: object, expression: string): boolean {
+  public static isExistProperty(object: object, expression: string = ''): boolean {
     if (ObjectUtils.isNotExist(object)) {
       return false
+    }
+    if (typeof expression !== "string") {
+     throw new TypeError('参数expression必须为string类型')
     }
     let propertyVal
     for (const propertyName of expression.split('.')) {
@@ -63,7 +66,7 @@ export class ObjectUtils {
    * @param expression 属性表达式
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static isNotExistProperty(object: object, expression: string): boolean {
+  public static isNotExistProperty(object: object, expression: string = ''): boolean {
     return !this.isExistProperty(object, expression)
   }
 
@@ -75,7 +78,7 @@ export class ObjectUtils {
    * @return{boolean} 对象属性为空则返回false, 否则返回true
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static isNotNullProperty(object: object, expression: string): boolean {
+  public static isNotNullProperty(object: object, expression: string = ''): boolean {
     if (ObjectUtils.isNull(object)) {
       return false
     }
@@ -99,7 +102,7 @@ export class ObjectUtils {
    * @return{boolean} 对象属性为空则返回true, 否则返回false
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static isNullProperty(object: object, expression: string): boolean {
+  public static isNullProperty(object: object, expression: string = ''): boolean {
     return !this.isNotNullProperty(object, expression)
   }
 
@@ -124,7 +127,7 @@ export class ObjectUtils {
    * @return{any} 对象属性值或默认值
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public static getSafeProperty(object: object, expression: string, defaultVal: unknown): unknown {
+  public static getSafeProperty(object: object, expression: string = '', defaultVal: unknown): unknown {
     if (ObjectUtils.isNullProperty(object, expression)) {
       return defaultVal
     }
