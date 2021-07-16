@@ -1,4 +1,4 @@
-﻿import { StringUtils } from "./StringUtils";
+import { StringUtils } from "./StringUtils";
 import { ObjectUtils } from "./ObjectUtils";
 import { BooleanUtils } from "./BooleanUtils";
 

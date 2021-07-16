@@ -1,4 +1,4 @@
-﻿import { ConvertUtils } from '../lib/js-utils.js';
+import { ConvertUtils } from '../lib/js-utils.js';
 
 describe("ConvertUtilsTest", () => {
     it("testConvertObjectPropertyName", () => {

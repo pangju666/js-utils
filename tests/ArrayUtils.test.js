@@ -1,4 +1,4 @@
-﻿import { ArrayUtils } from '../lib/js-utils.js';
+import { ArrayUtils } from '../lib/js-utils.js';
 
 describe("ArrayUtilsTest", () => {
     it("testIsEmpty", () => {

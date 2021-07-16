@@ -1,4 +1,4 @@
-﻿export class NumberUtils {
+export class NumberUtils {
   /**
    * 生成随机整数
    *

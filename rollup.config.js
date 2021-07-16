@@ -1,4 +1,4 @@
-﻿import nodeResolve from '@rollup/plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import commonjs from '@rollup/plugin-commonjs';
 import dts from 'rollup-plugin-dts';

@@ -1,4 +1,4 @@
-﻿import { BooleanUtils } from '../lib/js-utils.js';
+import { BooleanUtils } from '../lib/js-utils.js';
 
 describe("BooleanUtilsTest", () => {
     it("testAnd", () => {

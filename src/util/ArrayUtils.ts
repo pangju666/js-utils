@@ -1,4 +1,4 @@
-﻿import { ObjectUtils } from "./ObjectUtils";
+import { ObjectUtils } from "./ObjectUtils";
 import { BooleanUtils } from "./BooleanUtils";
 
 /**

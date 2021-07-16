@@ -1,4 +1,4 @@
-﻿import { ObjectUtils } from "./ObjectUtils";
+import { ObjectUtils } from "./ObjectUtils";
 import * as dateFns from 'date-fns'
 import { StringUtils } from "./StringUtils";
 

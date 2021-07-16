@@ -1,4 +1,4 @@
-﻿import { NumberUtils } from '../lib/js-utils.js';
+import { NumberUtils } from '../lib/js-utils.js';
 
 describe("NumberUtilsTest", () => {
     it("testRandomInteger", () => {
