@@ -8,12 +8,7 @@
         "tools"
     ],
     "private": false,
-    "main": "lib/js-utils.cjs",
-    "exports": {
-        "import": "./lib/js-utils.js",
-        "require": "./lib/js-utils.cjs"
-    },
-    "iife": "lib/js-utils.iife.js",
+    "module": "lib/js-utils.ems.js",
     "types": "lib/js-utils.d.ts",
     "type": "module",
     "scripts": {
