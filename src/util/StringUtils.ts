@@ -48,51 +48,63 @@ export class StringUtils {
      * 在一个字符串数组中，是否任意一个为空
      */
     public static isAnyEmpty(...strArr: string[]): boolean {
-        return strArr.some(str => this.isEmpty(str))
+        return strArr.some((str) => this.isEmpty(str));
     }
 
     /**
      * 在一个字符串数组中，是否任意一个不为空
      */
     public static isAnyNotEmpty(...strArr: string[]): boolean {
-        return strArr.some(str => this.isNotEmpty(str))
+        return strArr.some((str) => this.isNotEmpty(str));
     }
 
     /**
      * 在一个字符串数组中，是否所有字符串都不为空
      */
     public static isNoneEmpty(...strArr: string[]): boolean {
-        return strArr.every(str => this.isNotEmpty(str))
+        return strArr.every((str) => this.isNotEmpty(str));
     }
 
     /**
      * 判断一个字符串，是否与一个字符串数组中的任意一个相等
      */
     public static isAnyEqual(str: string, ...strArr: string[]): boolean {
-        return strArr.some(item => this.equals(str, item));
+        return strArr.some((item) => this.equals(str, item));
     }
 
     /**
      * 判断一个字符串，是否与一个字符串数组中的任意一个相等（忽略大小写）
      */
-    public static isAnyEqualsIgnoreCase(str: string, ...strArr: string[]): boolean {
-        return strArr.some(item => this.equalsIgnoreCase(str, item))
+    public static isAnyEqualsIgnoreCase(
+        str: string,
+        ...strArr: string[]
+    ): boolean {
+        return strArr.some((item) => this.equalsIgnoreCase(str, item));
+    }
+
+    /**
+     * 判断目标字符串是否存在于指定字符串中
+     * @param str 指定字符串
+     * @param queryStr 目标字符串
+     */
+    public static contains(str: string, queryStr: string): boolean {
+        return this.isNoneEmpty(str, queryStr) && str.indexOf(queryStr) !== -1;
     }
 
     /**
      * 比较两个字符串是否相等
      */
     public static equals(leftStr: string, rightStr: string): boolean {
-       if (ObjectUtils.isNull(leftStr)) {
-           if (ObjectUtils.isNull(rightStr)) {
-               return true
-           }
-       } else {
-           if (ObjectUtils.isNotNull(rightStr)) {
-               return leftStr === rightStr
-           }
-       }
-       return false
+        if (ObjectUtils.isNull(leftStr)) {
+            if (ObjectUtils.isNull(rightStr)) {
+                return true;
+            }
+        } else {
+            if (ObjectUtils.isNotNull(rightStr)) {
+                return leftStr === rightStr;
+            }
+        }
+        return false;
     }
 
     /**
@@ -101,21 +113,21 @@ export class StringUtils {
     public static equalsIgnoreCase(leftStr: string, rightStr: string): boolean {
         if (ObjectUtils.isNull(leftStr)) {
             if (ObjectUtils.isNull(rightStr)) {
-                return true
+                return true;
             }
         } else {
             if (ObjectUtils.isNotNull(rightStr)) {
-                return leftStr.toLowerCase() === rightStr.toLowerCase()
+                return leftStr.toLowerCase() === rightStr.toLowerCase();
             }
         }
-        return false
+        return false;
     }
 
     /**
      * 去除字符串两端的空白，若为空字符串则返回空字符串
      */
     public static trimToEmpty(str: string): string {
-        return this.isEmpty(str) ? '' : str.trim();
+        return this.isEmpty(str) ? "" : str.trim();
     }
 
     /**
@@ -129,11 +141,12 @@ export class StringUtils {
      * 下划线格式字符串转为小驼峰格式
      */
     public static underLineToCamelCase(str: string): string {
-        const strArr = str.split('_');
+        const strArr = str.split("_");
         for (let i = 1; i < strArr.length; i++) {
-            strArr[i] = strArr[i].charAt(0).toUpperCase() + strArr[i].substring(1);
+            strArr[i] =
+                strArr[i].charAt(0).toUpperCase() + strArr[i].substring(1);
         }
-        return strArr.join('');
+        return strArr.join("");
     }
 
     /**
@@ -149,10 +162,11 @@ export class StringUtils {
         }
         indexArr.forEach((value, index) => {
             newStr.push(
-                str.charAt(value).toLowerCase() + str.substring(value + 1, indexArr[index + 1])
+                str.charAt(value).toLowerCase() +
+                    str.substring(value + 1, indexArr[index + 1])
             );
         });
-        return newStr.join('_');
+        return newStr.join("_");
     }
 
     // 防止实例化
