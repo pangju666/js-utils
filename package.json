@@ -1,6 +1,6 @@
 {
     "name": "@pangju666/js-utils",
-    "version": "1.0.0-beta",
+    "version": "1.0.0-beta.1",
     "author": "pangju",
     "description": "将常用js函数整合为工具类，并将一些好用的库进行二次封装",
     "keywords": [
@@ -8,7 +8,10 @@
         "tools"
     ],
     "private": false,
-    "module": "lib/js-utils.ems.js",
+    "exports": {
+        "import": "./lib/js-utils.ems.js",
+        "require": "./lib/js-utils.cjs.js"
+    },
     "types": "lib/js-utils.d.ts",
     "type": "module",
     "scripts": {
