@@ -83,7 +83,7 @@ export class BooleanUtils {
         bool: boolean,
         trueValue = 1,
         falseValue = 0
-    ): number {
+    ): number | null {
         if (ObjectUtils.isNull(bool)) {
             return null;
         }
@@ -131,7 +131,7 @@ export class BooleanUtils {
         bool: boolean,
         trueString: string,
         falseString: string
-    ): string {
+    ): string | null {
         if (ObjectUtils.isNull(bool)) {
             return null;
         }

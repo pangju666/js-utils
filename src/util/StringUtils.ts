@@ -4,10 +4,68 @@ import { BooleanUtils } from "./BooleanUtils";
 /**
  * 字符串工具类
  *
- * @author pangju
- * @version 1.0 2021-6-21
+ * @author 胖橘
+ * @version 1.0
+ * @since 1.0
  */
 export class StringUtils {
+    /**
+     * 判断字符串是否为空或 null
+     *
+     * @param str 要检查的字符串，可能为 null
+     * @return {boolean} 如果为空或 null，则为true
+     */
+    public static isEmpty(str: string): boolean {
+        return ObjectUtils.isNull(str) || str.length === 0;
+    }
+
+    /**
+     * 判断字符串是否不为空且不为 null
+     *
+     * @param str 要检查的字符串，可能为 null
+     * @return {boolean} 如果不为空且不为 null，则为true
+     */
+    public static isNotEmpty(str: string): boolean {
+        return !this.isEmpty(str);
+    }
+
+    /**
+     * 在一个字符串数组中，是否任意一个为空或为 null
+     *
+     * @param strs 要检查的字符串，可能为 null
+     * @return {boolean} 如果任何字符串为空或 null，则为true
+     */
+    public static isAnyEmpty(...strs: string[]): boolean {
+        return strs.some((str) => this.isEmpty(str));
+    }
+
+    /**
+     * 在一个字符串数组中，是否所有字符串都不为空且不为 null
+     *
+     * @param strs 要检查的字符串，可能为 null
+     * @return {boolean} 如果没有一个字符串为空或 null，则为true
+     */
+    public static isNoneEmpty(...strs: string[]): boolean {
+        return !this.isAnyEmpty(...strs);
+    }
+
+    /**
+     * 在一个字符串数组中，是否所有字符串都为空或 null
+     *
+     * @param strs 要检查的字符串，可能为 null
+     * @return {boolean} 如果没有一个字符串为空或 null，则为true
+     */
+    public static isAllEmpty(...strs: string[]): boolean {
+        return strs.every((str) => this.isEmpty(str));
+    }
+
+    /**
+     * 判断一个字符串，是否与一个字符串数组中的任意一个相等
+     */
+    public static isAnyEqual(str: string, ...strArr: string[]): boolean {
+        return strArr.some((item) => this.equals(str, item));
+    }
+
     /**
      * 判断是否为大写字母
      *
@@ -28,48 +86,6 @@ export class StringUtils {
     public static isLowerCase(ch: string): boolean {
         const code = ch.charCodeAt(0);
         return BooleanUtils.and(code >= 97, code <= 122);
-    }
-
-    /**
-     * 判断字符串是否为空
-     */
-    public static isEmpty(str: string): boolean {
-        return ObjectUtils.isNull(str) || str.length === 0;
-    }
-
-    /**
-     * 判断字符串是否不为空
-     */
-    public static isNotEmpty(str: string): boolean {
-        return ObjectUtils.isNotNull(str) && str.length !== 0;
-    }
-
-    /**
-     * 在一个字符串数组中，是否任意一个为空
-     */
-    public static isAnyEmpty(...strArr: string[]): boolean {
-        return strArr.some((str) => this.isEmpty(str));
-    }
-
-    /**
-     * 在一个字符串数组中，是否任意一个不为空
-     */
-    public static isAnyNotEmpty(...strArr: string[]): boolean {
-        return strArr.some((str) => this.isNotEmpty(str));
-    }
-
-    /**
-     * 在一个字符串数组中，是否所有字符串都不为空
-     */
-    public static isNoneEmpty(...strArr: string[]): boolean {
-        return strArr.every((str) => this.isNotEmpty(str));
-    }
-
-    /**
-     * 判断一个字符串，是否与一个字符串数组中的任意一个相等
-     */
-    public static isAnyEqual(str: string, ...strArr: string[]): boolean {
-        return strArr.some((item) => this.equals(str, item));
     }
 
     /**

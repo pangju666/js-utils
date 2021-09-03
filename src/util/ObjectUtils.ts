@@ -237,7 +237,7 @@ export class ObjectUtils {
      * @param items 检查项
      * @return {T} 出现次数最最多的项，如果不唯一或检查项为空，则返回 null
      */
-    public static mode<T>(...items: T[]): T {
+    public static mode<T>(...items: T[]): T | null {
         if (this.isNotEmpty(items)) {
             const occurrences = new Map();
             for (const item of items) {
@@ -265,30 +265,36 @@ export class ObjectUtils {
     }
 
     /**
-     * 拷贝目标对象
+     * 浅克隆目标对象
      *
-     * @param obj 待拷贝对象
+     * @param obj 待克隆对象
+     * @return {any} 克隆的对象，如果输入为null则为null
      */
     public static clone<T>(obj: T): T {
-        if (this.isBasicType(obj)) {
+        if (this.isNull(obj) || this.isBasicType(obj)) {
             return obj;
         }
-        const newObject = {};
-        for (const propName of Object.getOwnPropertyNames(obj)) {
-            newObject[propName] = this.clone(obj[propName]);
-        }
-        return newObject as T;
+
+        const newObj = Array.isArray(obj) ? [] : {};
+        return Object.assign(newObj, obj);
     }
 
     /**
-     * 如果可能，克隆一个对象。<br />
+     * 深克隆目标对象
      *
-     * @param obj 要克隆的对象，null 返回 null
-     * @return {T} 如果对象可克隆，则返回克隆对象，不然则返回对象本身
+     * @param obj 待克隆对象
+     * @return {any} 克隆的对象，如果输入为null则为null
      */
-    public static cloneIfPossible<T>(obj: T): T {
-        const clone = this.clone(obj);
-        return this.isNull(clone) ? obj : clone;
+    public static deepClone<T>(obj: T): T {
+        if (this.isNull(obj) || this.isBasicType(obj)) {
+            return obj;
+        }
+
+        const newObj = Array.isArray(obj) ? [] : {};
+        for (const propName of Object.getOwnPropertyNames(obj)) {
+            newObj[propName] = this.deepClone(obj[propName]);
+        }
+        return newObj as T;
     }
 
     /**
