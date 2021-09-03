@@ -3,9 +3,8 @@
  *
  * @author 胖橘
  * @version 1.0
+ * @since 1.0
  */
-import { ArrayUtils } from "./ArrayUtils";
-
 export class ObjectUtils {
     /**
      * 判断对象是否不为null
