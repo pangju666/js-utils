@@ -151,11 +151,7 @@ export class ObjectUtils {
      */
     public static firstNonNull(...values: unknown[]): unknown {
         if (this.isNotNull(values)) {
-            for (const value of values) {
-                if (this.isNotNull(value)) {
-                    return value;
-                }
-            }
+            return this.defaultIfNull(values.find(value => this.isNotNull(value)), null);
         }
         return null;
     }
@@ -163,33 +159,54 @@ export class ObjectUtils {
     /**
      * 检查给定参数中是否存在非空值
      *
-     * @param values 要测试的值，可能是 null 或空
+     * @param values 要测试的值，可能是 null
      * @returns {} 如果在给定参数中至少存在一个非空值则返回 true，
-     * 如果给定参数中的所有值都是 null、给定参数为 null 或空，则返回 false
+     * 如果给定参数中的所有值都是 null 值，则返回 false
      */
     public static anyNotNull(...values: unknown[]): boolean {
         return this.firstNonNull(values) != null;
     }
 
     /**
+     * 检查给定参数中是否存在空值
+     *
+     * @param values 要测试的值，可能是 null
+     * @returns {} 如果在给定参数中至少存在一个空值则返回 true，
+     * 如果给定参数中的所有值都是非 null 值，则返回 false
+     */
+    public static anyNull(...values: unknown[]): boolean {
+        if (this.isNull(values)) {
+            return true;
+        }
+        return values.some(value => this.isNull(value));
+    }
+
+    /**
      * 检查给定参数中的所有值是否都不为null
      *
-     * @param values
+     * @param values 要测试的值，可能是 null
      * @returns {} 如果给定参数中存在至少一个 null 值或给定参数是 null 则返回 false，
-     * 如果给定参数中的所有值都不是 null 或给定参数为空则返回 true。
+     * 如果给定参数中的所有值都不是 null 则返回 true。
      */
     public static allNotNull(...values: unknown[]): boolean {
         if (this.isNull(values)) {
             return false;
         }
+        return values.every(value => this.isNotNull(value));
+    }
 
-        for (const value of values) {
-            if (this.isNull(value)) {
-                return false;
-            }
+    /**
+     * 检查给定参数中的所有值是否都为null
+     *
+     * @param values
+     * @returns {} 如果给定参数中存在至少一个非 null 值或给定参数是非 null 值则返回 false，
+     * 如果给定参数中的所有值都是 null 则返回 true。
+     */
+    public static allNull(...values: unknown[]): boolean {
+        if (this.isNull(values)) {
+            return true;
         }
-
-        return true;
+        return values.every(value => this.isNull(value));
     }
 
     /**

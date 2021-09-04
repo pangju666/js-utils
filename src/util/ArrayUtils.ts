@@ -262,18 +262,27 @@ export class ArrayUtils {
      * 负的 fromIndex 被视为零。大于数组长度的 fromIndex 将被视为 0。
      *
      * @param array 要搜索对象的数组，可能为null
-     * @param searchElement 要查找的对象或元素匹配函数，可能为null
+     * @param predicate 测试函数
+     * @param fromIndex 向后遍历的起始索引
+     * @return {number} 数组中查找对象的最后一个索引，如果未找到或为 null 数组则返回 -1
+     */
+    public static indexOf<T>(
+        array: T[],
+        predicate: (value: T, index?: number, obj?: T[]) => boolean,
+        fromIndex?: number
+    ): number;
+    /**
+     * 在数组中从给定索引开始查找给定对象的索引，null 数组则返回 -1。
+     * 负的 fromIndex 被视为零。大于数组长度的 fromIndex 将被视为 0。
+     *
+     * @param array 要搜索对象的数组，可能为null
+     * @param searchElement 要查找的对象，可能为null
      * @param fromIndex 向后遍历的起始索引
      * @return {number} 数组中查找对象的最后一个索引，如果未找到或为 null 数组则返回 -1
      */
     public static indexOf<T>(
         array: T[],
         searchElement: T,
-        fromIndex?: number
-    ): number;
-    public static indexOf<T>(
-        array: T[],
-        searchElement: (value: T, index?: number, obj?: T[]) => boolean,
         fromIndex?: number
     ): number;
     public static indexOf<T>(
@@ -290,12 +299,7 @@ export class ArrayUtils {
         }
 
         if (typeof searchElement === "function") {
-            for (let i = fromIndex; i < array.length; i++) {
-                if (searchElement(array[i], i, array)) {
-                    return i;
-                }
-            }
-            return -1;
+           return array.findIndex(((value, index, obj) => searchElement(value, index, obj)));
         } else {
             return array.indexOf(searchElement as T, fromIndex);
         }
@@ -306,18 +310,27 @@ export class ArrayUtils {
      * 负的 fromIndex 将返回 -1。大于数组长度的 fromIndex 将从数组的末尾开始搜索。
      *
      * @param array 要搜索对象的数组，可能为null
-     * @param searchElement 要查找的对象或元素匹配函数，可能为null
+     * @param predicate 测试函数
+     * @param fromIndex 开始搜索的索引
+     * @return {number} 数组中查找对象的索引，如果未找到或为 null 数组则返回 -1
+     */
+    public static lastIndexOf<T>(
+        array: T[],
+        predicate: (value: T, index?: number, obj?: T[]) => boolean,
+        fromIndex?: number
+    ): number;
+    /**
+     * 从给定索引开始查找数组中给定对象的最后一个索引。<br />
+     * 负的 fromIndex 将返回 -1。大于数组长度的 fromIndex 将从数组的末尾开始搜索。
+     *
+     * @param array 要搜索对象的数组，可能为null
+     * @param searchElement 要查找的元素，可能为null
      * @param fromIndex 开始搜索的索引
      * @return {number} 数组中查找对象的索引，如果未找到或为 null 数组则返回 -1
      */
     public static lastIndexOf<T>(
         array: T[],
         searchElement: T,
-        fromIndex?: number
-    ): number;
-    public static lastIndexOf<T>(
-        array: T[],
-        searchElement: (value: T, index?: number, obj?: T[]) => boolean,
         fromIndex?: number
     ): number;
     public static lastIndexOf<T>(
@@ -348,13 +361,32 @@ export class ArrayUtils {
      * 检查对象是否在给定的数组中。如果传入 null 数组，则该方法返回 false。
      *
      * @param array 要搜索的数组
-     * @param searchElement 要查找的对象或元素匹配函数，可能为null
+     * @param searchElement 测试函数
+     * @param fromIndex 向后遍历的起始索引
      */
     public static contains<T>(
         array: T[],
-        searchElement: T | ((value: T, index?: number, obj?: T[]) => boolean)
+        searchElement: (value: T, index?: number, obj?: T[]) => boolean,
+        fromIndex: number
+    ): boolean;
+    /**
+     * 检查对象是否在给定的数组中。如果传入 null 数组，则该方法返回 false。
+     *
+     * @param array 要搜索的数组
+     * @param searchElement 要查找的元素，可能为null
+     * @param fromIndex 向后遍历的起始索引
+     */
+    public static contains<T>(
+        array: T[],
+        searchElement: T,
+        fromIndex: number
+    ): boolean;
+    public static contains<T>(
+        array: T[],
+        searchElement: T,
+        fromIndex = 0
     ): boolean {
-        return this.indexOf(array, searchElement) != -1;
+        return this.indexOf(array, searchElement, fromIndex) != -1;
     }
 
     /**
@@ -421,6 +453,167 @@ export class ArrayUtils {
             return array[index];
         }
         return defaultVal;
+    }
+
+    /**
+     * 将给定数组的所有元素添加到一个新数组中。
+     * 新数组包含array1的所有元素，然后是array2所有元素。
+     * 当数组返回时，它始终是一个新数组。
+     *
+     * @param array1 其元素添加到新数组的第一个数组，可能为 null
+     * @param array2 其元素添加到新数组的第二个数组，可能为 null
+     * @return {Array} 新的数组，如果两个数组是 null 则返回 null。
+     * 新数组的类型是第一个数组的类型，除非第一个数组为空，在这种情况下，类型与第二个数组相同。
+     */
+    public static addAll<T>(array1: T[], ...array2: T[]): T[] {
+        if (ObjectUtils.isNull(array1)) {
+            return this.clone(array2);
+        } else if (ObjectUtils.isNull(array2)) {
+            return this.clone(array1);
+        }
+        return array1.concat(array2);
+    }
+
+    /**
+     * 向给定的数组的指定位置插入元素，并将其他元素后移一位。
+     * 如果输入数组为 null 或空 ，则返回一个新的单元素数组
+     *
+     * @param array 原始数组
+     * @param index 要插入元素的位置，低于(< 0) 被提升为 0，高于 (> array.length) 导致没有变化。
+     * @param element 待插入元素
+     * @return {Array} 插入元素后的新数组，原始数组不会修改
+     */
+    public static add<T>(array: T[], index: number, element: T): T[] {
+        if (ObjectUtils.isNull(array)) {
+            return [element];
+        }
+
+        const length = this.getLength(array);
+        if (index < 0) {
+            index = 0;
+        } else if (index >= length) {
+            index = length - 1;
+        }
+        const subArray1 = array.slice(0, index);
+        const subArray2 = array.slice(index);
+        return subArray1.concat(element, subArray2);
+    }
+
+    /**
+     * 从指定数组中移除指定位置的元素。 所有后续元素都向左移动（从它们的索引中减去一）。
+     * 如果输入数组为 null ，则将抛出 Error，因为在这种情况下无法指定有效索引。
+     *
+     * @param array 要从中删除元素的数组，不能为null
+     * @param index 要删除的元素的位置或测试函数
+     * @return {any} 已删除的元素, 如果未删除元素则返回undefined
+     * @throws {RangeError} 如果索引超出范围（index < 0 || index >= array.length）。
+     * @throws {Error} 如果数组为null
+     */
+    public static remove<T>(array: T[], index: number): T;
+    /**
+     * 从指定数组中移除指定位置的元素。 所有后续元素都向左移动（从它们的索引中减去一）。
+     * 如果输入数组为 null ，则将抛出 Error，因为在这种情况下无法指定有效索引。
+     *
+     * @param array 要从中删除元素的数组，不能为null
+     * @param predicate 测试函数
+     * @return {any} 已删除的元素, 如果未删除元素则返回undefined
+     * @throws {RangeError} 如果索引超出范围（index < 0 || index >= array.length）。
+     * @throws {Error} 如果数组为null
+     */
+    public static remove<T>(array: T[], predicate: (value: T, index: number, obj: T[]) => boolean): T;
+    public static remove<T>(array: T[], index: unknown): T {
+        if (ObjectUtils.isNull(array)) {
+            throw new Error("数组不可为null");
+        }
+
+        let removeIndex;
+        if (typeof index === "function") {
+            removeIndex = array.findIndex((value, index1, obj) => index(value, index, obj));
+            if (removeIndex === -1) {
+               return null;
+            }
+        } else if (typeof index === "number") {
+            removeIndex = index;
+            const length = this.getLength(array);
+            if (index < 0 || index >= length) {
+                throw new RangeError("索引: " + index + ", 数组长度: " + length);
+            }
+        }
+
+        const result = array.splice(removeIndex, 1);
+        return ObjectUtils.defaultIfCondition(result[0], undefined, this.isNotEmpty(result));
+    }
+
+
+    /**
+     * 从指定数组中以指定数量删除指定元素的出现次数。所有后续元素都向左移动。
+     * 对于指定数量大于原始数组中包含的数量的任何要删除的元素，除了删除现有的匹配项之外不会发生任何更改。
+     * 此方法返回一个新数组，该数组具有与输入数组相同的元素。
+     *
+     * @param array 要从中删除元素的数组，可能为null
+     * @param predicate 测试函数
+     * @return {Array} 一个包含现有元素的新数组。
+     */
+    public static removeElements<T>(array: T[], predicate: (value: T, index: number, obj: T[]) => boolean): T[];
+    /**
+     * 从指定数组中以指定数量删除指定元素的出现次数。所有后续元素都向左移动。
+     * 对于指定数量大于原始数组中包含的数量的任何要删除的元素，除了删除现有的匹配项之外不会发生任何更改。
+     * 此方法返回一个新数组，该数组具有与输入数组相同的元素。
+     *
+     * @param array 要从中删除元素的数组，可能为null
+     * @param values 要删除的元素
+     * @return {Array} 一个包含现有元素的新数组。如果数组为null，则返回null
+     */
+    public static removeElements<T>(array: T[], ...values: T[]): T[];
+    public static removeElements<T>(array: T[], values: unknown): T[] {
+        if (ObjectUtils.isNull(array)) {
+            return null;
+        }
+
+        if (typeof values === "function") {
+            return array.filter((value, index, obj) => !values(value, index, obj));
+        } else if (Array.isArray(values)){
+            return array.filter(value => !values.includes(value));
+        }
+    }
+
+    /**
+     * 从指定数组中移除指定位置的元素。 所有剩余的元素都向左移动。
+     * 此方法返回一个新数组，该数组具有与输入数组相同的元素。
+     *
+     * @param array 要从中删除元素的数组，可能为null
+     * @param indices 要删除的元素的位置
+     * @return {Array} 一个新数组，包含除指定位置的元素之外的现有元素。如果数组为null，则返回null
+     */
+    public static removeAll<T>(array: T[], ...indices: number[]): T[] {
+        if (ObjectUtils.isNull(array)) {
+            return null;
+        }
+        return array.filter((value, index) => !indices.includes(index));
+    }
+
+    /**
+     * 将元素插入给定索引处的数组（从零开始）。当数组返回时，它始终是一个新数组。
+     *
+     * @param array 要插入值的数组，可能为 null
+     * @param index 数组中插入新值的位置
+     * @param values 要插入的新值，可能为 null
+     * @return {Array} 新数组
+     * @throws {RangeError} 如果索引超出范围（index < 0 || index >= array.length）。
+     */
+    public static insert<T>(array: T[], index: number, ...values: T[]): T[] {
+        if (ObjectUtils.isNull(array)) {
+            return this.clone(values);
+        } else if (ObjectUtils.isNull(values)) {
+            return this.clone(array);
+        }
+
+        if (index < 0 || index >= length) {
+            throw new RangeError("索引: " + index + ", 数组长度: " + length);
+        }
+        const subArray1 = array.slice(0, index);
+        const subArray2 = array.slice(index);
+        return subArray1.concat(values, subArray2);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
