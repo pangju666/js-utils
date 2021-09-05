@@ -2,7 +2,7 @@
     "name": "@pangju666/js-utils",
     "version": "1.0.0_rc1",
     "author": "pangju",
-    "description": "将常用js函数整合为工具类，并将一些好用的库进行二次封装",
+    "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
     "keywords": [
         "utils",
         "tools"

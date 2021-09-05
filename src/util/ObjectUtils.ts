@@ -87,7 +87,7 @@ export class ObjectUtils {
      *
      * @param value 对象
      * @return {boolean} 对象如果为字符串或数组则判断是否为空，
-     * 否则使用{@link ObjectUtils.isNull}判断对象是否为 null
+     * 否则使用{@link isNull}判断对象是否为 null
      */
     public static isEmpty(value: unknown): boolean {
         if (this.isNull(value)) {
@@ -103,7 +103,7 @@ export class ObjectUtils {
      *
      * @param value 对象
      * @return {boolean} 对象如果为字符串或数组则判断是否为空，
-     * 否则使用{@link ObjectUtils.isNull}判断对象是否不为 null
+     * 否则使用{@link isNull}判断对象是否不为 null
      */
     public static isNotEmpty(value: unknown): boolean {
         return !this.isEmpty(value);
