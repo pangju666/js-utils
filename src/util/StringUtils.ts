@@ -1,6 +1,6 @@
-import {ObjectUtils} from "./ObjectUtils";
-import {BooleanUtils} from "./BooleanUtils";
-import {ArrayUtils} from "./ArrayUtils";
+import { ObjectUtils } from "./ObjectUtils";
+import { BooleanUtils } from "./BooleanUtils";
+import { ArrayUtils } from "./ArrayUtils";
 
 /**
  * 字符串工具类
@@ -11,7 +11,7 @@ import {ArrayUtils} from "./ArrayUtils";
  */
 export class StringUtils {
     static readonly WHITESPACE_CHAR_CODE = " ".charCodeAt(0);
-    static readonly EMPTY = " ";
+    static readonly EMPTY = "";
     static readonly INDEX_NOT_FOUND = -1;
 
     /**
@@ -174,7 +174,11 @@ export class StringUtils {
      */
     public static trimToNull(str: string): string {
         const trimStr = this.trim(str);
-        return ObjectUtils.defaultIfCondition(trimStr, null, this.isNotEmpty(trimStr));
+        return ObjectUtils.defaultIfCondition(
+            trimStr,
+            null,
+            this.isNotEmpty(trimStr)
+        );
     }
 
     /**
@@ -218,7 +222,10 @@ export class StringUtils {
             return this.EMPTY;
         }
         if (str.length > maxLength) {
-            const ix = offset + maxLength > str.length ? str.length : offset + maxLength;
+            const ix =
+                offset + maxLength > str.length
+                    ? str.length
+                    : offset + maxLength;
             return str.substring(offset, ix);
         }
         return str.substr(offset);
@@ -251,7 +258,11 @@ export class StringUtils {
             return null;
         }
         const stripStr = this.strip(str);
-        return ObjectUtils.defaultIfCondition(stripStr, null, this.isNotEmpty(stripStr));
+        return ObjectUtils.defaultIfCondition(
+            stripStr,
+            null,
+            this.isNotEmpty(stripStr)
+        );
     }
 
     /**
@@ -279,13 +290,19 @@ export class StringUtils {
         }
         let start = 0;
         if (ObjectUtils.isNull(stripChars)) {
-            while (start != str.length && this.isWhitespace(str.charCodeAt(start))) {
+            while (
+                start != str.length &&
+                this.isWhitespace(str.charCodeAt(start))
+            ) {
                 start++;
             }
         } else if (this.isEmpty(stripChars)) {
             return str;
         } else {
-            while (start != str.length && stripChars.includes(str.charAt(start))) {
+            while (
+                start != str.length &&
+                stripChars.includes(str.charAt(start))
+            ) {
                 start++;
             }
         }
@@ -338,7 +355,7 @@ export class StringUtils {
     public static stripAll(strs: string[], stripChars: string): string[];
     public static stripAll(strs: unknown, stripChars: unknown): string[] {
         if (!Array.isArray(strs)) {
-            throw new TypeError("strs 必须是数组或可变参数")
+            throw new TypeError("strs 必须是数组或可变参数");
         }
         if (ObjectUtils.isNull(stripChars)) {
             stripChars = null;
@@ -377,7 +394,11 @@ export class StringUtils {
         return this.equalsStr(str1, str2, true);
     }
 
-    private static equalsStr(str1: string, str2: string, ignoreCase: boolean): boolean {
+    private static equalsStr(
+        str1: string,
+        str2: string,
+        ignoreCase: boolean
+    ): boolean {
         if (str1 === str2) {
             return true;
         }
@@ -389,8 +410,12 @@ export class StringUtils {
         }
 
         for (let i = 0; i < str1.length; i++) {
-            const str1Char = ignoreCase ? str1.charAt(i).toUpperCase() : str1.charAt(i);
-            const str2Char = ignoreCase ? str2.charAt(i).toUpperCase() : str2.charAt(i);
+            const str1Char = ignoreCase
+                ? str1.charAt(i).toUpperCase()
+                : str1.charAt(i);
+            const str2Char = ignoreCase
+                ? str2.charAt(i).toUpperCase()
+                : str2.charAt(i);
             if (str1Char !== str2Char) {
                 return false;
             }
@@ -408,7 +433,7 @@ export class StringUtils {
      */
     public static equalsAny(str: string, ...searchStrings: string[]): boolean {
         if (ArrayUtils.isNotEmpty(searchStrings)) {
-            return searchStrings.some(value => this.equals(str, value));
+            return searchStrings.some((value) => this.equals(str, value));
         }
         return false;
     }
@@ -421,9 +446,14 @@ export class StringUtils {
      * @return {boolean} 如果字符串是等于（不区分大小写）的任何待比较字符串则返回 true。
      * 如果待比较字符串为 null 或等于任何待比较字符串则为 false。
      */
-    public static equalsAnyIgnoreCase(str: string, ...searchStrings: string[]): boolean {
+    public static equalsAnyIgnoreCase(
+        str: string,
+        ...searchStrings: string[]
+    ): boolean {
         if (ArrayUtils.isNotEmpty(searchStrings)) {
-            return searchStrings.some(value => this.equalsIgnoreCase(str, value));
+            return searchStrings.some((value) =>
+                this.equalsIgnoreCase(str, value)
+            );
         }
         return false;
     }
@@ -441,7 +471,11 @@ export class StringUtils {
      * @param nullIsLess 是否考虑 null 值小于非 null 值
      * @return {number} < 0, 0, > 0，如果 str1 分别小于、等于或大于 str2
      */
-    public static compare(str1: string, str2: string, nullIsLess = true): number {
+    public static compare(
+        str1: string,
+        str2: string,
+        nullIsLess = true
+    ): number {
         return this.compareStr(str1, str2, nullIsLess, false);
     }
 
@@ -458,11 +492,20 @@ export class StringUtils {
      * @param nullIsLess 是否考虑 null 值小于非 null 值
      * @return {number} < 0, 0, > 0，如果 str1 分别小于、等于或大于 str2
      */
-    public static compareToIgnoreCase(str1: string, str2: string, nullIsLess = true): number {
+    public static compareToIgnoreCase(
+        str1: string,
+        str2: string,
+        nullIsLess = true
+    ): number {
         return this.compareStr(str1, str2, nullIsLess, true);
     }
 
-    private static compareStr(str1: string, str2: string, nullIsLess: boolean, ignoreCase: boolean): number {
+    private static compareStr(
+        str1: string,
+        str2: string,
+        nullIsLess: boolean,
+        ignoreCase: boolean
+    ): number {
         if (str1 === str2) {
             return 0;
         }
@@ -481,8 +524,12 @@ export class StringUtils {
 
         let k = 0;
         while (k < lim) {
-            const char1 = ignoreCase ? char1Array[k].toUpperCase() : char1Array[k];
-            const char2 = ignoreCase ? char2Array[k].toUpperCase() : char1Array[k];
+            const char1 = ignoreCase
+                ? char1Array[k].toUpperCase()
+                : char1Array[k];
+            const char2 = ignoreCase
+                ? char2Array[k].toUpperCase()
+                : char1Array[k];
             if (char1 !== char2) {
                 return char1.charCodeAt(0) - char2.charCodeAt(0);
             }
@@ -503,7 +550,11 @@ export class StringUtils {
      * @param startPos 起始位置，负数视为 0
      * @return {number} 搜索字符串的第一个索引（总是 ≥ startPos），如果没有匹配或 字符串为 null 则返回 -1
      */
-    public static indexOf(str: string, searchString: string, startPos = 0): number {
+    public static indexOf(
+        str: string,
+        searchString: string,
+        startPos = 0
+    ): number {
         return this.indexOfStr(str, searchString, startPos, false, false);
     }
 
@@ -519,7 +570,11 @@ export class StringUtils {
      * @param startPos 起始位置，负数视为 0
      * @return {number} 搜索字符串的第一个索引（总是 ≥ startPos），如果没有匹配或 字符串为 null 则返回 -1
      */
-    public static indexOfIgnoreCase(str: string, searchString: string, startPos = 0): number {
+    public static indexOfIgnoreCase(
+        str: string,
+        searchString: string,
+        startPos = 0
+    ): number {
         return this.indexOfStr(str, searchString, startPos, false, true);
     }
 
@@ -535,7 +590,11 @@ export class StringUtils {
      * @param startPos 起始位置，负数视为 0
      * @return {number} 搜索 字符串 的最后一个索引（总是≤ startPos），如果没有匹配或 字符串为 null 则返回 -1
      */
-    public static lastIndexOf(str: string, searchString: string, startPos = 0): number {
+    public static lastIndexOf(
+        str: string,
+        searchString: string,
+        startPos = 0
+    ): number {
         return this.indexOfStr(str, searchString, startPos, true, false);
     }
 
@@ -551,11 +610,21 @@ export class StringUtils {
      * @param startPos 起始位置，负数视为 0
      * @return {number} 搜索 字符串 的最后一个索引（总是≤ startPos），如果没有匹配或 字符串为 null 则返回 -1
      */
-    public static lastIndexOfIgnoreCase(str: string, searchString: string, startPos = 0): number {
+    public static lastIndexOfIgnoreCase(
+        str: string,
+        searchString: string,
+        startPos = 0
+    ): number {
         return this.indexOfStr(str, searchString, startPos, true, true);
     }
 
-    private static indexOfStr(str: string, searchString: string, startPos: number, lastIndex: boolean, ignoreCase: boolean) {
+    private static indexOfStr(
+        str: string,
+        searchString: string,
+        startPos: number,
+        lastIndex: boolean,
+        ignoreCase: boolean
+    ) {
         if (ObjectUtils.anyNull(str, searchString)) {
             return this.INDEX_NOT_FOUND;
         }
@@ -575,7 +644,16 @@ export class StringUtils {
                 return this.INDEX_NOT_FOUND;
             }
             for (let i = startPos; i >= 0; i--) {
-                if (this.regionMatches(str, i, searchString, 0, searchString.length, true)) {
+                if (
+                    this.regionMatches(
+                        str,
+                        i,
+                        searchString,
+                        0,
+                        searchString.length,
+                        true
+                    )
+                ) {
                     return i;
                 }
             }
@@ -592,7 +670,16 @@ export class StringUtils {
                 return this.INDEX_NOT_FOUND;
             }
             for (let i = startPos; i < endLimit; i++) {
-                if (this.regionMatches(str, i, searchString, 0, searchString.length, true)) {
+                if (
+                    this.regionMatches(
+                        str,
+                        i,
+                        searchString,
+                        0,
+                        searchString.length,
+                        true
+                    )
+                ) {
                     return i;
                 }
             }
@@ -612,7 +699,11 @@ export class StringUtils {
      * @param ordinal 要查找第 n 个 searchStr
      * @return {number} 搜索字符串的第 n 个索引，如果没有匹配或字符串为 null 则返回 -1
      */
-    public static ordinalIndexOf(str: string, searchString: string, ordinal: number): number {
+    public static ordinalIndexOf(
+        str: string,
+        searchString: string,
+        ordinal: number
+    ): number {
         return this.ordinalStrIndexOf(str, searchString, ordinal, false);
     }
 
@@ -625,12 +716,26 @@ export class StringUtils {
      * @param ordinal 要查找第 n 个的最后一个 searchStr
      * @return {number} 搜索字符串的第 n 个的最后一个索引，如果没有匹配或字符串为 null 则返回 -1
      */
-    public static lastOrdinalIndexOf(str: string, searchString: string, ordinal: number): number {
+    public static lastOrdinalIndexOf(
+        str: string,
+        searchString: string,
+        ordinal: number
+    ): number {
         return this.ordinalStrIndexOf(str, searchString, ordinal, true);
     }
 
-    private static ordinalStrIndexOf(str: string, searchString: string, ordinal: number, lastIndex: boolean): number {
-        if (BooleanUtils.or(ObjectUtils.anyNull(str, searchString), ordinal <= 0)) {
+    private static ordinalStrIndexOf(
+        str: string,
+        searchString: string,
+        ordinal: number,
+        lastIndex: boolean
+    ): number {
+        if (
+            BooleanUtils.or(
+                ObjectUtils.anyNull(str, searchString),
+                ordinal <= 0
+            )
+        ) {
             return this.INDEX_NOT_FOUND;
         }
         if (searchString.length === 0) {
@@ -784,7 +889,7 @@ export class StringUtils {
         if (this.isEmpty(str) || this.isEmpty(searchChars)) {
             return this.INDEX_NOT_FOUND;
         }
-        str.trimRight()
+        str.trimRight();
         const strLen = str.length;
         for (let i = 0; i < strLen; i++) {
             const ch = str.charAt(i);
@@ -870,7 +975,10 @@ export class StringUtils {
                     if (j === searchLast) {
                         return false;
                     }
-                    if (i < strLast && invalidChars.charAt(j + 1) === str.charAt(i + 1)) {
+                    if (
+                        i < strLast &&
+                        invalidChars.charAt(j + 1) === str.charAt(i + 1)
+                    ) {
                         return false;
                     }
                 }
@@ -879,7 +987,473 @@ export class StringUtils {
         return true;
     }
 
+    /**
+     * 从指定的字符串中获取子字符串以避免异常。<br />
+     * 负开始位置可用于从字符串末尾开始/结束的n个字符。<br />
+     * 返回的子字符串从 start 位置的字符 start，在 end 位置之前 end。
+     * 所有位置计数都是从零开始的——即，从字符串的开头开始使用 start = 0。
+     * 负的开始和结束位置可用于指定相对于字符串结尾的偏移量。<br />
+     * 如果 start 不是严格地在 end 的左侧，则返回 ""。
+     *
+     * @param str 从中获取子字符串的字符串，可能为 null
+     * @param start 开始的位置，负数表示从字符串的末尾开始倒数这么多字符
+     * @param end 结束的位置（可不填），负数表示从字符串的末尾开始倒数这么多字符
+     * @return {string} 从开始位置到结束位置的子字符串，如果字符串为 null 则返回 null
+     */
+    public static substring(str: string, start: number, end?: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
 
+        if (start < 0) {
+            start = str.length + start;
+        }
+
+        if (ObjectUtils.isNull(end)) {
+            if (start < 0) {
+                start = 0;
+            }
+            if (start > str.length) {
+                return this.EMPTY;
+            }
+            return str.substring(start);
+        } else {
+            if (end < 0) {
+                end = str.length + end;
+            }
+            if (end > str.length) {
+                end = str.length;
+            }
+
+            if (start > end) {
+                return this.EMPTY;
+            }
+
+            if (start < 0) {
+                start = 0;
+            }
+            if (end < 0) {
+                end = 0;
+            }
+
+            return str.substring(start, end);
+        }
+    }
+
+    /**
+     * 获取字符串最左边的 length 个字符。
+     * 如果字符串为 null，则字符串将无一例外地返回。如果 length 为负，则返回空字符串。
+     *
+     * @param str 从中获取最左边字符的字符串，可能为空
+     * @param length 所需字符串的长度
+     * @return {string} 最左边的字符，如果空字符串为null，则返回 null
+     */
+    public static left(str: string, length: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (length < 0) {
+            return this.EMPTY;
+        }
+        if (str.length <= length) {
+            return str;
+        }
+        return str.substr(0, length);
+    }
+
+    /**
+     * 获取字符串最右边的 length 个字符。
+     * 如果字符串为 null，则字符串将无一例外地返回。如果 length 为负，则返回空字符串。
+     *
+     * @param str 从中获取最右边字符的字符串，可能为空
+     * @param length 所需字符串的长度
+     * @return {string} 最右边的字符，如果空字符串为null，则返回 null
+     */
+    public static right(str: string, length: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (length < 0) {
+            return this.EMPTY;
+        }
+        if (str.length <= length) {
+            return str;
+        }
+        return str.substr(str.length - length);
+    }
+
+    /**
+     * 获取字符串中间的 length 个字符。
+     * 如果字符串为 null，则字符串将无一例外地返回。如果 length 为负，则返回空字符串。
+     *
+     * @param str 从中获取中间字符的字符串，可能为空
+     * @param pos 起始位置，负数视为零
+     * @param length 所需字符串的长度
+     * @return {string} 中间的字符，如果空字符串为null，则返回 null
+     */
+    public static mid(str: string, pos: number, length: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (length < 0 || pos > str.length) {
+            return this.EMPTY;
+        }
+        if (pos < 0) {
+            pos = 0;
+        }
+        if (str.length <= pos + length) {
+            return str.substring(pos);
+        }
+        return str.substring(pos, pos + length);
+    }
+
+    /**
+     * 获取分隔符第一次出现之前的子字符串，不返回分隔符。
+     * 字符串为 null 将返回null。空 ("") 字符串输入将返回空字符串。分隔符为 null 将返回输入字符串。
+     * 如果未找到任何内容，则返回输入字符串。
+     *
+     * @param str 从中获取子字符串的字符串，可能为null
+     * @param separator 要搜索的字符串，可能为 null
+     * @return {string} 所述分离器的第一发生前的子串，如果搜索字符串为 null，则返回 null
+     */
+    public static substringBefore(str: string, separator: string): string {
+        if (BooleanUtils.or(this.isEmpty(str), ObjectUtils.isNull(separator))) {
+            return str;
+        }
+        if (this.isEmpty(separator)) {
+            return this.EMPTY;
+        }
+        const pos = str.indexOf(separator);
+        if (pos == this.INDEX_NOT_FOUND) {
+            return str;
+        }
+        return str.substring(0, pos);
+    }
+
+    /**
+     * 获取分隔符第一次出现后的子字符串，不返回分隔符。
+     * null 字符串输入将返回 null。 空 ("") 字符串输入将返回空字符串。
+     * 如果输入字符串不是 null 则 null 分隔符将返回空字符串。
+     * 如果未找到任何内容，则返回空字符串。
+     *
+     * @param str 从中获取子字符串的字符串，可能为null
+     * @param separator 要搜索的字符串，可能为空
+     * @return {string} 分离器的第一次出现，之后的子输入字符串如果 null 则返回空字符串
+     */
+    public static substringAfter(str: string, separator: string): string {
+        if (this.isAnyEmpty(str, separator)) {
+            return str;
+        }
+        if (this.isEmpty(separator)) {
+            return this.EMPTY;
+        }
+        const pos = str.indexOf(separator);
+        if (pos == this.INDEX_NOT_FOUND) {
+            return str;
+        }
+        return str.substring(0, pos);
+    }
+
+    /**
+     * 获取最后一次出现分隔符之前的子字符串。 不返回分隔符。
+     * null 字符串输入将返回 null 。 空 ("") 字符串输入将返回空字符串。 空或null分隔符将返回输入字符串。
+     * 如果未找到任何内容，则返回字符串输入。
+     *
+     * @param str 从中获取子字符串的字符串，可能为 null
+     * @param separator 要搜索的字符串，可能为空
+     * @return {string} 隔板的最后一次出现前的子字符串， null如果空字符串输入
+     */
+    public static substringBeforeLast(str: string, separator: string): string {
+        if (this.isAnyEmpty(str, separator)) {
+            return str;
+        }
+        const pos = str.lastIndexOf(separator);
+        if (pos == this.INDEX_NOT_FOUND) {
+            return str;
+        }
+        return str.substring(0, pos);
+    }
+
+    /**
+     * 获取最后一次出现分隔符后的子字符串。不返回分隔符。
+     * null 字符串输入将返回 null。 空 ("") 字符串输入将返回空字符串。
+     * 如果输入字符串不是 null 则空或 null 分隔符将返回空字符串。
+     * 如果未找到任何内容，则返回空字符串。
+     *
+     * @param str 从中获取子字符串的字符串，可能为空
+     * @param separator 要搜索的字符串，可能为空
+     * @return {string} 隔板的最后出现，后子null ，如果为空字符串输入
+     */
+    public static substringAfterLast(str: string, separator: string): string {
+        if (this.isEmpty(str)) {
+            return str;
+        }
+        if (this.isEmpty(separator)) {
+            return this.EMPTY;
+        }
+        const pos = str.lastIndexOf(separator);
+        if (
+            pos === this.INDEX_NOT_FOUND ||
+            pos === str.length - separator.length
+        ) {
+            return this.EMPTY;
+        }
+        return str.substring(pos + separator.length);
+    }
+
+    /**
+     * 获取嵌套在同一字符串的两个实例之间的字符串。
+     * null输入字符串返回null。null标签返回null
+     *
+     * @param str 包含子字符串的字符串，可能为空
+     * @param open 子字符串之前的字符串，可能为空
+     * @param close 子字符串之后的字符串，可能为空
+     * @return {string} 子字符串，如果不匹配则为null
+     */
+    public static substringBetween(
+        str: string,
+        open: string,
+        close: string
+    ): string {
+        if (ObjectUtils.allNotNull(str, open, close)) {
+            const start = str.indexOf(open);
+            if (start != this.INDEX_NOT_FOUND) {
+                const end = str.indexOf(close, start + open.length);
+                if (end != this.INDEX_NOT_FOUND) {
+                    return str.substring(start + open.length, end);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 在字符串中搜索由开始和结束标记分隔的子字符串，返回数组中所有匹配的子字符串。
+     * null输入字符串返回null 。 null打开/关闭返回null （不匹配）。 空 ("") 打开/关闭返回null （不匹配）。
+     *
+     * @param str 包含子字符串的字符串，空返回空，空返回空
+     * @param open 标识子字符串开头的字符串，空返回 null
+     * @param close 标识子字符串结尾的字符串，空返回 null
+     * @return {string} 子字符串的字符串数组，如果不匹配则为null
+     */
+    public static substringsBetween(
+        str: string,
+        open: string,
+        close: string
+    ): string[] {
+        if (
+            BooleanUtils.or(
+                ObjectUtils.isNull(str),
+                this.isAnyEmpty(open, close)
+            )
+        ) {
+            return null;
+        }
+        const strLen = str.length;
+        if (strLen === 0) {
+            return [];
+        }
+        const closeLen = close.length;
+        const openLen = open.length;
+        const list = [];
+        let pos = 0;
+        while (pos < strLen - closeLen) {
+            let start = str.indexOf(open, pos);
+            if (start < 0) {
+                break;
+            }
+            start += openLen;
+            const end = str.indexOf(close, start);
+            if (end < 0) {
+                break;
+            }
+            list.push(str.substring(start, end));
+            pos = end + closeLen;
+        }
+        if (ArrayUtils.isEmpty(list)) {
+            return null;
+        }
+        return list;
+    }
+
+    public static split(
+        str: string,
+        separatorChars = null,
+        max = -1
+    ): string[] {
+        return this.splitWorker(str, separatorChars, max, false);
+    }
+
+    public static splitByWholeSeparator(
+        str: string,
+        separatorChars,
+        max = -1
+    ): string[] {
+        return this.splitByWholeSeparatorWorker(
+            str,
+            separatorChars,
+            max,
+            false
+        );
+    }
+
+    public static splitByWholeSeparatorPreserveAllTokens(
+        str: string,
+        separatorChars,
+        max = -1
+    ): string[] {
+        return this.splitByWholeSeparatorWorker(str, separatorChars, max, true);
+    }
+
+    private static splitByWholeSeparatorWorker(
+        str: string,
+        separator: string,
+        max: number,
+        preserveAllTokens: boolean
+    ): string[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+
+        const len = str.length;
+        if (len === 0) {
+            return [];
+        }
+        if (this.isEmpty(separator)) {
+            return this.splitWorker(str, null, max, preserveAllTokens);
+        }
+
+        const separatorLength = separator.length;
+        const substrings = [];
+
+        let numberOfSubstrings = 0;
+        let beg = 0;
+        let end = 0;
+        while (end < len) {
+            end = str.indexOf(separator, beg);
+
+            if (end > -1) {
+                if (end > beg) {
+                    numberOfSubstrings += 1;
+
+                    if (numberOfSubstrings == max) {
+                        end = len;
+                        substrings.push(str.substring(beg));
+                    } else {
+                        substrings.push(str.substring(beg, end));
+                        beg = end + separatorLength;
+                    }
+                } else {
+                    if (preserveAllTokens) {
+                        numberOfSubstrings += 1;
+                        if (numberOfSubstrings == max) {
+                            end = len;
+                            substrings.push(str.substring(beg));
+                        } else {
+                            substrings.push(this.EMPTY);
+                        }
+                    }
+                    beg = end + separatorLength;
+                }
+            } else {
+                substrings.push(str.substring(beg));
+                end = len;
+            }
+        }
+        return substrings;
+    }
+
+    public static splitPreserveAllTokens(
+        str: string,
+        separatorChar: string,
+        max: number
+    ): string[] {
+        return this.splitWorker(str, separatorChar, -1, true);
+    }
+
+    private static splitWorker(
+        str: string,
+        separatorChars,
+        max: number,
+        preserveAllTokens: boolean
+    ): string[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        const len = str.length;
+        if (len === 0) {
+            return [];
+        }
+        const list = [];
+        let sizePlus1 = 1;
+        let i = 0,
+            start = 0;
+        let match = false;
+        let lastMatch = false;
+        if (separatorChars === null) {
+            while (i < len) {
+                if (this.isWhitespace(str.charAt(i))) {
+                    if (BooleanUtils.or(match, preserveAllTokens)) {
+                        lastMatch = true;
+                        if (sizePlus1++ === max) {
+                            i = len;
+                            lastMatch = false;
+                        }
+                        list.push(str.substring(start, i));
+                        match = false;
+                    }
+                    start = ++i;
+                    continue;
+                }
+                lastMatch = false;
+                match = true;
+                i++;
+            }
+        } else if (separatorChars.length() == 1) {
+            const sep = separatorChars.charAt(0);
+            while (i < len) {
+                if (str.charAt(i) === sep) {
+                    if (BooleanUtils.or(match, preserveAllTokens)) {
+                        lastMatch = true;
+                        if (sizePlus1++ === max) {
+                            i = len;
+                            lastMatch = false;
+                        }
+                        list.push(str.substring(start, i));
+                        match = false;
+                    }
+                    start = ++i;
+                    continue;
+                }
+                lastMatch = false;
+                match = true;
+                i++;
+            }
+        } else {
+            while (i < len) {
+                if (separatorChars.indexOf(str.charAt(i)) >= 0) {
+                    if (BooleanUtils.or(match, preserveAllTokens)) {
+                        lastMatch = true;
+                        if (sizePlus1++ === max) {
+                            i = len;
+                            lastMatch = false;
+                        }
+                        list.push(str.substring(start, i));
+                        match = false;
+                    }
+                    start = ++i;
+                    continue;
+                }
+                lastMatch = false;
+                match = true;
+                i++;
+            }
+        }
+        if (BooleanUtils.or(match, preserveAllTokens) && lastMatch) {
+            list.push(str.substring(start, i));
+        }
+        return list;
+    }
 
     /**
      *  * 测试两个字符串区域是否相等。参数 str 的子字符串与参数 other 的子字符串进行比较。
@@ -915,18 +1489,27 @@ export class StringUtils {
      * @return {boolean} 如果此字符串的指定子区域与字符串参数的指定子区域匹配，则为 true；否则为 false。
      * 匹配是精确匹配还是不区分大小写取决于 ignoreCase 参数。
      */
-    public static regionMatches(str1: string, str1Offset: number, str2: string, str2Offset: number, length: number, ignoreCase: boolean): boolean {
+    public static regionMatches(
+        str1: string,
+        str1Offset: number,
+        str2: string,
+        str2Offset: number,
+        length: number,
+        ignoreCase: boolean
+    ): boolean {
         const strArr = this.toCharArray(str1);
         let to = str1Offset;
 
         const otherArr = this.toCharArray(str2);
         let po = str2Offset;
 
-        if (BooleanUtils.or(
-            str1Offset < 0 || str2Offset < 0,
-            str1Offset > strArr.length - length,
-            str2Offset > otherArr.length - length
-        )) {
+        if (
+            BooleanUtils.or(
+                str1Offset < 0 || str2Offset < 0,
+                str1Offset > strArr.length - length,
+                str2Offset > otherArr.length - length
+            )
+        ) {
             return false;
         }
 
@@ -950,7 +1533,6 @@ export class StringUtils {
         }
         return true;
     }
-
 
     /**
      * 将此字符串转换为新的字符数组。
@@ -1014,13 +1596,12 @@ export class StringUtils {
         indexArr.forEach((value, index) => {
             newStr.push(
                 str.charAt(value).toLowerCase() +
-                str.substring(value + 1, indexArr[index + 1])
+                    str.substring(value + 1, indexArr[index + 1])
             );
         });
         return newStr.join("_");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected constructor() {
-    }
+    protected constructor() {}
 }
