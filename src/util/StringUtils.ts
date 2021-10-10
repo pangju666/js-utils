@@ -1286,7 +1286,7 @@ export class StringUtils {
 
     public static splitByWholeSeparator(
         str: string,
-        separatorChars,
+        separatorChars: string,
         max = -1
     ): string[] {
         return this.splitByWholeSeparatorWorker(
@@ -1299,7 +1299,7 @@ export class StringUtils {
 
     public static splitByWholeSeparatorPreserveAllTokens(
         str: string,
-        separatorChars,
+        separatorChars: string,
         max = -1
     ): string[] {
         return this.splitByWholeSeparatorWorker(str, separatorChars, max, true);
@@ -1366,9 +1366,9 @@ export class StringUtils {
     public static splitPreserveAllTokens(
         str: string,
         separatorChar: string,
-        max: number
+        max = -1
     ): string[] {
-        return this.splitWorker(str, separatorChar, -1, true);
+        return this.splitWorker(str, separatorChar, max, true);
     }
 
     private static splitWorker(
@@ -1453,6 +1453,79 @@ export class StringUtils {
             list.push(str.substring(start, i));
         }
         return list;
+    }
+
+    public static join(
+        array: string[],
+        separator = null,
+        startIndex: 0,
+        endIndex = array.length
+    ): string {
+        if (ObjectUtils.isNull(array)) {
+            return null;
+        }
+        if (ObjectUtils.isNull(separator)) {
+            separator = this.EMPTY;
+        }
+
+        if (endIndex - startIndex <= 0) {
+            return this.EMPTY;
+        }
+
+        let buf = "";
+        for (let i = startIndex; i < endIndex; i++) {
+            if (i > startIndex) {
+                buf += separator;
+            }
+            if (array[i] !== null) {
+                buf += array[i];
+            }
+        }
+        return buf;
+    }
+
+    public static joinWith(separator: string, ...strs: string[]): string {
+        if (ObjectUtils.isNull(strs)) {
+            throw new TypeError("strings varargs must not be null");
+        }
+
+        const sanitizedSeparator = this.defaultString(separator);
+        let result = "";
+        for (let i = 0; i < strs.length; i++) {
+            result += strs[i];
+            if (i !== strs.length - 1) {
+                result += sanitizedSeparator;
+            }
+        }
+        return result;
+    }
+
+    public static deleteWhitespace(str: string): string {
+        if (this.isEmpty(str)) {
+            return str;
+        }
+
+        const sz = str.length;
+        const chs = new Array(sz);
+        let count = 0;
+        for (let i = 0; i < sz; i++) {
+            if (!this.isWhitespace(str.charAt(i))) {
+                chs[count++] = str.charAt(i);
+            }
+        }
+        if (count === sz) {
+            return str;
+        }
+
+        let result = "";
+        for (let i = 0; i < count; i++) {
+            result += chs[i];
+        }
+        return result;
+    }
+
+    public static defaultString(str: string, defaultStr = ""): string {
+        return ObjectUtils.defaultIfNull(str, defaultStr);
     }
 
     /**
