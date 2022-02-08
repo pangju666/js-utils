@@ -5,8 +5,9 @@ import { StringUtils } from "./StringUtils";
 /**
  * 日期工具类
  *
- * @author pangju
- * @version 1.0 2021-6-21
+ * @author 胖橘
+ * @version 1.0
+ * @since 1.0
  */
 export class DateUtils {
     /**
@@ -71,7 +72,7 @@ export class DateUtils {
 
     // 防止实例化
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected constructor() {}
+    private constructor() {}
 }
 
 Reflect.setPrototypeOf(DateUtils, dateFns);

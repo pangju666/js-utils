@@ -607,8 +607,8 @@ export class ArrayUtils {
             return this.clone(array);
         }
 
-        if (index < 0 || index >= length) {
-            throw new RangeError("索引: " + index + ", 数组长度: " + length);
+        if (index < 0 || index >= array.length) {
+            throw new RangeError("索引: " + index + ", 数组长度: " + array.length);
         }
         const subArray1 = array.slice(0, index);
         const subArray2 = array.slice(index);
@@ -616,5 +616,5 @@ export class ArrayUtils {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected constructor() {}
+    private constructor() {}
 }
