@@ -1,5 +1,5 @@
-import {ObjectUtils} from "./ObjectUtils";
-import {IllegalArgumentError} from "../core/runtimeError";
+import { ObjectUtils } from "./ObjectUtils";
+import { IllegalArgumentError } from "../core/runtimeError";
 
 /**
  * 布尔工具类
@@ -56,7 +56,7 @@ export class BooleanUtils {
      * @throws {IllegalArgumentError} 如果数组长度为 0。
      */
     public static and(...array: boolean[]): boolean {
-        ObjectUtils.requireNonEmpty(array, "数组不能为空")
+        ObjectUtils.requireNonEmpty(array, "数组不能为空");
         for (const element of array) {
             if (!element) {
                 return false;
@@ -78,7 +78,6 @@ export class BooleanUtils {
         }
         return x ? 1 : -1;
     }
-
 
     /**
      * <p>指定的布尔值执行“取反”运算。</p>
@@ -160,7 +159,11 @@ export class BooleanUtils {
      * @return {boolean} true 或 false
      * @throws {IllegalArgumentError} 如果 value 不匹配 trueValue 和 falseValue
      */
-    public static toBoolean(value: number, trueValue: number, falseValue: number): boolean;
+    public static toBoolean(
+        value: number,
+        trueValue: number,
+        falseValue: number
+    ): boolean;
     /**
      * <p>将字符串转换为布尔值（针对性能进行了优化）。</p>
      *
@@ -199,8 +202,16 @@ export class BooleanUtils {
      * @return {boolean} 字符串的布尔值
      * @throws {IllegalArgumentError} 如果字符串不匹配
      */
-    public static toBoolean(str: string, trueString: string, falseString: string): boolean;
-    public static toBoolean(value: unknown, trueValue?: unknown, falseValue?: unknown): boolean {
+    public static toBoolean(
+        str: string,
+        trueString: string,
+        falseString: string
+    ): boolean;
+    public static toBoolean<T>(
+        value: T,
+        trueValue?: T,
+        falseValue?: T
+    ): boolean {
         if (ObjectUtils.isNull(value)) {
             if (ObjectUtils.isNull(trueValue)) {
                 return true;
@@ -244,7 +255,12 @@ export class BooleanUtils {
      * @param {number} nullValue 如果为 null 或 undefined 返回的值，默认返回0
      * @return {number} 适当的值
      */
-    public static toInteger(bool: boolean, trueValue = 1, falseValue = 0, nullValue = 0): number {
+    public static toInteger(
+        bool: boolean,
+        trueValue = 1,
+        falseValue = 0,
+        nullValue = 0
+    ): number {
         if (ObjectUtils.isNull(bool)) {
             return nullValue;
         }
@@ -266,7 +282,12 @@ export class BooleanUtils {
      * @param {string} nullString 如果 null 要返回的字符串，默认为 “”
      * @return {string} 三个输入字符串之一
      */
-    public static toString(bool: boolean, trueString: string, falseString: string, nullString = ""): string {
+    public static toString(
+        bool: boolean,
+        trueString: string,
+        falseString: string,
+        nullString = ""
+    ): string {
         if (ObjectUtils.isNull(bool)) {
             return nullString;
         }
@@ -282,7 +303,7 @@ export class BooleanUtils {
      * </pre>
      *
      * @param {boolean} bool 要检查的布尔值
-     * @return 'on', 'off', or ""
+     * @return {string} 'on', 'off', or ""
      */
     public static toStringOnOff(bool: boolean): string {
         return this.toString(bool, this.ON, this.OFF);
@@ -297,7 +318,7 @@ export class BooleanUtils {
      * </pre>
      *
      * @param {boolean} bool 要检查的布尔值
-     * @return 'true', 'false', or ""
+     * @return {string} 'true', 'false', or ""
      */
     public static toStringTrueFalse(bool: boolean): string {
         return this.toString(bool, this.TRUE, this.FALSE);
@@ -312,7 +333,7 @@ export class BooleanUtils {
      * </pre>
      *
      * @param {boolean} bool 要检查的布尔值
-     * @return 'yes', 'no', or ""
+     * @return {string} 'yes', 'no', or ""
      */
     public static toStringYesNo(bool: boolean): string {
         return this.toString(bool, this.YES, this.NO);
@@ -328,14 +349,22 @@ export class BooleanUtils {
         switch (str.length) {
             case 1: {
                 const ch0 = str.charAt(0);
-                if (ch0 == 'y' || ch0 == 'Y' ||
-                    ch0 == 't' || ch0 == 'T' ||
-                    ch0 == '1') {
+                if (
+                    ch0 == "y" ||
+                    ch0 == "Y" ||
+                    ch0 == "t" ||
+                    ch0 == "T" ||
+                    ch0 == "1"
+                ) {
                     return true;
                 }
-                if (ch0 == 'n' || ch0 == 'N' ||
-                    ch0 == 'f' || ch0 == 'F' ||
-                    ch0 == '0') {
+                if (
+                    ch0 == "n" ||
+                    ch0 == "N" ||
+                    ch0 == "f" ||
+                    ch0 == "F" ||
+                    ch0 == "0"
+                ) {
                     return false;
                 }
                 break;
@@ -343,12 +372,10 @@ export class BooleanUtils {
             case 2: {
                 const ch0 = str.charAt(0);
                 const ch1 = str.charAt(1);
-                if ((ch0 == 'o' || ch0 == 'O') &&
-                    (ch1 == 'n' || ch1 == 'N')) {
+                if ((ch0 == "o" || ch0 == "O") && (ch1 == "n" || ch1 == "N")) {
                     return true;
                 }
-                if ((ch0 == 'n' || ch0 == 'N') &&
-                    (ch1 == 'o' || ch1 == 'O')) {
+                if ((ch0 == "n" || ch0 == "N") && (ch1 == "o" || ch1 == "O")) {
                     return false;
                 }
                 break;
@@ -357,14 +384,18 @@ export class BooleanUtils {
                 const ch0 = str.charAt(0);
                 const ch1 = str.charAt(1);
                 const ch2 = str.charAt(2);
-                if ((ch0 == 'y' || ch0 == 'Y') &&
-                    (ch1 == 'e' || ch1 == 'E') &&
-                    (ch2 == 's' || ch2 == 'S')) {
+                if (
+                    (ch0 == "y" || ch0 == "Y") &&
+                    (ch1 == "e" || ch1 == "E") &&
+                    (ch2 == "s" || ch2 == "S")
+                ) {
                     return true;
                 }
-                if ((ch0 == 'o' || ch0 == 'O') &&
-                    (ch1 == 'f' || ch1 == 'F') &&
-                    (ch2 == 'f' || ch2 == 'F')) {
+                if (
+                    (ch0 == "o" || ch0 == "O") &&
+                    (ch1 == "f" || ch1 == "F") &&
+                    (ch2 == "f" || ch2 == "F")
+                ) {
                     return false;
                 }
                 break;
@@ -374,10 +405,12 @@ export class BooleanUtils {
                 const ch1 = str.charAt(1);
                 const ch2 = str.charAt(2);
                 const ch3 = str.charAt(3);
-                if ((ch0 == 't' || ch0 == 'T') &&
-                    (ch1 == 'r' || ch1 == 'R') &&
-                    (ch2 == 'u' || ch2 == 'U') &&
-                    (ch3 == 'e' || ch3 == 'E')) {
+                if (
+                    (ch0 == "t" || ch0 == "T") &&
+                    (ch1 == "r" || ch1 == "R") &&
+                    (ch2 == "u" || ch2 == "U") &&
+                    (ch3 == "e" || ch3 == "E")
+                ) {
                     return true;
                 }
                 break;
@@ -388,11 +421,13 @@ export class BooleanUtils {
                 const ch2 = str.charAt(2);
                 const ch3 = str.charAt(3);
                 const ch4 = str.charAt(4);
-                if ((ch0 == 'f' || ch0 == 'F') &&
-                    (ch1 == 'a' || ch1 == 'A') &&
-                    (ch2 == 'l' || ch2 == 'L') &&
-                    (ch3 == 's' || ch3 == 'S') &&
-                    (ch4 == 'e' || ch4 == 'E')) {
+                if (
+                    (ch0 == "f" || ch0 == "F") &&
+                    (ch1 == "a" || ch1 == "A") &&
+                    (ch2 == "l" || ch2 == "L") &&
+                    (ch3 == "s" || ch3 == "S") &&
+                    (ch4 == "e" || ch4 == "E")
+                ) {
                     return false;
                 }
                 break;
@@ -405,6 +440,5 @@ export class BooleanUtils {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {
-    }
+    private constructor() {}
 }

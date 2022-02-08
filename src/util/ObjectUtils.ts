@@ -9,34 +9,23 @@ import {IllegalArgumentError, NullError} from "../core/runtimeError";
  */
 export class ObjectUtils {
     /**
-     * 检查指定的对象引用不是 null，undefined 或为空。
-     * 使用此方法进行验证，例如：
+     * 判断对象是否不为 null 或 undefined
      *
-     * <blockquote>
-     *
-     * <pre>
-     * public Foo(Bar bar) {
-     *     this.bar = ObjectUtils.requireNonEmpty(bar, "bar");
-     * }
-     * </pre>
-     *
-     * </blockquote>
-     *
-     * @param obj 检查无效性的对象引用。
-     * @param message 异常消息。
-     * @return 如果不是 null, 则返回 obj。
-     * @throws {NullError} 如果 obj 为 null
-     * @throws {IllegalArgumentError} 如果 obj 为空.
-     * @see #isEmpty(Object)
+     * @param {any} value 对象
+     * @return {boolean} 对象为 null 或 undefined 则返回 false，否则为 true
      */
-    public static requireNonEmpty<T>(obj : T, message ?: string) : T {
-        if (this.isNull(obj)) {
-            throw new NullError(message);
-        }
-        if (this.isEmpty(obj)) {
-            throw new IllegalArgumentError(message);
-        }
-        return obj;
+    public static nonNull<T>(value: T): boolean {
+        return value !== undefined && value !== null;
+    }
+
+    /**
+     * 判断对象是否为 null 或 undefined
+     *
+     * @param {any} value 对象
+     * @return {boolean} 对象为 null 或 undefined 则返回 true，否则为 false
+     */
+    public static isNull<T>(value: T): boolean {
+        return !this.nonNull(value);
     }
 
     /**
@@ -60,11 +49,11 @@ export class ObjectUtils {
      * </pre>
      *
      * @param object {any} 要测试的对象，可能是 null 或 undefined
-     * @return {boolean} 如果对象具有支持的类型并且为空或 null 则返回 true，否则返回 false
+     * @return {boolean} 如果对象具有受支持的类型并且为空、null 或 undefined，则为 true，否则为 false
      */
-    public static isEmpty(object : unknown) : boolean {
+    public static isEmpty<T>(object: T): boolean {
         if (ObjectUtils.isNull(object)) {
-        return true;
+            return true;
         }
         if (typeof object === "string" || Array.isArray(object)) {
             return object.length === 0;
@@ -76,52 +65,86 @@ export class ObjectUtils {
     }
 
     /**
-     * 判断对象是否不为null
+     * 判断对象是否不为空
      *
-     * @param value 对象
-     * @return {boolean} 对象为 null 或 undefined 则返回 false，否则为 true
+     * 支持以下类型：
+     * <ul>
+     * <li>{@link String}: 如果它的长度为零，则认为是空的。</li>
+     * <li>{@link Array}: 如果它的长度为零，则认为是空的。</li>
+     * <li>{@link Set}: 如果它有零个元素，则认为是空的。</li>
+     * <li>{@link Map}: 如果它有零个键值映射，则认为是空的。</li>
+     * </ul>
+     *
+     * <pre>
+     * ObjectUtils.isNotEmpty(null)             = false
+     * ObjectUtils.isNotEmpty("")               = false
+     * ObjectUtils.isNotEmpty("ab")             = true
+     * ObjectUtils.isNotEmpty([])               = false
+     * ObjectUtils.isNotEmpty([1,2,3])          = true
+     * ObjectUtils.isNotEmpty(1234)             = true
+     * </pre>
+     *
+     * @param {any} object 要测试的对象，可能是 null 或 undefined
+     * @return {boolean} 如果对象具有不受支持的类型或不为空、不为 null 且不为 undefined，则为 true，否则为 false
      */
-    public static isNotNull(value: unknown): boolean {
-        return value !== undefined && value !== null;
+    public static isNotEmpty<T>(object: T): boolean {
+        return !this.isEmpty(object);
     }
 
     /**
-     * 判断对象是否为 null
+     * 检查指定的对象引用不为 null，undefined 或为空。
+     * 使用此方法进行验证，例如：
      *
-     * @param value 对象
-     * @return {boolean} 对象为 null 或 undefined 则返回 true，否则为 false
+     * <blockquote>
+     *
+     * <pre>
+     * public Foo(Bar bar) {
+     *     this.bar = ObjectUtils.requireNonEmpty(bar, "bar");
+     * }
+     * </pre>
+     *
+     * </blockquote>
+     *
+     * @param {any} obj 检查无效性的对象引用。
+     * @param {string} message 异常消息。
+     * @return {any} 如果不为null、undefined 或为空, 则返回 obj。
+     * @throws {NullError} 如果 obj 为 null
+     * @throws {IllegalArgumentError} 如果 obj 为空.
+     * @see #isEmpty(Object)
      */
-    public static isNull(value: unknown): boolean {
-        return !this.isNotNull(value);
+    public static requireNonEmpty<T>(obj: T, message?: string): T {
+        if (this.isNull(obj)) {
+            throw new NullError(message);
+        }
+        if (this.isEmpty(obj)) {
+            throw new IllegalArgumentError(message);
+        }
+        return obj;
     }
 
     /**
-     * 判断对象属性值是否存在
-     * @example
+     * 判断对象属性值是否为 undefined
+     *
+     * <pre>
      * const obj = { item: { name: "admin" } };
-     * // return true
-     * ObjectUtils.isExistProperty(obj, "item.name");
-     * // return false
-     * ObjectUtils.isExistProperty(obj, "item.password");
-     * // return false
+     * ObjectUtils.isExistProperty(obj, "item.name")      = true;
+     * ObjectUtils.isExistProperty(obj, "item.password")  = false;
      * const obj2 = null;
-     * ObjectUtils.isExistProperty(obj2, "item.password");
+     * ObjectUtils.isExistProperty(obj2, "item.password") = false;
+     * </pre>
      *
-     * @param object 待判断对象
-     * @param expression 属性表达式
-     * @return {boolean} 如果对象或要查询的属性不存在则返回 true，否则为 false
+     * @param {any} object 待检查对象
+     * @param {string} expression 属性表达式
+     * @return {boolean} 如果对象为 null、undefined 或要查询的属性为 undefined 则返回 true，否则为 false
      */
-    public static isExistProperty(
-        object: unknown,
-        expression: string
-    ): boolean {
-        if (this.isNotNull(object)) {
+    public static isExistProperty<T>(object: T, expression: string): boolean {
+        if (this.nonNull(object)) {
             return false;
         }
         let propertyVal;
         for (const propertyName of expression.split(".")) {
             propertyVal = object[propertyName];
-            if (this.isNull(propertyVal)) {
+            if (propertyVal === undefined) {
                 return false;
             }
         }
@@ -129,61 +152,49 @@ export class ObjectUtils {
     }
 
     /**
-     * 判断对象属性值是否不存在
-     * @example
-     * const obj = { item: { name: "admin" } };
-     * // return false
-     * ObjectUtils.isExistProperty(obj, "item.name");
-     * // return true
-     * ObjectUtils.isExistProperty(obj, "item.password");
-     * // return true
-     * const obj2 = null;
-     * ObjectUtils.isExistProperty(obj2, "item.password");
+     * 判断对象属性值是否为 undefined
      *
-     * @param object 待判断对象
-     * @param expression 属性表达式
-     * @return {boolean} 如果对象或要查询的属性不存在则返回 false，否则为 true
+     * <pre>
+     * const obj = { item: { name: "admin" } };
+     * ObjectUtils.isExistProperty(obj, "item.name")      = false;
+     * ObjectUtils.isExistProperty(obj, "item.password")  = true;
+     * const obj2 = null;
+     * ObjectUtils.isExistProperty(obj2, "item.password") = true;
+     * </pre>
+     *
+     * @param {any} object 待检查对象
+     * @param {string} expression 属性表达式
+     * @return {boolean} 如果对象为 null、undefined 或要查询的属性为 undefined 则返回 false，否则为 true
      */
-    public static isNotExistProperty(
-        object: unknown,
+    public static isNotExistProperty<T>(
+        object: T,
         expression: string
     ): boolean {
         return !this.isExistProperty(object, expression);
     }
 
     /**
-     * 判断对象是否不为空
+     * 如果传递的对象为 null 或 undefined，则返回默认值。
      *
-     * @param value 对象
-     * @return {boolean} 对象如果为字符串或数组则判断是否为空，
-     * 否则使用{@link isNull}判断对象是否不为 null
-     */
-    public static isNotEmpty(value: unknown): boolean {
-        return !this.isEmpty(value);
-    }
-
-    /**
-     * 如果传递的对象为空，则返回默认值。
-     *
-     * @param value 待取值变量
-     * @param defaultVal 变量默认值
-     * @return {T} 如果不是空则返回对象，否则返回默认值
+     * @param {any} value 待取值变量
+     * @param {any} defaultVal 变量默认值
+     * @return {any} 如果不为 null 或 undefined 则返回对象，否则返回默认值
      */
     public static defaultIfNull<T>(value: T, defaultVal: T): T {
         return this.defaultIfCondition(
             value,
             defaultVal,
-            this.isNotNull(value)
+            this.nonNull(value)
         );
     }
 
     /**
      * 条件取值，如果取值条件不成立则返回默认值
      *
-     * @param value 对象
-     * @param defaultVal 默认值
-     * @param condition 取值条件
-     * @return {T} 条件成立则返回此变量，否则返回默认值
+     * @param {any} value 对象
+     * @param {any} defaultVal 默认值
+     * @param {boolean || function} condition 取值条件
+     * @return {any} 条件成立则返回此变量，否则返回默认值
      */
     public static defaultIfCondition<T>(
         value: T,
@@ -197,14 +208,17 @@ export class ObjectUtils {
     }
 
     /**
-     * 返回给定参数中第一个不为null的值
+     * 返回给定参数中第一个不为 null 或 undefined 的值
      *
-     * @param values 要测试的值，可能是 null 或空
-     * @returns {} 给定参数中第一个不是 null 的值。如果所有值都为 null 或者给定参数为 null 或空，则返回 null
+     * @param {any[]} values 待测试的一组值，可能是 null 或 undefined
+     * @returns {boolean} 给定参数中第一个不是 null 或 undefined 的值。如果所有值都为 null、undefined 或者给定参数为 null、undefined，则返回 null
      */
-    public static firstNonNull(...values: unknown[]): unknown {
-        if (this.isNotNull(values)) {
-            return this.defaultIfNull(values.find(value => this.isNotNull(value)), null);
+    public static firstNonNull<T>(...values: T[]): unknown {
+        if (this.nonNull(values)) {
+            return this.defaultIfNull(
+                values.find((value) => this.nonNull(value)),
+                null
+            );
         }
         return null;
     }
@@ -212,68 +226,68 @@ export class ObjectUtils {
     /**
      * 检查给定参数中是否存在非空值
      *
-     * @param values 要测试的值，可能是 null
-     * @returns {} 如果在给定参数中至少存在一个非空值则返回 true，
-     * 如果给定参数中的所有值都是 null 值，则返回 false
+     * @param {any[]} values 待测试的一组值，可能是 null 或 undefined
+     * @returns {boolean} 如果在给定参数中至少存在一个非空值则返回 true，
+     * 如果给定参数中的所有值都是空值，则返回 false
      */
-    public static anyNotNull(...values: unknown[]): boolean {
+    public static anyNotNull<T>(...values: T[]): boolean {
         return this.firstNonNull(values) != null;
     }
 
     /**
      * 检查给定参数中是否存在空值
      *
-     * @param values 要测试的值，可能是 null
-     * @returns {} 如果在给定参数中至少存在一个空值则返回 true，
-     * 如果给定参数中的所有值都是非 null 值，则返回 false
+     * @param {any[]} values 待测试的一组值，可能是 null 或 undefined
+     * @returns {boolean} 如果在给定参数中至少存在一个空值则返回 true，
+     * 如果给定参数中的所有值都是非空值，则返回 false
      */
-    public static anyNull(...values: unknown[]): boolean {
+    public static anyNull<T>(...values: T[]): boolean {
         if (this.isNull(values)) {
             return true;
         }
-        return values.some(value => this.isNull(value));
+        return values.some((value) => this.isNull(value));
     }
 
     /**
-     * 检查给定参数中的所有值是否都不为null
+     * 检查给定参数中的所有值是否都不为空值
      *
-     * @param values 要测试的值，可能是 null
-     * @returns {} 如果给定参数中存在至少一个 null 值或给定参数是 null 则返回 false，
-     * 如果给定参数中的所有值都不是 null 则返回 true。
+     * @param {any[]} values 待测试的一组值，可能是 null 或 undefined
+     * @returns {boolean} 如果给定参数中存在至少一个空值或给定参数是空值则返回 false，
+     * 如果给定参数中的所有值都不是空值则返回 true。
      */
-    public static allNotNull(...values: unknown[]): boolean {
+    public static allNotNull<T>(...values: T[]): boolean {
         if (this.isNull(values)) {
             return false;
         }
-        return values.every(value => this.isNotNull(value));
+        return values.every((value) => this.nonNull(value));
     }
 
     /**
-     * 检查给定参数中的所有值是否都为null
+     * 检查给定参数中的所有值是否都为空值
      *
-     * @param values
-     * @returns {} 如果给定参数中存在至少一个非 null 值或给定参数是非 null 值则返回 false，
-     * 如果给定参数中的所有值都是 null 则返回 true。
+     * @param {any[]} values
+     * @returns {boolean} 如果给定参数中存在至少一个非空值或给定参数是非空值则返回 false，
+     * 如果给定参数中的所有值都是空值则返回 true。
      */
-    public static allNull(...values: unknown[]): boolean {
+    public static allNull<T>(...values: T[]): boolean {
         if (this.isNull(values)) {
             return true;
         }
-        return values.every(value => this.isNull(value));
+        return values.every((value) => this.isNull(value));
     }
 
     /**
-     * 比较两个对象是否相等，其中一个或两个对象可能为空。
+     * 比较两个对象是否相等，其中一个或两个对象可能为空值。
      *
-     * @param value1 第一个对象，可能为 null
-     * @param value2 第二个对象，可能为 null
+     * @param {any} value1 第一个对象，可能为 null 或 undefined
+     * @param {any} value2 第二个对象，可能为 null 或 undefined
      * @return {boolean} 如果两个对象的值相同，则为 true
      */
-    public static equals(value1: unknown, value2: unknown): boolean {
+    public static equals<T>(value1: T, value2: T): boolean {
         if (value1 === value2) {
             return true;
         }
-        if (value1 === null || value2 === null) {
+        if (ObjectUtils.anyNull(value1, value2)) {
             return false;
         }
         return Object.is(value1, value2);
@@ -282,30 +296,30 @@ export class ObjectUtils {
     /**
      * 比较两个对象是否不相等，其中一个或两个对象可能为空。
      *
-     * @param value1 第一个对象，可能为 null
-     * @param value2 第二个对象，可能为 null
+     * @param {any} value1 第一个对象，可能为 null 或 undefined
+     * @param {any} value2 第二个对象，可能为 null 或 undefined
      * @return {boolean} 如果两个对象的值相同，则为 false
      */
-    public static notEqual(value1: unknown, value2: unknown): boolean {
+    public static notEqual<T>(value1: T, value2: T): boolean {
         return !this.equals(value1, value2);
     }
 
     /**
      * 返回传入对象的字符串表示。
      *
-     * @param value
-     * @param nullStr
+     * @param {any} value
+     * @param {string} nullStr
      * @return {string} 传入 value 的{@link Object.toString}，如果为 null，则返回 nullStr
      */
-    public static toString(value: unknown, nullStr = ""): string {
+    public static toString<T>(value: T, nullStr = ""): string {
         return this.isNull(value) ? nullStr : value.toString();
     }
 
     /**
      * 找出最常出现的项目
      *
-     * @param items 检查项
-     * @return {T} 出现次数最最多的项，如果不唯一或检查项为空，则返回 null
+     * @param {any[]} items 检查项
+     * @return {any} 出现次数最最多的项，如果不唯一或检查项为空，则返回 null
      */
     public static mode<T>(...items: T[]): T | null {
         if (this.isNotEmpty(items)) {
@@ -337,7 +351,7 @@ export class ObjectUtils {
     /**
      * 浅克隆目标对象
      *
-     * @param obj 待克隆对象
+     * @param {any} obj 待克隆对象
      * @return {any} 克隆的对象，如果输入为null则为null
      */
     public static clone<T>(obj: T): T {
@@ -352,7 +366,7 @@ export class ObjectUtils {
     /**
      * 深克隆目标对象
      *
-     * @param obj 待克隆对象
+     * @param {any} obj 待克隆对象
      * @return {any} 克隆的对象，如果输入为null则为null
      */
     public static deepClone<T>(obj: T): T {
@@ -370,9 +384,9 @@ export class ObjectUtils {
     /**
      * 是否为基础类型
      *
-     * @param value 待判断的值
+     * @param {any} value 待判断的值
      */
-    public static isBasicType(value: unknown): boolean {
+    public static isBasicType<T>(value: T): boolean {
         return (
             this.isNull(value) ||
             typeof value === "string" ||
@@ -385,14 +399,15 @@ export class ObjectUtils {
     /**
      * 判断对象是否为对象
      *
-     * @param value 对象值，不可以为空或未定义
-     * @param types 待比较类型
+     * @param {any} value 对象值，不可以为空或未定义
+     * @param {Function[]} types 待比较类型
      */
     // eslint-disable-next-line @typescript-eslint/ban-types
-    public static isAnyType(value: unknown, types: Function[]): boolean {
+    public static isAnyType<T>(value: T, types: Function[]): boolean {
         return types.some((type) => value instanceof type);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected constructor() {}
+    protected constructor() {
+    }
 }
