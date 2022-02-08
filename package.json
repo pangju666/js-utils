@@ -16,7 +16,7 @@
     "type": "module",
     "scripts": {
         "build": "rollup -c \"rollup.config.js\"",
-        "pretest": "npm run build",
+        "pretest": "yarn run build",
         "lint": "eslint src/**/*.{js,ts}",
         "test": "jest --config jest.config.js",
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
@@ -71,6 +71,6 @@
         "ts-jest": "^26.5.0",
         "ts-node": "^9.1.1",
         "tslib": "^2.3.0",
-        "typescript": "^4.3.5"
+        "typescript": "^4.5.5"
     }
 }

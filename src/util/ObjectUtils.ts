@@ -1,3 +1,5 @@
+import {IllegalArgumentError, NullError} from "../core/runtimeError";
+
 /**
  * 对象工具类，包含常用对象处理函数
  *
@@ -6,6 +8,73 @@
  * @since 1.0
  */
 export class ObjectUtils {
+    /**
+     * 检查指定的对象引用不是 null，undefined 或为空。
+     * 使用此方法进行验证，例如：
+     *
+     * <blockquote>
+     *
+     * <pre>
+     * public Foo(Bar bar) {
+     *     this.bar = ObjectUtils.requireNonEmpty(bar, "bar");
+     * }
+     * </pre>
+     *
+     * </blockquote>
+     *
+     * @param obj 检查无效性的对象引用。
+     * @param message 异常消息。
+     * @return 如果不是 null, 则返回 obj。
+     * @throws {NullError} 如果 obj 为 null
+     * @throws {IllegalArgumentError} 如果 obj 为空.
+     * @see #isEmpty(Object)
+     */
+    public static requireNonEmpty<T>(obj : T, message ?: string) : T {
+        if (this.isNull(obj)) {
+            throw new NullError(message);
+        }
+        if (this.isEmpty(obj)) {
+            throw new IllegalArgumentError(message);
+        }
+        return obj;
+    }
+
+    /**
+     * <p>检查参数是否为空，null 或 undefined。</p>
+     *
+     * 支持以下类型：
+     * <ul>
+     * <li>{@link String}: 如果它的长度为零，则认为是空的。</li>
+     * <li>{@link Array}: 如果它的长度为零，则认为是空的。</li>
+     * <li>{@link Set}: 如果它有零个元素，则认为是空的。</li>
+     * <li>{@link Map}: 如果它有零个键值映射，则认为是空的。</li>
+     * </ul>
+     *
+     * <pre>
+     * ObjectUtils.isEmpty(null)             = true
+     * ObjectUtils.isEmpty("")               = true
+     * ObjectUtils.isEmpty("ab")             = false
+     * ObjectUtils.isEmpty([])               = true
+     * ObjectUtils.isEmpty([1,2,3])          = false
+     * ObjectUtils.isEmpty(1234)             = false
+     * </pre>
+     *
+     * @param object {any} 要测试的对象，可能是 null 或 undefined
+     * @return {boolean} 如果对象具有支持的类型并且为空或 null 则返回 true，否则返回 false
+     */
+    public static isEmpty(object : unknown) : boolean {
+        if (ObjectUtils.isNull(object)) {
+        return true;
+        }
+        if (typeof object === "string" || Array.isArray(object)) {
+            return object.length === 0;
+        }
+        if (object instanceof Map || object instanceof Set) {
+            return object.size === 0;
+        }
+        return false;
+    }
+
     /**
      * 判断对象是否不为null
      *
@@ -80,22 +149,6 @@ export class ObjectUtils {
         expression: string
     ): boolean {
         return !this.isExistProperty(object, expression);
-    }
-
-    /**
-     * 判断对象是否为空
-     *
-     * @param value 对象
-     * @return {boolean} 对象如果为字符串或数组则判断是否为空，
-     * 否则使用{@link isNull}判断对象是否为 null
-     */
-    public static isEmpty(value: unknown): boolean {
-        if (this.isNull(value)) {
-            return value != null;
-        } else if (typeof value === "string" || Array.isArray(value)) {
-            return value.length !== 0;
-        }
-        return false;
     }
 
     /**

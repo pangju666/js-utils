@@ -106,3 +106,4 @@ lib
 .idea
 lib/
 /node_modules/
+yarn.lock
