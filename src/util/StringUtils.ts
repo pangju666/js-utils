@@ -826,7 +826,7 @@ export class StringUtils {
      * @return {number} str 中任何 searchStrs 的最后一个索引，如果不匹配则为 -1
      */
     public static indexOfAny(str: string, ...searchStrs: string[]): number {
-        if (ObjectUtils.anyNull(str, searchStrs)) {
+        if (ObjectUtils.anyNull(str, ...searchStrs)) {
             return this.INDEX_NOT_FOUND;
         }
 
@@ -859,7 +859,7 @@ export class StringUtils {
      * @return {number} str 中任何 searchStrs 的第一个索引，如果不匹配则为 -1
      */
     public static lastIndexOfAny(str: string, ...searchStrs: string[]): number {
-        if (ObjectUtils.anyNull(str, searchStrs)) {
+        if (ObjectUtils.anyNull(str, ...searchStrs)) {
             return this.INDEX_NOT_FOUND;
         }
 

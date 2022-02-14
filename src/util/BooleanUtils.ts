@@ -252,7 +252,7 @@ export class BooleanUtils {
      * @param {boolean} bool 要转换的布尔值
      * @param {number} trueValue 如果 true 返回的值，默认返回 1
      * @param {number} falseValue 如果 false 返回的值，默认返回 0
-     * @param {number} nullValue 如果为 null 或 undefined 返回的值，默认返回0
+     * @param {number} nullValue 如果为 null 或 undefined 返回的值，默认返回 0
      * @return {number} 适当的值
      */
     public static toInteger(
