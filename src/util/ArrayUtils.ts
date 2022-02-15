@@ -483,15 +483,14 @@ export class ArrayUtils {
      *
      * @param array 要从中删除元素的数组，不能为 null 或 undefined
      * @param indexes 要移除的元素的位置
-     * @return 一个新数组，包含除指定位置之外的现有元素。
+     * @return {} 一个新数组，包含除指定位置之外的现有元素。
      * @throws {IndexOutOfBoundsError} 如果任何索引超出范围（索引 < 0 || 索引 >= array.length），或者数组为 null 或 undefined。
      */
     public static removeAll<T>(array: T[], ...indexes: number[]): T[] {
         const length = this.getLength(array);
         // 不同索引的数量，即将被删除的条目数
         let diff = 0;
-        const clonedIndices = this.clone(indexes)
-            .sort((a, b) => a - b);
+        const clonedIndices = [...indexes].sort((a, b) => a - b);
 
         // 识别结果数组的长度
         if (this.isNotEmpty(clonedIndices)) {
@@ -511,7 +510,7 @@ export class ArrayUtils {
         }
 
         // 创建结果数组
-        const result = new Array<T>(length - diff);
+        const result = [];
         if (diff < length) {
             let end = length; // 最后一个副本之后的索引
             let dest = length - diff; // 到目前为止未复制的条目数
@@ -520,12 +519,12 @@ export class ArrayUtils {
                 if (end - index > 1) { // 与 (cp > 0) 相同
                     const cp = end - index - 1;
                     dest -= cp;
-                    result.splice(index + 1, 0, ...array.slice(dest, dest + cp + 1));
+                    result.splice(index + 1, 0, ...array.slice(dest, dest + cp));
                 }
                 end = index;
             }
             if (end > 0) {
-                result.splice(0, 0, ...array.slice(0, end + 1));
+                return array.slice(0, end);
             }
         }
         return result;
@@ -840,7 +839,7 @@ export class ArrayUtils {
             return [];
         }
 
-        const result = new Array<string>(array.length);
+        const result = [];
         for (let i = 0; i < array.length; i++) {
             if (ObjectUtils.isNull(elementToStringFunc)) {
                 result[i] = ObjectUtils.defaultIfNull(array[i].toString(), valueForNullElements);
