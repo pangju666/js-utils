@@ -18,7 +18,7 @@
         "build": "rollup -c \"rollup.config.js\"",
         "pretest": "yarn run build",
         "lint": "eslint src/**/*.{js,ts}",
-修改        "test": "jest --config jestconfig.json",
+        "test": "jest --config jestconfig.json",
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
     },
     "files": [

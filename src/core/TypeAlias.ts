@@ -15,3 +15,10 @@ export type Comparator<T> = (o1: T, o2: T) => number;
  * @param obj 待测试的数组
  */
 export type Predicate<T> = (element: T, index?: number, obj?: T[]) => boolean;
+
+/**
+ * 将值以字符串形式输出
+ *
+ * @param value 要作为字符串输出的值
+ */
+export type ToString<T> = (value: T) => string;
