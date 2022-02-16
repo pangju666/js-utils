@@ -743,7 +743,7 @@ export class ArrayUtils {
      * 低于值（< startIndex）产生空数组，高于值（>array.length）被降级为数组长度。
      * @return {} 包含开始和结束索引之间的元素的新数组。
      *
-     * @see {@link Array#slice}
+     * @see Array#slice
      */
     public static subarray<T>(
         array: T[],

@@ -44,7 +44,7 @@ export class DateFormatUtils {
      * @param date 要格式化的日期（{@link Date}）或时间戳，不能为 null 或 undefined
      * @param pattern 用于格式化日期的表达式，不能为空、null 或 undefined
      * @return {} 格式化后的日期字符串
-     * @see {@link https://date-fns.org/v2.28.0/docs/format}
+     * @see https://date-fns.org/v2.28.0/docs/format
      */
     public static format(date: number | Date, pattern: string): string {
         if (ObjectUtils.anyNull(date, pattern)) {

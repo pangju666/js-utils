@@ -50,8 +50,8 @@ export class BooleanUtils {
      *   BooleanUtils.and(true, true, true)   = true
      * </pre>
      *
-     * @param array {boolean[]} 一个布尔数组，如果参数为 undefined 或 null 则返回 false。
-     * @return {boolean} 逻辑“与”运算的结果。如果任何参数为 false 则为 false，否则为 true。
+     * @param array 一个布尔数组，如果参数为 undefined 或 null 则返回 false。
+     * @return {} 逻辑“与”运算的结果。如果任何参数为 false 则为 false，否则为 true。
      * @throws {NullError} 如果数组为 null 或 undefined。
      * @throws {IllegalArgumentError} 如果数组长度为 0。
      */
@@ -68,9 +68,9 @@ export class BooleanUtils {
     /**
      * <p>比较两个布尔值。</p>
      *
-     * @param x {boolean} 第一个要比较的布尔值
-     * @param y {boolean} 第二个要比较的布尔值
-     * @return {number} 如果 x === y 则返回 0；!x && y 则返回 -1；如果 x && !y 则返回 1。
+     * @param x 第一个要比较的布尔值
+     * @param y 第二个要比较的布尔值
+     * @return {} 如果 x === y 则返回 0；!x && y 则返回 -1；如果 x && !y 则返回 1。
      */
     public static compare(x: boolean, y: boolean): number {
         if (x === y) {
@@ -90,8 +90,8 @@ export class BooleanUtils {
      *   BooleanUtils.negate(null)  = null;
      * </pre>
      *
-     * @param bool {boolean} 否定的布尔值，可能为空
-     * @return {boolean} 取反的布尔值，如果传入 null 则返回 null。
+     * @param bool 否定的布尔值，可能为空
+     * @return {} 取反的布尔值，如果传入 null 则返回 null。
      */
     public static not(bool: boolean): boolean {
         if (ObjectUtils.isNull(bool)) {
@@ -112,8 +112,8 @@ export class BooleanUtils {
      *   BooleanUtils.or(false, false, false) = false
      * </pre>
      *
-     * @param array {boolean[]} 一个布尔数组，如果参数为 undefined 或 null 则返回 false。
-     * @return {boolean} 如果任何参数为 true 则返回 true，否则返回 false。
+     * @param array 一个布尔数组，如果参数为 undefined 或 null 则返回 false。
+     * @return {} 如果任何参数为 true 则返回 true，否则返回 false。
      * @throws {NullError} 如果数组为 null 或 undefined。
      * @throws {IllegalArgumentError} 如果数组长度为 0。
      */
@@ -136,8 +136,8 @@ export class BooleanUtils {
      *   BooleanUtils.toBoolean(2) = true
      * </pre>
      *
-     * @param {number} value 要转换的数字
-     * @return {boolean} true 如果非零，false 如果为零
+     * @param value 要转换的数字
+     * @return {} true 如果非零，false 如果为零
      */
     public static toBoolean(value: number): boolean;
     /**
@@ -153,10 +153,10 @@ export class BooleanUtils {
      *   BooleanUtils.toBoolean(2, 2, 0) = true
      * </pre>
      *
-     * @param {number} value 要转换的数字
-     * @param {number} trueValue true 匹配的值
-     * @param {number} falseValue false 匹配的值
-     * @return {boolean} true 或 false
+     * @param value 要转换的数字
+     * @param trueValue true 匹配的值
+     * @param falseValue false 匹配的值
+     * @return {} true 或 false
      * @throws {IllegalArgumentError} 如果 value 不匹配 trueValue 和 falseValue
      */
     public static toBoolean(
@@ -184,8 +184,8 @@ export class BooleanUtils {
      *   BooleanUtils.toBoolean("f") = false
      * </pre>
      *
-     * @param {string} str 要检查的字符串
-     * @return {boolean} 字符串的布尔值，如果不匹配或字符串为 null，则为 false
+     * @param str 要检查的字符串
+     * @return {} 字符串的布尔值，如果不匹配或字符串为 null，则为 false
      */
     public static toBoolean(str: string): boolean;
     /**
@@ -196,10 +196,10 @@ export class BooleanUtils {
      *   BooleanUtils.toBoolean("false", "true", "false") = false
      * </pre>
      *
-     * @param {string} str 要检查的字符串
-     * @param {string} trueString 与 true 匹配的字符串（区分大小写），可能是 null
-     * @param {string} falseString 与 false 匹配的字符串（区分大小写），可能是 null
-     * @return {boolean} 字符串的布尔值
+     * @param str 要检查的字符串
+     * @param trueString 与 true 匹配的字符串（区分大小写），可能是 null
+     * @param falseString 与 false 匹配的字符串（区分大小写），可能是 null
+     * @return {} 字符串的布尔值
      * @throws {IllegalArgumentError} 如果字符串不匹配
      */
     public static toBoolean(
@@ -249,11 +249,11 @@ export class BooleanUtils {
      *   BooleanUtils.toInteger(false, 1, 0) = 0
      * </pre>
      *
-     * @param {boolean} bool 要转换的布尔值
-     * @param {number} trueValue 如果 true 返回的值，默认返回 1
-     * @param {number} falseValue 如果 false 返回的值，默认返回 0
-     * @param {number} nullValue 如果为 null 或 undefined 返回的值，默认返回 0
-     * @return {number} 适当的值
+     * @param bool 要转换的布尔值
+     * @param trueValue 如果 true 返回的值，默认返回 1
+     * @param falseValue 如果 false 返回的值，默认返回 0
+     * @param nullValue 如果为 null 或 undefined 返回的值，默认返回 0
+     * @return {} 适当的值
      */
     public static toInteger(
         bool: boolean,
@@ -276,11 +276,11 @@ export class BooleanUtils {
      *   BooleanUtils.toString(null, "true", "false", null)           = null;
      * </pre>
      *
-     * @param {boolean} bool 要检查的布尔值
-     * @param {string} trueString 如果 true 要返回的字符串，可能是 null
-     * @param {string} falseString 如果 false 要返回的字符串，可能是 null
-     * @param {string} nullString 如果 null 要返回的字符串，默认为 “”
-     * @return {string} 三个输入字符串之一
+     * @param bool 要检查的布尔值
+     * @param trueString 如果 true 要返回的字符串，可能是 null
+     * @param falseString 如果 false 要返回的字符串，可能是 null
+     * @param nullString 如果 null 要返回的字符串，默认为 “”
+     * @return {} 三个输入字符串之一
      */
     public static toString(
         bool: boolean,
@@ -302,8 +302,8 @@ export class BooleanUtils {
      *   BooleanUtils.toStringOnOff(false)  = "off"
      * </pre>
      *
-     * @param {boolean} bool 要检查的布尔值
-     * @return {string} 'on', 'off', or ""
+     * @param bool 要检查的布尔值
+     * @return {} 'on', 'off', or ""
      */
     public static toStringOnOff(bool: boolean): string {
         return this.toString(bool, this.ON, this.OFF);
@@ -317,8 +317,8 @@ export class BooleanUtils {
      *   BooleanUtils.toStringTrueFalse(false)  = "false"
      * </pre>
      *
-     * @param {boolean} bool 要检查的布尔值
-     * @return {string} 'true', 'false', or ""
+     * @param bool 要检查的布尔值
+     * @return {} 'true', 'false', or ""
      */
     public static toStringTrueFalse(bool: boolean): string {
         return this.toString(bool, this.TRUE, this.FALSE);
@@ -332,8 +332,8 @@ export class BooleanUtils {
      *   BooleanUtils.toStringYesNo(false)  = "no"
      * </pre>
      *
-     * @param {boolean} bool 要检查的布尔值
-     * @return {string} 'yes', 'no', or ""
+     * @param bool 要检查的布尔值
+     * @return {} 'yes', 'no', or ""
      */
     public static toStringYesNo(bool: boolean): string {
         return this.toString(bool, this.YES, this.NO);
