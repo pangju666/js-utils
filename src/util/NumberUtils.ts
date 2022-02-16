@@ -1,4 +1,5 @@
 import { ObjectUtils } from "./ObjectUtils";
+import {IllegalArgumentError} from "../core/runtimeError";
 
 /**
  * 数字工具类
@@ -9,29 +10,56 @@ import { ObjectUtils } from "./ObjectUtils";
  */
 export class NumberUtils {
     /**
-     * 将字符串转换为整数，如果转换失败则返回默认值。
+     * <p>将字符串转换为整数，如果转换失败则返回默认值。</p>
      *
-     * @param str 要转换的字符串，可能为空
-     * @param defaultValue 默认值，默认为0
+     * <p>如果字符串为 null 或 undefined，则返回默认值。</p>
+     *
+     * <pre>
+     *   NumberUtils.toInt(null, 1) = 1
+     *   NumberUtils.toInt("", 1)   = 1
+     *   NumberUtils.toInt("1", 0)  = 1
+     * </pre>
+     *
+     * @param str 要转换的字符串，可能为 null 或 undefined
+     * @param defaultValue 默认值
+     * @param radix 数字进制
+     * @return {} 由字符串表示的数字，如果转换失败，则为默认值
      */
-    public static toInt(str: string, defaultValue = 0): number {
+    public static toInt(str: string, defaultValue = 0, radix = 10): number {
         if (ObjectUtils.isNull(str)) {
             return defaultValue;
         }
-        return parseInt(str, 10);
+        const value = Number.parseInt(str, radix);
+        if (Number.isNaN(value)) {
+            return defaultValue;
+        }
+        return value;
     }
 
     /**
-     * 将字符串转换为浮点数，如果转换失败则返回默认值。
+     * <p>将字符串转换为浮点数，如果转换失败则返回默认值。</p>
      *
-     * @param str 要转换的字符串，可能为空
-     * @param defaultValue 默认值，默认为0.0
+     * <p>如果字符串为 null 或 undefined，则返回默认值。</p>
+     *
+     * <pre>
+     *   NumberUtils.toFloat(null, 1.1f)   = 1.0f
+     *   NumberUtils.toFloat("", 1.1f)     = 1.1f
+     *   NumberUtils.toFloat("1.5", 0.0f)  = 1.5f
+     * </pre>
+     *
+     * @param str 要转换的字符串，可能为 null 或 undefined
+     * @param defaultValue 默认值
+     * @return 由字符串表示的浮点数，如果转换失败则为 defaultValue
      */
     public static toFloat(str: string, defaultValue = 0.0): number {
         if (ObjectUtils.isNull(str)) {
             return defaultValue;
         }
-        return parseFloat(str);
+        const value = Number.parseFloat(str);
+        if (Number.isNaN(value)) {
+            return defaultValue;
+        }
+        return value;
     }
 
     /**
@@ -39,11 +67,19 @@ export class NumberUtils {
      *
      * @param array 一个数组，不能为 null 或为空
      * @return {number} 数组中的最小值
-     * @throws {TypeError} 数组为null或为空时抛出
+     * @throws {IllegalArgumentError} 如果数组为空、null 或 undefined
      */
     public static min(...array: number[]): number {
         this.validateArray(array);
-        return Math.min(...array);
+
+        let min = array[0];
+        for (let j = 1; j < array.length; j++) {
+            if (array[j] < min) {
+                min = array[j];
+            }
+        }
+
+        return min;
     }
 
     /**
@@ -51,19 +87,27 @@ export class NumberUtils {
      *
      * @param array 一个数组，不能为 null 或为空
      * @return {number} 数组中的最大值
-     * @throws {TypeError} 数组为null或为空时抛出
+     * @throws {IllegalArgumentError} 如果数组为空、null 或 undefined
      */
     public static max(...array: number[]): number {
         this.validateArray(array);
-        return Math.max(...array);
+
+        let min = array[0];
+        for (let j = 1; j < array.length; j++) {
+            if (array[j] > min) {
+                min = array[j];
+            }
+        }
+
+        return min;
     }
 
-    protected static validateArray(array: number[]): void {
+    private static validateArray(array: number[]): void {
         if (ObjectUtils.isNull(array)) {
-            throw new TypeError("参数不能为null");
+            throw new IllegalArgumentError("参数不能为null");
         }
         if (array.length === 0) {
-            throw new TypeError("数组不能为空");
+            throw new IllegalArgumentError("数组不能为空");
         }
     }
 

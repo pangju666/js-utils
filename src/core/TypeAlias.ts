@@ -13,6 +13,7 @@ export type Comparator<T> = (o1: T, o2: T) => number;
  * @param element 数组元素
  * @param index 数组索引
  * @param obj 待测试的数组
+ * @return {} 是否通过测试，通过则返回 true，否则为 false
  */
 export type Predicate<T> = (element: T, index?: number, obj?: T[]) => boolean;
 
@@ -20,5 +21,31 @@ export type Predicate<T> = (element: T, index?: number, obj?: T[]) => boolean;
  * 将值以字符串形式输出
  *
  * @param value 要作为字符串输出的值
+ * @return {} 输出字符串
  */
 export type ToString<T> = (value: T) => string;
+
+/**
+ * 对象属性名转换器
+ *
+ * @param propertyName 对象属性名
+ * @return {} 新的属性名
+ */
+export type PropertyNameConverter = (propertyName: string) => string;
+
+/**
+ * 对象属性名排除器
+ *
+ * @param propertyName 对象属性名
+ * @param value 对象属性名对应的值
+ */
+export type PropertyNameExcluder = (propertyName: string, value: unknown) => boolean;
+
+
+/**
+ * 判断值是否符合条件
+ *
+ * @param value 待判断的值
+ * @return {} 条件是否成立
+ */
+export type Condition = (value: unknown) => boolean;

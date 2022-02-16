@@ -14,7 +14,7 @@ export class ArrayUtils {
     /**
      * 未找到时的索引（-1）
      */
-    static INDEX_NOT_FOUND = -1;
+    public static readonly INDEX_NOT_FOUND = -1;
 
     /**
      * <p>复制给定数组并将给定元素添加到新数组的末尾。</p>
@@ -135,7 +135,7 @@ export class ArrayUtils {
         if (ObjectUtils.isNull(array)) {
             return null;
         }
-        return array.map((item) => ObjectUtils.deepClone(item));
+        return array.map((item) => ObjectUtils.deepClone(item) as T);
     }
 
     /**
