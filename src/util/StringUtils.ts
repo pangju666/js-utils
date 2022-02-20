@@ -3,6 +3,7 @@ import { BooleanUtils } from "./BooleanUtils";
 import { ArrayUtils } from "./ArrayUtils";
 
 /**
+ * TODO: 重构
  * 字符串工具类
  *
  * @author 胖橘
