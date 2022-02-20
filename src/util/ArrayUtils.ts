@@ -728,7 +728,7 @@ export class ArrayUtils {
      */
     public static shuffle<T>(array: T[]): void {
         for (let i = array.length; i > 1; i--) {
-            this.swap(array, i - 1, RandomUtils.randomInteger(i), 1);
+            this.swap(array, i - 1, RandomUtils.nextInt(i), 1);
         }
     }
 
