@@ -49,3 +49,24 @@ export type PropertyNameExcluder = (propertyName: string, value: unknown) => boo
  * @return {} 条件是否成立
  */
 export type Condition = (value: unknown) => boolean;
+
+/**
+ * 树形结构
+ *
+ * @param <K> 键值类型
+ * @param <T> 数据类型
+ */
+export interface TreeProp {
+    /**
+     * 编号属性名
+     */
+    id: string;
+    /**
+     * 父级节编号属性名
+     */
+    parentId: string;
+    /**
+     * 子级属性名
+     */
+    children: string;
+}

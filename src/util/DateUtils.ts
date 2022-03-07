@@ -65,7 +65,7 @@ export class DateUtils {
      * 如果没有匹配的解析模式，则抛出{@link ParseError}。</p>
      *
      * @param str 要解析的日期字符串，不能为空、null 或 undefined
-     * @param parsePatterns 要使用的日期格式模式，请参阅{@link https://date-fns.org/v2.28.0/docs/parse}，不能为空、null 或 undefined
+     * @param parsePatterns 要使用的日期格式模式，请参阅{@link https://date-fns.org/v2.28.0/docs/parse dateFns文档}，不能为空、null 或 undefined
      * @return {} 解析出的日期对象
      * @throws {IllegalArgumentError} 如果日期字符串为空、null 或 undefined
      * @throws {ParseError} 如果没有合适的日期解析模式或解析表达式为空、null 或 undefined
