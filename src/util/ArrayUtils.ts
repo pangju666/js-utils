@@ -17,6 +17,26 @@ export class ArrayUtils {
     public static readonly INDEX_NOT_FOUND = -1;
 
     /**
+     * 填充数组，根据参数创建指定长度的数组，并指定指定的值进行填充
+     *
+     * @param value 要填充的值
+     * @param length 数组长度
+     * @return {} 填充后的数组
+     * @throws {IllegalArgumentError} 数组长度小于 0、 null 或 undefined 时抛出
+     */
+    public static fill<T>(value: T, length: number): T[] {
+        if (ObjectUtils.isNull(length) || length <= 0) {
+            throw new IllegalArgumentError("数组长度必须大于0");
+        }
+
+        const array = new Array(length);
+        for (let i = 0; i < length; i++) {
+            array[i] = value;
+        }
+        return array;
+    }
+
+    /**
      * <p>复制给定数组并将给定元素添加到新数组的末尾。</p>
      *
      * <p>新数组包含输入数组的相同元素加上最后位置的给定元素。</p>
