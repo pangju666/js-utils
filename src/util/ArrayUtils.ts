@@ -167,8 +167,7 @@ export class ArrayUtils {
      * @param search 要搜索的元素或谓词（{@link Predicate}），函数数组必须使用谓词方式
      * @return 如果数组包含元素则返回 true
      */
-    public static contains<T>(array: T[],
-                              search: Predicate<T> | T): boolean {
+    public static contains<T>(array: T[], search: Predicate<T> | T): boolean {
         return this.indexOf(array, search) !== -1;
     }
 
@@ -220,9 +219,7 @@ export class ArrayUtils {
      * @param startIndex 开始搜索的索引
      * @return 数组中值的所有索引的数组，如果未找到或输入为 null、undefined 数组则返回空数组
      */
-    public static indexesOf<T>(array: T[],
-                               search: Predicate<T> | T,
-                               startIndex = 0): number[] {
+    public static indexesOf<T>(array: T[], search: Predicate<T> | T, startIndex = 0): number[] {
         const indexes = [];
 
         if (ObjectUtils.isNull(array)) {
@@ -265,11 +262,7 @@ export class ArrayUtils {
      * @param startIndex 开始搜索的索引
      * @return 数组中值的索引，如果未找到或 null、undefined 数组输入则为 {@link INDEX_NOT_FOUND}
      */
-    public static indexOf<T>(
-        array: T[],
-        search: Predicate<T> | T,
-        startIndex = 0
-    ): number {
+    public static indexOf<T>(array: T[], search: Predicate<T> | T, startIndex = 0): number {
         if (ObjectUtils.isNull(array)) {
             return this.INDEX_NOT_FOUND;
         }
@@ -417,11 +410,7 @@ export class ArrayUtils {
      * @param startIndex 向后遍历的起始索引
      * @return 数组中值的最后一个索引，如果未找到或 null 、 undefined 数组输入，则返回{@link INDEX_NOT_FOUND}
      */
-    public static lastIndexOf<T>(
-        array: T[],
-        search: Predicate<T> | T,
-        startIndex = Number.MAX_SAFE_INTEGER
-    ): number {
+    public static lastIndexOf<T>(array: T[], search: Predicate<T> | T, startIndex = Number.MAX_SAFE_INTEGER): number {
         if (ObjectUtils.isNull(array)) {
             return this.INDEX_NOT_FOUND;
         }
@@ -655,11 +644,7 @@ export class ArrayUtils {
      * 低于值（< 起始索引）不会导致任何变化。
      * 高于值 (>array.length) 降级为数组长度。
      */
-    public static reverse<T>(
-        array: T[],
-        startIndexInclusive = 0,
-        endIndexExclusive = array.length
-    ): void {
+    public static reverse<T>(array: T[], startIndexInclusive = 0, endIndexExclusive = array.length): void {
         if (ObjectUtils.isNull(array)) {
             return;
         }
@@ -681,17 +666,25 @@ export class ArrayUtils {
      * <p>多维数组没有特殊处理。此方法对 null、undefined 或空输入数组没有任何作用。</p>
      *
      * @param array 要移位的数组，可能是 null、undefined
-     * @param startIndexInclusive 起始索引。低值 (<0) 提升为 0，高值 (>array.length) 没有变化。
-     * @param endIndexExclusive 直到 endIndex-1 的元素在数组中移动。低于值（< 起始索引）不会导致任何变化。
-     * 高于值 (>array.length) 降级为数组长度。
      * @param offset 旋转元素的位置数。如果偏移量大于要旋转的元素数，则有效偏移量是要旋转的元素数的模数。
      */
-    public static shift<T>(
-        array: T[],
-        offset: number,
-        startIndexInclusive = 0,
-        endIndexExclusive = array.length
-    ): void {
+    public static shift<T>(array: T[], offset: number): void;
+    /**
+     * 移动给定数组中一系列元素的顺序。
+     *
+     * <p>多维数组没有特殊处理。此方法对 null、undefined 或空输入数组没有任何作用。</p>
+     *
+     * @param array 要移位的数组，可能是 null、undefined
+     * @param startIndexInclusive 起始索引。低值 (<0) 提升为 0，高值 (>array.length) 没有变化。
+     * @param endIndexExclusive 直到 endIndex-1 的元素在数组中移动。低于值（< 起始索引）不会导致任何变化。高于值 (>array.length) 降级为数组长度。
+     * @param offset 旋转元素的位置数。如果偏移量大于要旋转的元素数，则有效偏移量是要旋转的元素数的模数。
+     */
+    public static shift<T>(array: T[], startIndexInclusive: number, endIndexExclusive: number, offset: number): void;
+    static shift<T>(array: T[], startIndexInclusive: number, endIndexExclusive?: number, offset?: number): void {
+        if (endIndexExclusive === undefined && offset === undefined) {
+            return this.shift(array, 0, array.length, offset);
+        }
+
         if (ObjectUtils.isNull(array)) {
             return;
         }
@@ -748,7 +741,7 @@ export class ArrayUtils {
      */
     public static shuffle<T>(array: T[]): void {
         for (let i = array.length; i > 1; i--) {
-            this.swap(array, i - 1, RandomUtils.nextInt(i), 1);
+            this.swap(array, i - 1, RandomUtils.nextInt(0, i), 1);
         }
     }
 
@@ -765,11 +758,7 @@ export class ArrayUtils {
      *
      * @see Array#slice
      */
-    public static subarray<T>(
-        array: T[],
-        startIndexInclusive: number,
-        endIndexExclusive: number
-    ): T[] {
+    public static subarray<T>(array: T[], startIndexInclusive: number, endIndexExclusive: number): T[] {
         if (ObjectUtils.isNull(array)) {
             return null;
         }
@@ -810,12 +799,7 @@ export class ArrayUtils {
      * @param offset2 要交换的系列中第二个元素的索引
      * @param length 从给定索引开始交换的元素数
      */
-    public static swap<T>(
-        array: T[],
-        offset1: number,
-        offset2: number,
-        length = 1
-    ): void {
+    public static swap<T>(array: T[], offset1: number, offset2: number, length = 1): void {
         if (
             this.isEmpty(array) ||
             offset1 >= array.length ||
@@ -852,7 +836,7 @@ export class ArrayUtils {
      * @param elementToStringFunc 元素转字符串函数，未定义则使用{@link toString}进行输出
      * @return 一个字符串数组，如果为数组输入为 null 或 undefined 则返回 null
      */
-    public static toStringArray<T>(array: T[], valueForNullElements = "[]", elementToStringFunc?: ToString<T>): string[] {
+    public static toStringArray<T>(array: T[], valueForNullElements: string, elementToStringFunc?: ToString<T>): string[] {
         if (ObjectUtils.isNull(array)) {
             return null;
         } else if (array.length == 0) {

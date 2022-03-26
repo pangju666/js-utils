@@ -230,12 +230,7 @@ export class ObjectUtils {
      * 或者如果为 false，则 null、undefined 被认为小于非 null、undefined 值
      * @return 如果 c1 < c2 则为负值，如果 c1 = c2 则为零，如果 c1 > c2 则为正值
      */
-    public static compare<T>(
-        c1: T,
-        c2: T,
-        compareTo: Comparator<T>,
-        nullGreater = false
-    ): number {
+    public static compare<T>(c1: T, c2: T, compareTo: Comparator<T>, nullGreater = false): number {
         if (c1 == c2) {
             return 0;
         } else if (this.isNull(c1)) {
@@ -265,11 +260,7 @@ export class ObjectUtils {
      * @param condition 取值条件
      * @return {} 条件成立则返回此变量，否则返回默认值
      */
-    public static defaultIfCondition<T>(
-        value: T,
-        defaultVal: T,
-        condition: boolean | Condition
-    ): T {
+    public static defaultIfCondition<T>(value: T, defaultVal: T, condition: boolean | Condition): T {
         if (typeof condition === "boolean") {
             return condition ? value : defaultVal;
         }
@@ -446,11 +437,7 @@ export class ObjectUtils {
      * @param compareTo 值比较规则
      * @return {} 如果两个对象的值相同，则为 true，否则为 false
      */
-    public static equals<T>(
-        value1: T,
-        value2: T,
-        compareTo: Comparator<T>
-    ): boolean {
+    public static equals<T>(value1: T, value2: T, compareTo: Comparator<T>): boolean {
         if (value1 === value2) {
             return true;
         }
@@ -467,11 +454,7 @@ export class ObjectUtils {
      * @param compareTo 值比较规则
      * @return {} 如果两个对象的值相同，则为 false，否则为 true
      */
-    public static notEqual<T>(
-        value1: T,
-        value2: T,
-        compareTo: Comparator<T>
-    ): boolean {
+    public static notEqual<T>(value1: T, value2: T, compareTo: Comparator<T>): boolean {
         return !this.equals(value1, value2, compareTo);
     }
 

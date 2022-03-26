@@ -159,11 +159,7 @@ export class BooleanUtils {
      * @return {} true 或 false
      * @throws {IllegalArgumentError} 如果 value 不匹配 trueValue 和 falseValue
      */
-    public static toBoolean(
-        value: number,
-        trueValue: number,
-        falseValue: number
-    ): boolean;
+    public static toBoolean(value: number, trueValue: number, falseValue: number): boolean;
     /**
      * <p>将字符串转换为布尔值（针对性能进行了优化）。</p>
      *
@@ -202,16 +198,8 @@ export class BooleanUtils {
      * @return {} 字符串的布尔值
      * @throws {IllegalArgumentError} 如果字符串不匹配
      */
-    public static toBoolean(
-        str: string,
-        trueString: string,
-        falseString: string
-    ): boolean;
-    public static toBoolean<T>(
-        value: T,
-        trueValue?: T,
-        falseValue?: T
-    ): boolean {
+    public static toBoolean(str: string, trueString: string, falseString: string): boolean;
+    static toBoolean<T>(value: T, trueValue?: T, falseValue?: T): boolean {
         if (ObjectUtils.isNull(value)) {
             if (ObjectUtils.isNull(trueValue)) {
                 return true;
@@ -255,12 +243,7 @@ export class BooleanUtils {
      * @param nullValue 如果为 null 或 undefined 返回的值，默认返回 0
      * @return {} 适当的值
      */
-    public static toInteger(
-        bool: boolean,
-        trueValue = 1,
-        falseValue = 0,
-        nullValue = 0
-    ): number {
+    public static toInteger(bool: boolean, trueValue = 1, falseValue = 0, nullValue = 0): number {
         if (ObjectUtils.isNull(bool)) {
             return nullValue;
         }
@@ -282,12 +265,7 @@ export class BooleanUtils {
      * @param nullString 如果 null 要返回的字符串，默认为 “”
      * @return {} 三个输入字符串之一
      */
-    public static toString(
-        bool: boolean,
-        trueString: string,
-        falseString: string,
-        nullString = ""
-    ): string {
+    public static toString(bool: boolean, trueString: string, falseString: string, nullString = ""): string {
         if (ObjectUtils.isNull(bool)) {
             return nullString;
         }

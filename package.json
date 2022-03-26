@@ -1,6 +1,6 @@
 {
     "name": "@pangju666/js-utils",
-    "version": "1.0.0-beta.2",
+    "version": "1.0.0-rc.1",
     "author": "pangju",
     "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
     "keywords": [
