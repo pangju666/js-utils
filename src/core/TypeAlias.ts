@@ -51,6 +51,13 @@ export type PropertyNameExcluder = (propertyName: string, value: unknown) => boo
 export type Condition = (value: unknown) => boolean;
 
 /**
+ * 获取结果
+ *
+ * @return {} 结果
+ */
+export type Supplier<T> = () => T;
+
+/**
  * 树形结构
  *
  * @param <K> 键值类型
