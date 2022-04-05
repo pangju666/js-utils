@@ -1,84 +1,83 @@
-﻿import { StringUtils } from "./StringUtils";
-import { ObjectUtils } from "./ObjectUtils";
+import {StringUtils} from "./StringUtils";
+import {ObjectUtils} from "./ObjectUtils";
+import {PropertyNameConverter, PropertyNameExcluder} from "../core/TypeAlias";
 
 /**
  * 对象转换工具类
  *
- * @author pangju
- * @version 1.0 2021-6-21
+ * @author 胖橘
+ * @version 1.0
+ * @since 1.0
  */
 export class ConvertUtils {
-  /**
-   * 转换对象属性名称
-   *
-   * @param object 待转换对象
-   * @param convertFunc 转换对象属性名称回调，定义了如何转换属性名称，参数为属性名称
-   * @param excludeTypes 转换时需要排除的对象类型，如File, Blob, Date 等非自定义类型
-   * @return {} 转换后的新对象
-   */
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public static convertObjectPropertyName(object: object, convertFunc: (propertyName)=> string,
-                                          // eslint-disable-next-line @typescript-eslint/ban-types
-                                          excludeTypes: Function[] = []): object {
-    if (ObjectUtils.isNotNull(object)) {
-      // 判断是否为数组
-      if (Array.isArray(object)) {
-        return object.map(curVal => {
-          // 判断是否为基础类型或需排除类型
-          if (ObjectUtils.isBasicType(curVal) || ObjectUtils.isAnyType(curVal, excludeTypes)) {
-            return curVal
-          }
-          // 执行转换操作
-          return this.convertObjectPropertyName(curVal, convertFunc, excludeTypes)
-        })
-      }
-      // 不为数组则直接执行对象转换
-      const newObj = {}
-      // 遍历属性名称
-      Object.keys(object).forEach(propertyName => {
-        const newPropertyName = convertFunc(propertyName)
-        const val = object[propertyName]
-        // 判断是否为基础类型或需排除类型
-        if (ObjectUtils.isBasicType(val) || ObjectUtils.isAnyType(val, excludeTypes)) {
-          newObj[newPropertyName] = val
-        } else {
-          newObj[newPropertyName] = this.convertObjectPropertyName(val, convertFunc, excludeTypes)
+    /**
+     * 转换属性名称
+     *
+     * @param value 待转换的值，基础类型无法转换
+     * @param converter 属性名转换器，用于定义如何转换属性名称
+     * @param excluder 属性排除器，符合条件的属性将在转换过程中被忽略
+     * @return {} 此方法会对值进行深拷贝操作，因为会返回一个新的对象，不会影响原始值
+     */
+    public static convertPropertyName(value: unknown, converter: PropertyNameConverter, excluder: PropertyNameExcluder): unknown {
+        if (ObjectUtils.isNull(value)) {
+            return null;
         }
-      })
-      return newObj
+
+        if (ObjectUtils.isBasicType(value)) {
+            return value;
+        }
+
+        // 判断是否为数组
+        if (Array.isArray(value)) {
+            return value.map(curVal => {
+                // 判断是否为基础类型
+                if (ObjectUtils.isBasicType(curVal)) {
+                    return curVal;
+                }
+                // 执行转换操作
+                return this.convertPropertyName(curVal, converter, excluder);
+            });
+        }
+
+        // 不为数组则直接执行对象转换
+        const newObj = {};
+        // 遍历属性名称
+        Object.keys(value).forEach(propertyName => {
+            const newPropertyName = converter(propertyName);
+            const val = value[propertyName];
+            // 判断是否为基础类型或是否符合排除条件
+            if (ObjectUtils.isBasicType(val) || excluder(propertyName, val)) {
+                newObj[newPropertyName] = val;
+            } else {
+                newObj[newPropertyName] = this.convertPropertyName(val, converter, excluder);
+            }
+        })
+        return newObj;
     }
-    return null
-  }
 
-  /**
-   * 对象属性名称转驼峰
-   *
-   * @param object 待转换对象
-   * @param excludeTypes 转换时需要排除的对象类型，如File, Blob, Date 等系统类型
-   * @return {} 转换后的对象
-   */
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public static propertyNamesToCamlCase(object: object, excludeTypes?: Function[]): object {
-    return this.convertObjectPropertyName(object,
-        propertyName => StringUtils.underLineToCamelCase(propertyName), excludeTypes)
-  }
+    /**
+     * 属性名称称为驼峰格式
+     *
+     * @param value 待转换的值，基础类型无法转换
+     * @param excluder 属性排除器，符合条件的属性将在转换过程中被忽略
+     * @return {} 此方法会对值进行深拷贝操作，因为会返回一个新的对象，不会影响原始值
+     */
+    public static propertyNamesToCamlCase(value: unknown, excluder: PropertyNameExcluder): unknown {
+        return this.convertPropertyName(value, StringUtils.camelCaseToUnderLine, excluder);
+    }
 
-  /**
-   * 对象属性名称转下划线
-   *
-   * @param object 待转换对象
-   * @param excludeTypes 转换时需要排除的对象类型，如File, Blob, Date 等非自定义类型
-   * @return {} 转换后的对象
-   */
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public static propertyNamesToUnderLine(object: object, excludeTypes?: Function[]): object {
-    return this.convertObjectPropertyName(object,
-        propertyName => StringUtils.camelCaseToUnderLine(propertyName), excludeTypes)
-  }
+    /**
+     * 属性名称转为下划线格式
+     *
+     * @param value 待转换的值，基础类型无法转换
+     * @param excluder 属性排除器，符合条件的属性将在转换过程中被忽略
+     * @return {} 此方法会对值进行深拷贝操作，因为会返回一个新的对象，不会影响原始值
+     */
+    public static propertyNamesToUnderLine(value: unknown, excluder: PropertyNameExcluder): unknown {
+        return this.convertPropertyName(value, StringUtils.underLineToCamelCase, excluder);
+    }
 
-  // 防止实例化
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected constructor() {
-  }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    private constructor() {
+    }
 }

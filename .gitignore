@@ -1,4 +1,4 @@
-﻿# Logs
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -106,3 +106,4 @@ lib
 .idea
 lib/
 /node_modules/
+yarn.lock

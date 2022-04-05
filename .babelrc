@@ -1,4 +1,4 @@
-﻿{
+{
   "presets": [
     [
       "@babel/env",
