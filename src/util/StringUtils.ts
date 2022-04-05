@@ -1,7 +1,7 @@
 import {ObjectUtils} from "./ObjectUtils";
 import {BooleanUtils} from "./BooleanUtils";
 import {ArrayUtils} from "./ArrayUtils";
-import {IllegalArgumentError} from "../core/runtimeError";
+import {IllegalArgumentError, IndexOutOfBoundsError} from "../core/runtimeError";
 import {Supplier} from "../core/TypeAlias";
 
 /**
@@ -541,8 +541,8 @@ export class StringUtils {
         const str1Len = str1.length;
         const str2Len = str2.length;
         const lim = Math.min(str1.length, str2.length);
-        const char1Array = this.toCharArray(str1);
-        const char2Array = this.toCharArray(str2);
+        const char1Array = this.toChars(str1);
+        const char2Array = this.toChars(str2);
 
         let k = 0;
         while (k < lim) {
@@ -581,7 +581,7 @@ export class StringUtils {
         if (ObjectUtils.anyNull(str, searchStr)) {
             return false;
         }
-        return this.indexOf(str, searchStr, 0) >= 0;
+        return str.includes(searchStr);
     }
 
     /**
@@ -670,15 +670,7 @@ export class StringUtils {
         if (ObjectUtils.anyNull(str, searchStr)) {
             return false;
         }
-
-        const strLen = searchStr.length;
-        const max = str.length - strLen;
-        for (let i = 0; i <= max; i++) {
-            if (this.regionMatches(str, i, searchStr, 0, strLen, true)) {
-                return true;
-            }
-        }
-        return false;
+        return str.toLowerCase().includes(searchStr);
     }
 
     /**
@@ -973,8 +965,7 @@ export class StringUtils {
         if (suffix.length > str.length) {
             return false;
         }
-        const strOffset = str.length - suffix.length;
-        return this.regionMatches(str, strOffset, suffix, 0, suffix.length, ignoreCase);
+        return ignoreCase ? str.toLowerCase().endsWith(suffix) : str.endsWith(suffix);
     }
 
     /**
@@ -1031,38 +1022,6 @@ export class StringUtils {
      */
     public static endsWithIgnoreCase(str: string, suffix: string): boolean {
         return this.endsWith(str, suffix, true);
-    }
-
-    /**
-     * <p>检查字符串是否以任何提供的不区分大小写的后缀结尾。</p>
-     *
-     * <pre>
-     * StringUtils.endsWithAny(null, null)      = false
-     * StringUtils.endsWithAny(null, new String[] {"abc"})  = false
-     * StringUtils.endsWithAny("abcxyz", null)     = false
-     * StringUtils.endsWithAny("abcxyz", new String[] {""}) = true
-     * StringUtils.endsWithAny("abcxyz", new String[] {"xyz"}) = true
-     * StringUtils.endsWithAny("abcxyz", new String[] {null, "xyz", "abc"}) = true
-     * StringUtils.endsWithAny("abcXYZ", "def", "XYZ") = true
-     * StringUtils.endsWithAny("abcXYZ", "def", "xyz") = false
-     * </pre>
-     *
-     * @param str 要检查的字符串，可能为 null 或 undefined
-     * @param searchStrings 要查找的区分大小写的字符串，可能为空或包含 null、undefined
-     * @return 如果输入字符串是 null 或 undefined 并且没有提供 searchStrings 则返回 true，
-     * 或者输入字符串以任何提供的不区分大小写的 searchStrings 结尾。
-     * @see endsWithIgnoreCase
-     */
-    public static endsWithAnyWithIgnoreCase(str: string, ...searchStrings: string[]): boolean {
-        if (this.isEmpty(str) || ArrayUtils.isEmpty(searchStrings)) {
-            return false;
-        }
-        for (const searchString of searchStrings) {
-            if (this.endsWithIgnoreCase(str, searchString)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -1359,6 +1318,9 @@ export class StringUtils {
         if (ObjectUtils.anyNull(str, searchString)) {
             return this.INDEX_NOT_FOUND;
         }
+        if (startPos < 0) {
+            startPos = 0;
+        }
         return str.indexOf(searchString, startPos);
     }
 
@@ -1566,12 +1528,7 @@ export class StringUtils {
         if (searchStr.length === 0) {
             return startPos;
         }
-        for (let i = startPos; i < endLimit; i++) {
-            if (this.regionMatches(str, i, searchStr, 0, searchStr.length, true)) {
-                return i;
-            }
-        }
-        return this.INDEX_NOT_FOUND;
+        return str.toLowerCase().indexOf(searchStr, startPos);
     }
 
     /**
@@ -1634,6 +1591,56 @@ export class StringUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * <p>判断是否为大写字符, 如果输入字符串为 ""、null 或 undefined 则返回 false</p>
+     *
+     * <p>如果输入字符串长度大于 1，则只判断第一个字符是否为大写</p>
+     *
+     * <pre>
+     * StringUtils.isUpperCase(null)   = false
+     * StringUtils.isUpperCase("")     = false
+     * StringUtils.isUpperCase("ABC")  = true
+     * StringUtils.isUpperCase("aBC")  = false
+     * StringUtils.isUpperCase("a")    = false
+     * StringUtils.isUpperCase("A")    = true
+     * </pre>
+     *
+     * @param str 待判断字符，可能为 null、undefined
+     * @return 大写字符则返回 true，否则返回 false
+     */
+    public static isUpperCase(str: string): boolean {
+        if (this.isEmpty(str)) {
+            return false;
+        }
+        const code = str.charCodeAt(0);
+        return code >= 65 && code <= 90;
+    }
+
+    /**
+     * <p>判断是否为小写字符, 如果输入字符串为 ""、null 或 undefined 则返回 false</p>
+     *
+     * <p>如果输入字符串长度大于 1，则只判断第一个字符是否为小写</p>
+     *
+     * <pre>
+     * StringUtils.isLowerCase(null)   = false
+     * StringUtils.isLowerCase("")     = false
+     * StringUtils.isLowerCase("Abc")  = false
+     * StringUtils.isLowerCase("aBC")  = true
+     * StringUtils.isLowerCase("a")    = true
+     * StringUtils.isLowerCase("A")    = false
+     * </pre>
+     *
+     * @param str 待判断字符，可能为 null、undefined
+     * @return 大写字符则返回 true，否则返回 false
+     */
+    public static isLowerCase(str: string): boolean {
+        if (this.isEmpty(str)) {
+            return false;
+        }
+        const code = str.charCodeAt(0);
+        return code >= 97 && code <= 122;
     }
 
     /**
@@ -1960,83 +1967,153 @@ export class StringUtils {
         return true;
     }
 
-    public static join(array: string[], separator = null, startIndex: 0, endIndex = array.length): string {
+    /**
+     * <p>将提供的数组的元素连接到包含提供的元素列表的单个字符串中。</p>
+     *
+     * <p>列表前后不加分隔符。
+     * null 分隔符与空字符串 ("") 相同。
+     * 数组中的 null、undefined 对象或空字符串由空字符串表示。</p>
+     *
+     * <pre>
+     * StringUtils.join(null, *, *, *)                = null
+     * StringUtils.join([], *, *, *)                  = ""
+     * StringUtils.join([null], *, *, *)              = ""
+     * StringUtils.join(["a", "b", "c"], "--", 0, 3)  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], "--", 1, 3)  = "b--c"
+     * StringUtils.join(["a", "b", "c"], "--", 2, 3)  = "c"
+     * StringUtils.join(["a", "b", "c"], "--", 2, 2)  = ""
+     * StringUtils.join(["a", "b", "c"], null, 0, 3)  = "abc"
+     * StringUtils.join(["a", "b", "c"], "", 0, 3)    = "abc"
+     * StringUtils.join([null, "", "a"], ',', 0, 3)   = ",,a"
+     * </pre>
+     *
+     * @param array 要连接在一起的值数组，可以为 null 或 undefined
+     * @param separator 要使用的分隔符，null 或 undefined 被视为 “”
+     * @param startIndex 开始加入的第一个索引。
+     * @param endIndex 停止加入的索引（不包括）。
+     * @return 连接在一起的字符串，如果为空数组输入，则返回 null；
+     * 如果 endIndex - startIndex <= 0，则为空字符串。
+     * 连接条目的数量由 endIndex - startIndex 给出
+     * @throws {IndexOutOfBoundsError} 如果：<br>
+     * startIndex < 0 或 <br>
+     * startIndex >= array.length 或 <br>
+     * endIndex < 0 或 <br>
+     * endIndex > array.length
+     */
+    public static join<T>(array: T[], separator = this.EMPTY, startIndex = 0, endIndex = array.length): string {
         if (ObjectUtils.isNull(array)) {
             return null;
         }
-        if (ObjectUtils.isNull(separator)) {
-            separator = this.EMPTY;
-        }
-
         if (endIndex - startIndex <= 0) {
             return this.EMPTY;
         }
 
-        let buf = "";
-        for (let i = startIndex; i < endIndex; i++) {
-            if (i > startIndex) {
-                buf += separator;
-            }
-            if (array[i] !== null) {
-                buf += array[i];
-            }
-        }
-        return buf;
-    }
-
-    public static joinWith(separator: string, ...strs: string[]): string {
-        if (ObjectUtils.isNull(strs)) {
-            throw new TypeError("strings varargs must not be null");
+        if (startIndex < 0) {
+            throw new IndexOutOfBoundsError("startIndex 不可小于0");
+        } else if (startIndex >= array.length) {
+            throw new IndexOutOfBoundsError("startIndex 不可大于等于数组长度");
+        } else if (endIndex < 0) {
+            throw new IndexOutOfBoundsError("endIndex 不可小于0");
+        } else if (endIndex > array.length) {
+            throw new IndexOutOfBoundsError(`endIndex 不可大于数组长度`);
         }
 
-        const sanitizedSeparator = this.defaultString(separator);
-        let result = "";
-        for (let i = 0; i < strs.length; i++) {
-            result += strs[i];
-            if (i !== strs.length - 1) {
-                result += sanitizedSeparator;
-            }
-        }
-        return result;
+        return array.slice(startIndex, endIndex).join(separator);
     }
 
     /**
-     * 查找字符串中的最后一个索引，不区分大小写。
-     * null 字符串将返回 -1。
-     * 负起始位置被视为0。
+     * <p>将提供的数组的元素连接到包含提供的元素列表的单个字符串中。</p>
+     *
+     * <p>没有分隔符添加到连接的字符串。
+     * 数组中的 null、undefined 对象或空字符串由空字符串表示。</p>
+     *
+     * <pre>
+     * StringUtils.join(null)            = null
+     * StringUtils.join([])              = ""
+     * StringUtils.join([null])          = ""
+     * StringUtils.join(["a", "b", "c"]) = "abc"
+     * StringUtils.join([null, "", "a"]) = "a"
+     * </pre>
+     *
+     * @param elements 要连接在一起的值，可能为 null 或 undefined
+     * @return 连接在一起的字符串，如果为空数组输入则返回 null
+     */
+    public static joinWith<T>(...elements: T[]): string {
+        return this.join(elements);
+    }
+
+    /**
+     * <p>查找字符串中的最后一个索引，处理 null 和 undefined。</p>
+     *
+     * <p>null 或 undefined 字符串 将返回 -1。负的起始位置返回 -1。
      * 除非起始位置为负，否则空 ("") 搜索字符串始终匹配。
-     * 大于字符串长度的起始位置仅匹配空搜索字符串。搜索从 startPos 开始并向后工作；在开始位置之后开始的匹配将被忽略。
+     * 大于字符串长度的起始位置会搜索整个字符串。
+     * 搜索从 startPos 开始并向后进行；在开始位置之后开始的匹配将被忽略。
+     * </p>
      *
-     * @param str 要检查的字符串，可能为 null
-     * @param searchString 要查找的字符串，可能为 null
-     * @param startPos 起始位置，负数视为 0
-     * @return {number} 搜索 字符串 的最后一个索引（总是≤ startPos），如果没有匹配或 字符串为 null 则返回 -1
-     */
-    public static lastIndexOf(str: string, searchString: string, startPos = 0): number {
-        return this.indexOfStr(str, searchString, startPos, true, false);
-    }
-
-    /**
-     * 查找任何一组潜在子串的最新索引。<br />
-     * 字符串为 null 将返回 -1。搜索数组如果为 null 将返回 -1。
-     * 搜索数组中为null 的元素将被忽略，但如果 str 不为空，包含 "" 的搜索数组将返回 0 。
+     * <pre>
+     * StringUtils.lastIndexOf(null, *, *)          = -1
+     * StringUtils.lastIndexOf(*, null, *)          = -1
+     * StringUtils.lastIndexOf("aabaabaa", "a", 8)  = 7
+     * StringUtils.lastIndexOf("aabaabaa", "b", 8)  = 5
+     * StringUtils.lastIndexOf("aabaabaa", "ab", 8) = 4
+     * StringUtils.lastIndexOf("aabaabaa", "b", 9)  = 5
+     * StringUtils.lastIndexOf("aabaabaa", "b", -1) = -1
+     * StringUtils.lastIndexOf("aabaabaa", "a", 0)  = 0
+     * StringUtils.lastIndexOf("aabaabaa", "b", 0)  = -1
+     * StringUtils.lastIndexOf("aabaabaa", "b", 1)  = -1
+     * StringUtils.lastIndexOf("aabaabaa", "b", 2)  = 2
+     * StringUtils.lastIndexOf("aabaabaa", "ba", 2)  = 2
+     * </pre>
      *
-     * @param str 要检查的字符串，可能为 null
-     * @param searchStrs 要搜索的字符串，可能为 null
-     * @return {number} str 中任何 searchStrs 的第一个索引，如果不匹配则为 -1
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param searchStr 要查找的字符串，可能为 null 或 undefined
+     * @param startPos 起始位置，负数视为零
+     * @return 搜索字符串的最后一个索引（总是 ≤ startPos），如果不匹配、null 或 undefined 字符串输入，则为 -1
      */
-    public static lastIndexOfAny(str: string, ...searchStrs: string[]): number {
-        if (ObjectUtils.anyNull(str, ...searchStrs)) {
+    public static lastIndexOf(str: string, searchStr: string, startPos = str.length): number {
+        if (ObjectUtils.anyNull(str, searchStr)) {
             return this.INDEX_NOT_FOUND;
         }
+        if (startPos < 0) {
+            return this.INDEX_NOT_FOUND;
+        }
+        return str.lastIndexOf(searchStr, Math.min(startPos, str.length));
+    }
 
+    /**
+     * <p>在一组潜在子串中查找任何子串的最新索引。</p>
+     *
+     * <p>null、undefined 字符串将返回 -1。 null 搜索数组将返回 -1。
+     * null、undefined 或零长度搜索数组条目将被忽略，但如果 str 不为空，包含 "" 的搜索数组将返回 str 的长度。</p>
+     *
+     * <pre>
+     * StringUtils.lastIndexOfAny(null, *)                    = -1
+     * StringUtils.lastIndexOfAny(*, null)                    = -1
+     * StringUtils.lastIndexOfAny(*, [])                      = -1
+     * StringUtils.lastIndexOfAny(*, [null])                  = -1
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["ab", "cd"]) = 6
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["cd", "ab"]) = 6
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["mn", "op"]) = -1
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["mn", "op"]) = -1
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["mn", ""])   = 10
+     * </pre>
+     *
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param searchStrs 要搜索的字符串，可能为 null 或 undefined
+     * @return 任何字符串的最后一个索引，如果不匹配，则为 -1
+     */
+    public static lastIndexOfAny(str: string, ...searchStrs: string[]): number {
+        if (ObjectUtils.anyNull(str, searchStrs)) {
+            return this.INDEX_NOT_FOUND;
+        }
         let ret = this.INDEX_NOT_FOUND;
         let tmp = 0;
-        for (const searchStr of searchStrs) {
-            if (ObjectUtils.isNull(searchStr)) {
+        for (const search of searchStrs) {
+            if (ObjectUtils.isNull(search)) {
                 continue;
             }
-            tmp = str.lastIndexOf(searchStr, str.length);
+            tmp = str.lastIndexOf(search, str.length);
             if (tmp > ret) {
                 ret = tmp;
             }
@@ -2045,159 +2122,263 @@ export class StringUtils {
     }
 
     /**
-     * 查找字符串中的最后一个索引，处理 null。
-     * null 字符串将返回 -1。
-     * 负起始位置被视为0。
+     * <p>从指定位置查找字符串中的最后一个索引，不区分大小写。</p>
+     *
+     * <p>null 或 undefined 字符串将返回 -1。负的起始位置返回 -1。
      * 除非起始位置为负，否则空 ("") 搜索字符串始终匹配。
-     * 大于字符串长度的起始位置仅匹配空搜索字符串。搜索从 startPos 开始并向后工作；在开始位置之后开始的匹配将被忽略。
+     * 大于字符串长度的起始位置会搜索整个字符串。
+     * 搜索从 startPos 开始并向后进行；在开始位置之后开始的匹配将被忽略。
+     * </p>
      *
-     * @param str 要检查的字符串，可能为 null
-     * @param searchString 要查找的字符串，可能为 null
-     * @param startPos 起始位置，负数视为 0
-     * @return {number} 搜索 字符串 的最后一个索引（总是≤ startPos），如果没有匹配或 字符串为 null 则返回 -1
-     */
-    public static lastIndexOfIgnoreCase(str: string, searchString: string, startPos = 0): number {
-        return this.indexOfStr(str, searchString, startPos, true, true);
-    }
-
-    /**
-     * 查找字符串中的第 n 个的最后一个索引，处理 null。
-     * 字符串为 null 将返回-1。
+     * <pre>
+     * StringUtils.lastIndexOfIgnoreCase(null, *, *)          = -1
+     * StringUtils.lastIndexOfIgnoreCase(*, null, *)          = -1
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "A", 8)  = 7
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "B", 8)  = 5
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "AB", 8) = 4
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "B", 9)  = 5
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "B", -1) = -1
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "A", 0)  = 0
+     * StringUtils.lastIndexOfIgnoreCase("aabaabaa", "B", 0)  = -1
+     * </pre>
      *
-     * @param str 要检查的字符串，可能为 null
-     * @param searchString 要查找的字符串，可能为 null
-     * @param ordinal 要查找第 n 个的最后一个 searchStr
-     * @return {number} 搜索字符串的第 n 个的最后一个索引，如果没有匹配或字符串为 null 则返回 -1
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param searchStr 要查找的字符串，可能为 null 或 undefined
+     * @param startPos 起始位置
+     * @return 搜索字符串的最后一个索引（总是 ≤ startPos），如果不匹配或 null、undefined 输入，则为 -1
      */
-    public static lastOrdinalIndexOf(str: string, searchString: string, ordinal: number): number {
-        return this.ordinalStrIndexOf(str, searchString, ordinal, true);
-    }
-
-    private static indexOfStr(str
-                   :
-                   string, searchString
-                   :
-                   string, startPos
-                   :
-                   number, lastIndex
-                   :
-                   boolean, ignoreCase
-                   :
-                   boolean
-    ) {
-        if (ObjectUtils.anyNull(str, searchString)) {
+    public static lastIndexOfIgnoreCase(str: string, searchStr: string, startPos = str.length): number {
+        if (ObjectUtils.anyNull(str, searchStr)) {
             return this.INDEX_NOT_FOUND;
         }
-        if (searchString.length === 0) {
+        const searchStrLength = searchStr.length;
+        const strLength = str.length;
+        if (startPos > strLength - searchStrLength) {
+            startPos = strLength - searchStrLength;
+        }
+        if (startPos < 0) {
+            return this.INDEX_NOT_FOUND;
+        }
+        if (searchStrLength === 0) {
             return startPos;
         }
-
-        if (lastIndex) {
-            if (!ignoreCase) {
-                return str.lastIndexOf(searchString, startPos);
-            }
-
-            if (startPos > str.length - searchString.length) {
-                startPos = str.length - searchString.length;
-            }
-            if (startPos < 0) {
-                return this.INDEX_NOT_FOUND;
-            }
-            for (let i = startPos; i >= 0; i--) {
-                if (
-                    this.regionMatches(
-                        str,
-                        i,
-                        searchString,
-                        0,
-                        searchString.length,
-                        true
-                    )
-                ) {
-                    return i;
-                }
-            }
-        } else {
-            if (!ignoreCase) {
-                return str.indexOf(searchString, startPos);
-            }
-
-            if (startPos < 0) {
-                startPos = 0;
-            }
-            const endLimit = str.length - searchString.length + 1;
-            if (startPos > endLimit) {
-                return this.INDEX_NOT_FOUND;
-            }
-            for (let i = startPos; i < endLimit; i++) {
-                if (
-                    this.regionMatches(
-                        str,
-                        i,
-                        searchString,
-                        0,
-                        searchString.length,
-                        true
-                    )
-                ) {
-                    return i;
-                }
-            }
-        }
-        return this.INDEX_NOT_FOUND;
+        return str.toLowerCase().lastIndexOf(searchStr, startPos);
     }
 
     /**
-     * 查找字符串中的第 n 个索引，处理 null。
-     * 注意：代码在目标的开头开始寻找匹配项，在每次成功匹配后将起始索引增加 1
-     * （除非searchStr是空字符串，在这种情况下，位置永远不会增加并立即返回 0）。
-     * 这意味着匹配可能会重叠。
-     * 字符串为 null 将返回-1。
+     * <p>查找字符串中的第 n 个最后索引，处理 null 或 undefined。</p>
      *
-     * @param str 要检查的字符串，可能为 null
-     * @param searchString 要查找的字符串，可能为 null
-     * @param ordinal 要查找第 n 个 searchStr
-     * @return {number} 搜索字符串的第 n 个索引，如果没有匹配或字符串为 null 则返回 -1
+     * <p>null 或 undefined 字符串将返回 -1。</p>
+     *
+     * <pre>
+     * StringUtils.lastOrdinalIndexOf(null, *, *)          = -1
+     * StringUtils.lastOrdinalIndexOf(*, null, *)          = -1
+     * StringUtils.lastOrdinalIndexOf("", "", *)           = 0
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "a", 1)  = 7
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "a", 2)  = 6
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "b", 1)  = 5
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "b", 2)  = 2
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "ab", 1) = 4
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "ab", 2) = 1
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "", 1)   = 8
+     * StringUtils.lastOrdinalIndexOf("aabaabaa", "", 2)   = 8
+     * </pre>
+     *
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param searchStr 要查找的字符串，可能为 null 或 undefined
+     * @param ordinal 要查找的第 n 个最后 searchStr
+     * @return 搜索字符串 的第 n 个最后索引，如果不匹配，则为 -1 ({@link INDEX_NOT_FOUND}) 或 null、undefined 字符串输入
      */
-    public static
-
-    ordinalIndexOf(str
-                       :
-                       string, searchString
-                       :
-                       string, ordinal
-                       :
-                       number
-    ):
-        number {
-        return this.ordinalStrIndexOf(str, searchString, ordinal, false);
+    public static lastOrdinalIndexOf(str: string, searchStr: string, ordinal: number): number {
+        return this.ordinalStrIndexOf(str, searchStr, ordinal, true);
     }
 
-    private static
+    /**
+     * <p>获取字符串最左边的 length 个字符。</p>
+     *
+     * <p>如果 length 个字符不可用，或者字符串为 null 或 undefined，则字符串将无异常返回。
+     * 如果 length 为负数，则返回一个空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.left(null, *)    = null
+     * StringUtils.left(*, -ve)     = ""
+     * StringUtils.left("", *)      = ""
+     * StringUtils.left("abc", 0)   = ""
+     * StringUtils.left("abc", 2)   = "ab"
+     * StringUtils.left("abc", 4)   = "abc"
+     * </pre>
+     *
+     * @param str 要从中获取最左边的字符的字符串，可能为 null 或 undefined
+     * @param length 所需字符串的长度
+     * @return 最左边的字符，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static left(str: string, length: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (length < 0) {
+            return this.EMPTY;
+        }
+        if (str.length <= length) {
+            return str;
+        }
+        return str.substring(0, length);
+    }
 
-    ordinalStrIndexOf(str
-                          :
-                          string, searchString
-                          :
-                          string, ordinal
-                          :
-                          number, lastIndex
-                          :
-                          boolean
-    ):
-        number {
-        if (
-            BooleanUtils.or(
-                ObjectUtils.anyNull(str, searchString),
-                ordinal <= 0
-            )
-        ) {
+    /**
+     * <p>左填充一个具有指定字符串的字符串。</p>
+     *
+     * <p>填充到 size 的大小。</p>
+     *
+     * <pre>
+     * StringUtils.leftPad(null, *, *)      = null
+     * StringUtils.leftPad("", 3, "z")      = "zzz"
+     * StringUtils.leftPad("bat", 3, "yz")  = "bat"
+     * StringUtils.leftPad("bat", 5, "yz")  = "yzbat"
+     * StringUtils.leftPad("bat", 8, "yz")  = "yzyzybat"
+     * StringUtils.leftPad("bat", 1, "yz")  = "bat"
+     * StringUtils.leftPad("bat", -1, "yz") = "bat"
+     * StringUtils.leftPad("bat", 5, null)  = "  bat"
+     * StringUtils.leftPad("bat", 5, "")    = "  bat"
+     * </pre>
+     *
+     * @param str 要填充的字符串，可能为 null 或 undefined
+     * @param size 要填充的大小
+     * @param padStr 要填充的字符串，null、undefined 或空视为单个空白
+     * @return 如果不需要填充，则为左填充字符串或原始字符串，如果为空字符串输入，则返回 null
+     */
+    public static leftPad(str: string, size: number, padStr = this.SPACE): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (this.isEmpty(padStr)) {
+            padStr = this.SPACE;
+        }
+        return str.padStart(size + str.length, padStr);
+    }
+
+    /**
+     * 获取字符串长度，如果字符串为 null 或 undefined，则返回 0。
+     *
+     * @param str 一个字符串或 null 或 undefined
+     * @return 获取字符串长度，如果字符串为 null 或 undefined，则返回 0。
+     */
+    public static getLength(str: string): number {
+        return ObjectUtils.isNull(str) ? 0 : str.length;
+    }
+
+    /**
+     * <p>根据 {@link String#toLowerCase} 将字符串转换为小写。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。</p>
+     *
+     * <pre>
+     * StringUtils.lowerCase(null)  = null
+     * StringUtils.lowerCase("")    = ""
+     * StringUtils.lowerCase("aBc") = "abc"
+     * </pre>
+     *
+     * @param str 小写的字符串，可能为 null 或 undefined
+     * @param locales 定义大小写转换规则的语言环境，不能为空
+     * @return 小写字符串，如果为空字符串输入则返回 null
+     */
+    public static lowerCase(str: string, locales?: string | string[]): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        return str.toLocaleLowerCase(locales);
+    }
+
+    /**
+     * <p>从字符串的中间获取 length 个字符。</p>
+     *
+     * <p>如果 length 个字符不可用，则将返回字符串的其余部分而无异常。
+     * 如果字符串为 null 或 undefined，则返回 null。
+     * 如果 length 为负数或超过 str 的长度，则返回一个空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.mid(null, *, *)    = null
+     * StringUtils.mid("", 0, *)      = ""
+     * StringUtils.mid("abc", 0, 2)   = "ab"
+     * StringUtils.mid("abc", 0, 4)   = "abc"
+     * StringUtils.mid("abc", 2, 4)   = "c"
+     * StringUtils.mid("abc", 4, 2)   = ""
+     * StringUtils.mid("abc", -2, 2)  = "ab"
+     * </pre>
+     *
+     * @param str 要从中获取字符的字符串，可能为 null 或 undefined
+     * @param pos 开始的位置，负数视为零
+     * @param length 所需字符串的长度
+     * @return 中间字符，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static mid(str: string, pos: number, length: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (length < 0 || pos > str.length) {
+            return this.EMPTY;
+        }
+        if (pos < 0) {
+            pos = 0;
+        }
+        if (str.length <= pos + length) {
+            return str.substring(pos);
+        }
+        return str.substring(pos, pos + length);
+    }
+
+    /**
+     * <p>查找字符串中的第 n 个索引，处理 null 和 undefined。
+     * 如果可能，此方法使用 {@link String#indexOf}。</p>
+     *
+     * <p><b>Note:</b>
+     * 代码开始在目标的开头寻找匹配，每次成功匹配后将起始索引加一（除非 searchStr 是一个空字符串，在这种情况下，位置永远不会增加并且 0 是立即返回）。
+     * 这意味着匹配可能会重叠。</p>
+     *
+     * <p>null 或 undefined 字符串将返回 -1。</p>
+     *
+     * <pre>
+     * StringUtils.ordinalIndexOf(null, *, *)          = -1
+     * StringUtils.ordinalIndexOf(*, null, *)          = -1
+     * StringUtils.ordinalIndexOf("", "", *)           = 0
+     * StringUtils.ordinalIndexOf("aabaabaa", "a", 1)  = 0
+     * StringUtils.ordinalIndexOf("aabaabaa", "a", 2)  = 1
+     * StringUtils.ordinalIndexOf("aabaabaa", "b", 1)  = 2
+     * StringUtils.ordinalIndexOf("aabaabaa", "b", 2)  = 5
+     * StringUtils.ordinalIndexOf("aabaabaa", "ab", 1) = 1
+     * StringUtils.ordinalIndexOf("aabaabaa", "ab", 2) = 4
+     * StringUtils.ordinalIndexOf("aabaabaa", "", 1)   = 0
+     * StringUtils.ordinalIndexOf("aabaabaa", "", 2)   = 0
+     * </pre>
+     *
+     * <p>匹配可能重叠：</p>
+     * <pre>
+     * StringUtils.ordinalIndexOf("ababab", "aba", 1)   = 0
+     * StringUtils.ordinalIndexOf("ababab", "aba", 2)   = 2
+     * StringUtils.ordinalIndexOf("ababab", "aba", 3)   = -1
+     *
+     * StringUtils.ordinalIndexOf("abababab", "abab", 1) = 0
+     * StringUtils.ordinalIndexOf("abababab", "abab", 2) = 2
+     * StringUtils.ordinalIndexOf("abababab", "abab", 3) = 4
+     * StringUtils.ordinalIndexOf("abababab", "abab", 4) = -1
+     * </pre>
+     *
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param searchStr 要查找的字符串，可能为 null 或 undefined
+     * @param ordinal 要查找的第 n 个 searchStr
+     * @return 搜索字符串的第 n 个索引，如果没有匹配或 null、undefined 字符串输入则返回 -1 ({@link INDEX_NOT_FOUND})
+     */
+    public static ordinalIndexOf(str: string, searchStr: string, ordinal: number): number {
+        return this.ordinalStrIndexOf(str, searchStr, ordinal, false);
+    }
+
+    private static ordinalStrIndexOf(str: string, searchString: string, ordinal: number, lastIndex: boolean): number {
+        if (ObjectUtils.anyNull(str, searchString) || ordinal <= 0) {
             return this.INDEX_NOT_FOUND;
         }
         if (searchString.length === 0) {
             return lastIndex ? str.length : 0;
         }
-
         let found = 0;
         let index = lastIndex ? str.length : this.INDEX_NOT_FOUND;
         do {
@@ -2214,290 +2395,1118 @@ export class StringUtils {
         return index;
     }
 
-
-
     /**
-     * 移除字符串串的两端字符的空白字符（空白、制表符、不间断空白等）和所有行终止符（LF、CR 等），字符串为 null则返回 null。
+     * <p>用另一个字符串覆盖一个字符串的一部分。</p>
      *
-     * @param str 要修剪的字符串，可能为 null
-     * @return {string} 修整后的字符串，如果字符串为 null则返回 null
+     * <p>null 或 undefined 字符串输入返回 null。
+     * 负索引被视为零。大于字符串长度的索引被视为字符串长度。
+     * 起始索引始终是两个索引中较小的一个。</p>
+     *
+     * <pre>
+     * StringUtils.overlay(null, *, *, *)            = null
+     * StringUtils.overlay("", "abc", 0, 0)          = "abc"
+     * StringUtils.overlay("abcdef", null, 2, 4)     = "abef"
+     * StringUtils.overlay("abcdef", "", 2, 4)       = "abef"
+     * StringUtils.overlay("abcdef", "", 4, 2)       = "abef"
+     * StringUtils.overlay("abcdef", "zzzz", 2, 4)   = "abzzzzef"
+     * StringUtils.overlay("abcdef", "zzzz", 4, 2)   = "abzzzzef"
+     * StringUtils.overlay("abcdef", "zzzz", -1, 4)  = "zzzzef"
+     * StringUtils.overlay("abcdef", "zzzz", 2, 8)   = "abzzzz"
+     * StringUtils.overlay("abcdef", "zzzz", -2, -3) = "zzzzabcdef"
+     * StringUtils.overlay("abcdef", "zzzz", 8, 10)  = "abcdefzzzz"
+     * </pre>
+     *
+     * @param str 要覆盖的字符串，可能为 null 或 undefined
+     * @param overlay 要覆盖的字符串，可能为 null 或 undefined
+     * @param start 开始覆盖的位置
+     * @param end 之前停止覆盖的位置
+     * @return 覆盖字符串，如果为 null 或 undefined 字符串输入则返回 null
      */
-    public static
-
-    trim(str
-             :
-             string
-    ):
-        string {
-        return ObjectUtils.defaultIfNull(str.trim(), null);
-    }
-
-    /**
-     * 移除字符串串的两端字符的空白字符（空白、制表符、不间断空白等）和所有行终止符（LF、CR 等），字符串为 null 或空则返回 null。
-     *
-     * @param str 要修剪的字符串，可能为 null
-     * @return {string} 修整后的字符串，如果字符串为 null 或空则返回 null
-     */
-    public static
-
-    trimToNull(str
-                   :
-                   string
-    ):
-        string {
-        const trimStr = this.trim(str);
-        return ObjectUtils.defaultIfCondition(
-            trimStr,
-            null,
-            this.isNotEmpty(trimStr)
-        );
-    }
-
-    /**
-     * 移除字符串串的两端字符的空白字符（空白、制表符、不间断空白等）和所有行终止符（LF、CR 等），字符串为 null 则返回空字符串。
-     *
-     * @param str 要修剪的字符串，可能为 null
-     * @return {string} 修整后的字符串，如果字符串为 null 则返回空字符串
-     */
-    public static
-
-    trimToEmpty(str
-                    :
-                    string
-    ):
-        string {
-        return ObjectUtils.defaultIfNull(str.trim(), this.EMPTY);
-    }
-
-    /**
-     * 截断一个字符串。这将把“Now is the time for all good men”变成“is the time for all”。
-     *
-     * <p>具体来说：</p>
-     * <ul>
-     * <li>如果 str的长度 小于 maxWidth，则返回str.substring(offset)。<li>
-     * <li>否则将其截断为 str.substring(offset, offset + maxWidth)。</li>
-     * <li>如果 maxWidth 小于0 ，则抛出RangeError。</li>
-     * <li>如果 offset 小于0 ，则抛出RangeError。</li>
-     * <li>在任何情况下，它都不会返回长度大于 maxWidth 的字符串。</li>
-     * </ul>
-     *
-     * @param str 要检查的字符串，可能为 null
-     * @param maxLength 截取字符串的最大长度，必须为正数
-     * @param offset 源字符串的左偏移位置
-     * @return {string} 截断的字符串，如果是空字符串则返回 null
-     */
-    public static
-
-    truncate(str
-                 :
-                 string, maxLength
-                 :
-                 number, offset = 0
-    ):
-        string {
-        if (offset < 0) {
-            throw new RangeError("偏移量不能为负数");
-        }
-        if (maxLength < 0) {
-            throw new RangeError("最大长度不能为负数");
-        }
+    public static overlay(str: string, overlay: string, start: number, end: number): string {
         if (ObjectUtils.isNull(str)) {
             return null;
         }
-        if (offset > str.length) {
-            return this.EMPTY;
+        if (ObjectUtils.isNull(overlay)) {
+            overlay = this.EMPTY;
         }
-        if (str.length > maxLength) {
-            const ix =
-                offset + maxLength > str.length
-                    ? str.length
-                    : offset + maxLength;
-            return str.substring(offset, ix);
+        const len = str.length;
+        if (start < 0) {
+            start = 0;
         }
-        return str.substr(offset);
+        if (start > len) {
+            start = len;
+        }
+        if (end < 0) {
+            end = 0;
+        }
+        if (end > len) {
+            end = len;
+        }
+        if (start > end) {
+            const temp = start;
+            start = end;
+            end = temp;
+        }
+        return str.substring(0, start) + overlay + str.substring(end);
     }
 
-    /**
-     * 从字符串的开头和结尾去除一组字符中的任何一个。 这与{@link trim}类似，但允许控制要去除的字符。
-     * 如果字符串为 null，则返回null。如果为空字符串 ("") 则返回空字符串。
-     *
-     * @param str 要从中删除字符的字符串，可能为 null
-     * @param stripChars 要删除的字符，null 视为空白
-     * @return {string} 截断后的字符串。
-     */
-    public static
-
-    strip(str
-              :
-              string, stripChars = null
-    ):
-        string {
-        if (this.isEmpty(str)) {
+    private static prependStrIfMissing(str: string, prefix: string, ignoreCase: boolean, ...prefixes: string[]): string {
+        if (ObjectUtils.isNull(str) || this.isEmpty(prefix) || this.startsWith(str, prefix, ignoreCase)) {
             return str;
         }
-        return this.stripEnd(this.stripStart(str, stripChars), stripChars);
-    }
-
-    /**
-     * 如果字符串在删除后为空 ("")，则从字符串的开头和结尾删除空白，返回 null。
-     * 这与{@link trimToNull}类似，但删除了空白
-     *
-     * @param str 从中删除字符的字符串，可能为 null
-     * @return {string} 截取后的字符串，如果有空白，空字符串或为 null，则返回 null。
-     */
-    public static
-
-    stripToNull(str
-                    :
-                    string
-    ):
-        string {
-        if (ObjectUtils.isNull(str)) {
-            return null;
+        if (ArrayUtils.isNotEmpty(prefixes)) {
+            for (const prefix of prefixes) {
+                if (this.startsWith(str, prefix, ignoreCase)) {
+                    return str;
+                }
+            }
         }
-        const stripStr = this.strip(str);
-        return ObjectUtils.defaultIfCondition(
-            stripStr,
-            null,
-            this.isNotEmpty(stripStr)
-        );
+        return prefix.toString() + str;
     }
 
     /**
-     * 如果字符串在删除后为空("")，则从字符串的开头和结尾删除空白，返回空("")。
-     * 这与{@link trimToEmpty}类似，但删除了空白
+     * 如果字符串尚未以任何前缀开头，则将前缀添加到字符串的开头。
      *
-     * @param str 从中删除字符的字符串，可能为 null
-     * @return {string} 截取后的字符串，如果有空白，空字符串或为 null，则返回空("")。
+     * <pre>
+     * StringUtils.prependIfMissing(null, null) = null
+     * StringUtils.prependIfMissing("abc", null) = "abc"
+     * StringUtils.prependIfMissing("", "xyz") = "xyz"
+     * StringUtils.prependIfMissing("abc", "xyz") = "xyzabc"
+     * StringUtils.prependIfMissing("xyzabc", "xyz") = "xyzabc"
+     * StringUtils.prependIfMissing("XYZabc", "xyz") = "xyzXYZabc"
+     * </pre>
+     * <p>带有附加前缀，</p>
+     * <pre>
+     * StringUtils.prependIfMissing(null, null, null) = null
+     * StringUtils.prependIfMissing("abc", null, null) = "abc"
+     * StringUtils.prependIfMissing("", "xyz", null) = "xyz"
+     * StringUtils.prependIfMissing("abc", "xyz", [null]) = "xyzabc"
+     * StringUtils.prependIfMissing("abc", "xyz", "") = "abc"
+     * StringUtils.prependIfMissing("abc", "xyz", "mno") = "xyzabc"
+     * StringUtils.prependIfMissing("xyzabc", "xyz", "mno") = "xyzabc"
+     * StringUtils.prependIfMissing("mnoabc", "xyz", "mno") = "mnoabc"
+     * StringUtils.prependIfMissing("XYZabc", "xyz", "mno") = "xyzXYZabc"
+     * StringUtils.prependIfMissing("MNOabc", "xyz", "mno") = "xyzMNOabc"
+     * </pre>
+     *
+     * @param str 字符串。
+     * @param prefix 附加到字符串开头的前缀。
+     * @param prefixes 其他有效的前缀。
+     * @return {} 如果前缀被添加，则为新字符串，否则为相同的字符串。
      */
-    public static
-
-    stripToEmpty(str
-                     :
-                     string
-    ):
-        string {
-        return ObjectUtils.defaultIfNull(this.strip(str), this.EMPTY);
+    public static prependIfMissing(str: string, prefix: string, ...prefixes: string[]): string {
+        return this.prependStrIfMissing(str, prefix, false, ...prefixes);
     }
 
     /**
-     * 从字符串的开头去除一组字符中的任何一个。
-     * 如果字符串为 null，则返回 null 。 如果为空字符串("")，则返回空字符串。
+     * 如果字符串尚未以任何前缀开头，不区分大小写，则将前缀添加到字符串的开头。
      *
-     * @param str 要从中删除字符的字符串，可能为 null
-     * @param stripChars 要删除的字符，null 视为空白
-     * @return {string} 修整后的字符串，如果字符串为空则返回 null
+     * <pre>
+     * StringUtils.prependIfMissingIgnoreCase(null, null) = null
+     * StringUtils.prependIfMissingIgnoreCase("abc", null) = "abc"
+     * StringUtils.prependIfMissingIgnoreCase("", "xyz") = "xyz"
+     * StringUtils.prependIfMissingIgnoreCase("abc", "xyz") = "xyzabc"
+     * StringUtils.prependIfMissingIgnoreCase("xyzabc", "xyz") = "xyzabc"
+     * StringUtils.prependIfMissingIgnoreCase("XYZabc", "xyz") = "XYZabc"
+     * </pre>
+     * <p>加上额外的前缀，</p>
+     * <pre>
+     * StringUtils.prependIfMissingIgnoreCase(null, null, null) = null
+     * StringUtils.prependIfMissingIgnoreCase("abc", null, null) = "abc"
+     * StringUtils.prependIfMissingIgnoreCase("", "xyz", null) = "xyz"
+     * StringUtils.prependIfMissingIgnoreCase("abc", "xyz", [null]) = "xyzabc"
+     * StringUtils.prependIfMissingIgnoreCase("abc", "xyz", "") = "abc"
+     * StringUtils.prependIfMissingIgnoreCase("abc", "xyz", "mno") = "xyzabc"
+     * StringUtils.prependIfMissingIgnoreCase("xyzabc", "xyz", "mno") = "xyzabc"
+     * StringUtils.prependIfMissingIgnoreCase("mnoabc", "xyz", "mno") = "mnoabc"
+     * StringUtils.prependIfMissingIgnoreCase("XYZabc", "xyz", "mno") = "XYZabc"
+     * StringUtils.prependIfMissingIgnoreCase("MNOabc", "xyz", "mno") = "MNOabc"
+     * </pre>
+     *
+     * @param str 字符串。
+     * @param prefix 附加到字符串开头的前缀。
+     * @param prefixes 有效的附加前缀（可选）。
+     * @return {} 如果前缀被添加，则为新字符串，否则为相同的字符串。
      */
-    public static
+    public static prependIfMissingIgnoreCase(str: string, prefix: string, ...prefixes: string[]): string {
+        return this.prependStrIfMissing(str, prefix, true, ...prefixes);
+    }
 
-    stripStart(str
-                   :
-                   string, stripChars
-                   :
-                   string
-    ):
-        string {
-        if (this.isEmpty(str)) {
+    /**
+     * <p>从源字符串中删除所有出现的子字符串。</p>
+     *
+     * <p>null 或 undefined 源字符串将返回 null。空 ("") 源字符串将返回空字符串。
+     * null 删除字符串将返回源字符串。空 ("") 删除字符串将返回源字符串。</p>
+     *
+     * <pre>
+     * StringUtils.remove(null, *)        = null
+     * StringUtils.remove("", *)          = ""
+     * StringUtils.remove(*, null)        = *
+     * StringUtils.remove(*, "")          = *
+     * StringUtils.remove("queued", "ue") = "qd"
+     * StringUtils.remove("queued", "zz") = "queued"
+     * </pre>
+     *
+     * @param str 要搜索的源字符串，可能为 null 或 undefined
+     * @param remove 要搜索和删除的字符串，可能为 null 或 undefined
+     * @return 如果找到，则删除字符串的子字符串，如果为 null 或 undefined 字符串输入，则返回 null
+     */
+    public static remove(str: string, remove: string): string {
+        if (this.isEmpty(str) || this.isEmpty(remove)) {
             return str;
+        }
+        return this.replace(str, remove, this.EMPTY, -1);
+    }
+
+    /**
+     * <p>仅当子字符串位于源字符串的末尾时才删除它，否则返回源字符串。</p>
+     *
+     * <p>null 或 undefined 源字符串将返回 null。
+     * 空 ("") 源字符串将返回空字符串。
+     * null 或 undefined 搜索字符串将返回源字符串。</p>
+     *
+     * <pre>
+     * StringUtils.removeEnd(null, *)      = null
+     * StringUtils.removeEnd("", *)        = ""
+     * StringUtils.removeEnd(*, null)      = *
+     * StringUtils.removeEnd("www.domain.com", ".com.")  = "www.domain.com"
+     * StringUtils.removeEnd("www.domain.com", ".com")   = "www.domain"
+     * StringUtils.removeEnd("www.domain.com", "domain") = "www.domain.com"
+     * StringUtils.removeEnd("abc", "")    = "abc"
+     * </pre>
+     *
+     * @param str 要搜索的源字符串，可能为 null 或 undefined
+     * @param remove 要搜索和删除的字符串，可能为 null 或 undefined
+     * @return 如果找到，则删除字符串的子字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static removeEnd(str: string, remove: string): string {
+        if (this.isEmpty(str) || this.isEmpty(remove)) {
+            return str;
+        }
+        if (str.endsWith(remove)) {
+            return str.substring(0, str.length - remove.length);
+        }
+        return str;
+    }
+
+    /**
+     * <p>如果子字符串位于源字符串的末尾，则不区分大小写，否则返回源字符串</p>
+     *
+     * <p>null 或 undefined 源字符串将返回 null。空 ("") 源字符串将返回空字符串。
+     * null 或 undefined 搜索字符串将返回源字符串。</p>
+     *
+     * <pre>
+     * StringUtils.removeEndIgnoreCase(null, *)      = null
+     * StringUtils.removeEndIgnoreCase("", *)        = ""
+     * StringUtils.removeEndIgnoreCase(*, null)      = *
+     * StringUtils.removeEndIgnoreCase("www.domain.com", ".com.")  = "www.domain.com"
+     * StringUtils.removeEndIgnoreCase("www.domain.com", ".com")   = "www.domain"
+     * StringUtils.removeEndIgnoreCase("www.domain.com", "domain") = "www.domain.com"
+     * StringUtils.removeEndIgnoreCase("abc", "")    = "abc"
+     * StringUtils.removeEndIgnoreCase("www.domain.com", ".COM") = "www.domain")
+     * StringUtils.removeEndIgnoreCase("www.domain.COM", ".com") = "www.domain")
+     * </pre>
+     *
+     * @param str 要搜索的源字符串，可能为 null 或 undefined
+     * @param remove 要搜索（不区分大小写）和删除的字符串，可能为 null 或 undefined
+     * @return 如果找到则删除字符串的子字符串，如果输入字符串为 null 或 undefined 则返回 null
+     */
+    public static removeEndIgnoreCase(str: string, remove: string): string {
+        if (this.isEmpty(str) || this.isEmpty(remove)) {
+            return str;
+        }
+        if (this.endsWithIgnoreCase(str, remove)) {
+            return str.substring(0, str.length - remove.length);
+        }
+        return str;
+    }
+
+    /**
+     * <p>从源字符串中删除所有出现的子字符串，不区分大小写。</p>
+     *
+     * <p>null 或 undefined 源字符串将返回 null。空 ("") 源字符串将返回空字符串。
+     * null 或 undefined 删除字符串将返回源字符串。空 ("") 删除字符串将返回源字符串。</p>
+     *
+     * <pre>
+     * StringUtils.removeIgnoreCase(null, *)        = null
+     * StringUtils.removeIgnoreCase("", *)          = ""
+     * StringUtils.removeIgnoreCase(*, null)        = *
+     * StringUtils.removeIgnoreCase(*, "")          = *
+     * StringUtils.removeIgnoreCase("queued", "ue") = "qd"
+     * StringUtils.removeIgnoreCase("queued", "zz") = "queued"
+     * StringUtils.removeIgnoreCase("quEUed", "UE") = "qd"
+     * StringUtils.removeIgnoreCase("queued", "zZ") = "queued"
+     * </pre>
+     *
+     * @param str 要搜索的源字符串，可能为 null 或 undefined
+     * @param remove 要搜索（不区分大小写）和删除的字符串，可能为 null 或 undefined
+     * @return 如果找到，则删除字符串的子字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static removeIgnoreCase(str: string, remove: string): string {
+        return this.replaceIgnoreCase(str, remove, this.EMPTY, -1);
+    }
+
+    /**
+     * <p>仅当子字符串位于源字符串的开头时才删除它，否则返回源字符串。</p>
+     *
+     * <p>null 或 undefined 源字符串将返回 null。空 ("") 源字符串将返回空字符串。
+     * null 或 undefined 搜索字符串将返回源字符串。</p>
+     *
+     * <pre>
+     * StringUtils.removeStart(null, *)      = null
+     * StringUtils.removeStart("", *)        = ""
+     * StringUtils.removeStart(*, null)      = *
+     * StringUtils.removeStart("www.domain.com", "www.")   = "domain.com"
+     * StringUtils.removeStart("domain.com", "www.")       = "domain.com"
+     * StringUtils.removeStart("www.domain.com", "domain") = "www.domain.com"
+     * StringUtils.removeStart("abc", "")    = "abc"
+     * </pre>
+     *
+     * @param str 要搜索的源字符串，可能为 null 或 undefined
+     * @param remove 要搜索和删除的字符串，可能为 null 或 undefined
+     * @return 如果找到，则删除字符串的子字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static removeStart(str: string, remove: string): string {
+        if (this.isEmpty(str) || this.isEmpty(remove)) {
+            return str;
+        }
+        if (str.startsWith(remove)) {
+            return str.substring(remove.length);
+        }
+        return str;
+    }
+
+    /**
+     * <p>如果子字符串位于源字符串的开头，则不区分大小写，否则返回源字符串。</p>
+     *
+     * <p>null 或 undefined 源字符串将返回 null。空 ("") 源字符串将返回空字符串。
+     * null 或 undefined 搜索字符串将返回源字符串。</p>
+     *
+     * <pre>
+     * StringUtils.removeStartIgnoreCase(null, *)      = null
+     * StringUtils.removeStartIgnoreCase("", *)        = ""
+     * StringUtils.removeStartIgnoreCase(*, null)      = *
+     * StringUtils.removeStartIgnoreCase("www.domain.com", "www.")   = "domain.com"
+     * StringUtils.removeStartIgnoreCase("www.domain.com", "WWW.")   = "domain.com"
+     * StringUtils.removeStartIgnoreCase("domain.com", "www.")       = "domain.com"
+     * StringUtils.removeStartIgnoreCase("www.domain.com", "domain") = "www.domain.com"
+     * StringUtils.removeStartIgnoreCase("abc", "")    = "abc"
+     * </pre>
+     *
+     * @param str 要搜索的源字符串，可能为 null 或 undefined
+     * @param remove 要搜索（不区分大小写）和删除的字符串，可能为 null 或 undefined
+     * @return 如果找到，则删除字符串的子字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static removeStartIgnoreCase(str: string, remove: string): string {
+        if (ObjectUtils.nonNull(str) && this.startsWithIgnoreCase(str, remove)) {
+            return str.substring(this.getLength(remove));
+        }
+        return str;
+    }
+
+    /**
+     * <p>重复一个字符串 repeat 次以形成一个新字符串。</p>
+     *
+     * <pre>
+     * StringUtils.repeat(null, 2) = null
+     * StringUtils.repeat("", 0)   = ""
+     * StringUtils.repeat("", 2)   = ""
+     * StringUtils.repeat("a", 3)  = "aaa"
+     * StringUtils.repeat("ab", 2) = "abab"
+     * StringUtils.repeat("a", -2) = ""
+     * </pre>
+     *
+     * @param str 要重复的字符串，可能为 null 或 undefined
+     * @param repeat 重复 str 的次数，负数视为零
+     * @return 由重复的原始字符串组成的新字符串，如果字符串输入为 null 或 undefined 则返回 null
+     */
+    public static repeat(str: string, repeat: number): string;
+    /**
+     * <p>重复一个字符串 repeat 次以形成一个新的字符串，每次都注入一个字符串分隔符。</p>
+     *
+     * <pre>
+     * StringUtils.repeat(null, null, 2) = null
+     * StringUtils.repeat(null, "x", 2)  = null
+     * StringUtils.repeat("", null, 0)   = ""
+     * StringUtils.repeat("", "", 2)     = ""
+     * StringUtils.repeat("", "x", 3)    = "xxx"
+     * StringUtils.repeat("?", ", ", 3)  = "?, ?, ?"
+     * </pre>
+     *
+     * @param str 要重复的字符串，可能为 null 或 undefined
+     * @param separator 要注入的字符串，可能为 null 或 undefined
+     * @param repeat 重复 str 的次数，负数视为零
+     * @return 由重复的原始字符串组成的新字符串，如果字符串输入为 null 或 undefined 则返回 null
+     */
+    public static repeat(str: string, separator: string, repeat: number): string;
+    public static repeat(str: string, separator: string | number, repeat?: number): string {
+        if (ObjectUtils.anyNull(str, separator)) {
+            return this.repeat(str, repeat);
+        }
+
+        if (typeof separator === "number") {
+            if (ObjectUtils.isNull(str)) {
+                return null;
+            }
+            if (repeat <= 0) {
+                return this.EMPTY;
+            }
+            return str.repeat(repeat);
+        }
+
+        const result = this.repeat(str + separator, repeat);
+        return this.removeEnd(result, separator);
+    }
+
+    /**
+     * <p>对于搜索字符串的第一个 max 值，将一个字符串替换为更大字符串中的另一个字符串。</p>
+     *
+     * <p>传递给此方法的 null 或 undefined 是无操作的。</p>
+     *
+     * <pre>
+     * StringUtils.replace(null, *, *, *)         = null
+     * StringUtils.replace("", *, *, *)           = ""
+     * StringUtils.replace("any", null, *, *)     = "any"
+     * StringUtils.replace("any", *, null, *)     = "any"
+     * StringUtils.replace("any", "", *, *)       = "any"
+     * StringUtils.replace("any", *, *, 0)        = "any"
+     * StringUtils.replace("abaa", "a", null, -1) = "abaa"
+     * StringUtils.replace("abaa", "a", "", -1)   = "b"
+     * StringUtils.replace("abaa", "a", "z", 0)   = "abaa"
+     * StringUtils.replace("abaa", "a", "z", 1)   = "zbaa"
+     * StringUtils.replace("abaa", "a", "z", 2)   = "zbza"
+     * StringUtils.replace("abaa", "a", "z", -1)  = "zbzz"
+     * </pre>
+     *
+     * @param text 要搜索和替换的文本，可能为 null 或 undefined
+     * @param searchString 要搜索的字符串，可能为 null 或 undefined
+     * @param replacement 替换它的字符串，可能为 null 或 undefined
+     * @param max 要替换的最大值数，如果没有最大值，则为 -1
+     * @return 处理任何替换的文本，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static replace(text: string, searchString: string, replacement: string, max = -1): string {
+        return this.replaceStr(text, searchString, replacement, max, false);
+    }
+
+    private static replaceStr(text: string, searchString: string, replacement: string, max: number, ignoreCase: boolean): string {
+        if (this.isEmpty(text) || this.isEmpty(searchString) || ObjectUtils.isNull(replacement) || max === 0) {
+            return text;
+        }
+        if (ignoreCase) {
+            searchString = searchString.toLowerCase();
         }
         let start = 0;
-        if (ObjectUtils.isNull(stripChars)) {
-            while (
-                start != str.length &&
-                this.isWhitespace(str.charCodeAt(start))
-                ) {
-                start++;
-            }
-        } else if (this.isEmpty(stripChars)) {
-            return str;
-        } else {
-            while (
-                start != str.length &&
-                stripChars.includes(str.charAt(start))
-                ) {
-                start++;
-            }
+        let end = ignoreCase ? this.indexOfIgnoreCase(text, searchString, start) : this.indexOf(text, searchString, start);
+        if (end === this.INDEX_NOT_FOUND) {
+            return text;
         }
-        return str.substring(start);
+        const replLength = searchString.length;
+        const buf = [];
+        while (end != this.INDEX_NOT_FOUND) {
+            buf.push(text.substring(start, end), replacement);
+            start = end + replLength;
+            if (--max === 0) {
+                break;
+            }
+            end = ignoreCase ? this.indexOfIgnoreCase(text, searchString, start) : this.indexOf(text, searchString, start);
+        }
+        buf.push(text.substring(start));
+        return buf.join("");
     }
 
     /**
-     * 从字符串的末尾去除一组字符中的任何一个。
-     * 如果字符串为 null，则返回 null 。 如果为空字符串("")，则返回空字符串。
+     * <p>一次性替换字符串中的多个字符。此方法也可用于删除字符。</p>
      *
-     * @param str 要从中删除字符的字符串，可能为 null
-     * @param stripChars 要删除的字符，null 视为空白
-     * @return {string} 修整后的字符串，如果字符串为空则返回 null
+     * <p>例如：<br>
+     * replaceChars(&quot;hello&quot;, &quot;ho&quot;, &quot;jy&quot;) = jelly.</p>
+     *
+     * <p>null 或 undefined 字符串输入返回 null。
+     * 空 ("") 字符串输入返回空字符串。
+     * 一组 null、undefined 或空的搜索字符返回输入字符串。</p>
+     *
+     * <p>搜索字符的长度通常应等于替换字符的长度。
+     * 如果搜索字符较长，则删除多余的搜索字符。
+     * 如果搜索字符较短，则忽略多余的替换字符。</p>
+     *
+     * <pre>
+     * StringUtils.replaceChars(null, *, *)           = null
+     * StringUtils.replaceChars("", *, *)             = ""
+     * StringUtils.replaceChars("abc", null, *)       = "abc"
+     * StringUtils.replaceChars("abc", "", *)         = "abc"
+     * StringUtils.replaceChars("abc", "b", null)     = "ac"
+     * StringUtils.replaceChars("abc", "b", "")       = "ac"
+     * StringUtils.replaceChars("abcba", "bc", "yz")  = "ayzya"
+     * StringUtils.replaceChars("abcba", "bc", "y")   = "ayya"
+     * StringUtils.replaceChars("abcba", "bc", "yzx") = "ayzya"
+     * </pre>
+     *
+     * @param str 替换字符的字符串，可以为 null 或 undefined
+     * @param searchChars 要搜索的一组字符，可能为 null 或 undefined
+     * @param replaceChars 一组要替换的字符，可以为 null 或 undefined
+     * @return 修改后的字符串，如果为 null 或 undefined 字符串输入则返回 null
      */
-    public static
-
-    stripEnd(str
-                 :
-                 string, stripChars
-                 :
-                 string
-    ):
-        string {
-        if (this.isEmpty(str)) {
+    public static replaceChars(str: string, searchChars: string, replaceChars: string): string {
+        if (this.isEmpty(str) || this.isEmpty(searchChars)) {
             return str;
         }
-        let end = str.length;
-        if (ObjectUtils.isNull(stripChars)) {
-            while (end != 0 && this.isWhitespace(str.charAt(end - 1))) {
-                end--;
-            }
-        } else if (this.isEmpty(stripChars)) {
-            return str;
-        } else {
-            while (end != 0 && stripChars.includes(str.charAt(end - 1))) {
-                end--;
+        if (ObjectUtils.isNull(replaceChars)) {
+            replaceChars = this.EMPTY;
+        }
+        let modified = false;
+        const replaceCharsLength = replaceChars.length;
+        const strLength = str.length;
+        const buf = new Array(strLength);
+        for (let i = 0; i < strLength; i++) {
+            const ch = str.charAt(i);
+            const index = searchChars.indexOf(ch);
+            if (index >= 0) {
+                modified = true;
+                if (index < replaceCharsLength) {
+                    buf[i] = replaceChars.charAt(index);
+                }
+            } else {
+                buf[i] = ch;
             }
         }
-        return str.substring(0, end);
+        if (modified) {
+            return buf.join("");
+        }
+        return str;
     }
 
     /**
-     * 从数组中每个字符串的开头和结尾去除一组字符中的任何一个。
-     * 每次返回一个新数组，长度为零除外。数组为 null 将返回 null。空数组将返回自身。null 数组元素将被忽略。
+     * <p>对于搜索字符串的第一个 max 值，不区分大小写将字符串替换为较大字符串中的另一个字符串。</p>
      *
-     * @param strs 要从中删除字符的数组，可能为 null
-     * @return {Array} 修整后的字符串，如果数组输入为null则为空
+     * <p>传递给此方法的 null 或 undefined 引用是无操作的。</p>
+     *
+     * <pre>
+     * StringUtils.replaceIgnoreCase(null, *, *, *)         = null
+     * StringUtils.replaceIgnoreCase("", *, *, *)           = ""
+     * StringUtils.replaceIgnoreCase("any", null, *, *)     = "any"
+     * StringUtils.replaceIgnoreCase("any", *, null, *)     = "any"
+     * StringUtils.replaceIgnoreCase("any", "", *, *)       = "any"
+     * StringUtils.replaceIgnoreCase("any", *, *, 0)        = "any"
+     * StringUtils.replaceIgnoreCase("abaa", "a", null, -1) = "abaa"
+     * StringUtils.replaceIgnoreCase("abaa", "a", "", -1)   = "b"
+     * StringUtils.replaceIgnoreCase("abaa", "a", "z", 0)   = "abaa"
+     * StringUtils.replaceIgnoreCase("abaa", "A", "z", 1)   = "zbaa"
+     * StringUtils.replaceIgnoreCase("abAa", "a", "z", 2)   = "zbza"
+     * StringUtils.replaceIgnoreCase("abAa", "a", "z", -1)  = "zbzz"
+     * </pre>
+     *
+     * @param text 要搜索和替换的文本，可能为 null 或 undefined
+     * @param searchString 要搜索的字符串（不区分大小写），可能为 null 或 undefined
+     * @param replacement 替换它的字符串，可能为 null 或 undefined
+     * @param max 要替换的最大值数，如果没有最大值，则为 -1
+     * @return 处理任何替换的文本，如果为 null、undefined 字符串输入则返回 null
      */
-    public static
-
-    stripAll(...strs
-                 :
-                 string[]
-    ):
-        string[];
+    public static replaceIgnoreCase(text: string, searchString: string, replacement: string, max = -1): string {
+        return this.replaceStr(text, searchString, replacement, max, true);
+    }
 
     /**
-     * 从数组中每个字符串的开头和结尾去除一组字符中的任何一个。
-     * 每次返回一个新数组，长度为零除外。数组为 null 将返回 null。空数组将返回自身。null 数组元素将被忽略。
+     * <p>用更大字符串中的另一个字符串替换一个字符串，一次。</p>
      *
-     * @param strs 要从中删除字符的数组，可能为 null
-     * @param stripChars 要删除的字符，null 视为空白
-     * @return {Array} 修整后的字符串，如果数组输入为null则为空
+     * <p>传递给此方法的 null 或 undefined 引用是无操作的。</p>
+     *
+     * <pre>
+     * StringUtils.replaceOnce(null, *, *)        = null
+     * StringUtils.replaceOnce("", *, *)          = ""
+     * StringUtils.replaceOnce("any", null, *)    = "any"
+     * StringUtils.replaceOnce("any", *, null)    = "any"
+     * StringUtils.replaceOnce("any", "", *)      = "any"
+     * StringUtils.replaceOnce("aba", "a", null)  = "aba"
+     * StringUtils.replaceOnce("aba", "a", "")    = "ba"
+     * StringUtils.replaceOnce("aba", "a", "z")   = "zba"
+     * </pre>
+     *
+     * @param text 要搜索和替换的文本，可能为 null 或 undefined
+     * @param searchString 要搜索的字符串，可能为 null 或 undefined
+     * @param replacement 替换它的字符串，可能为 null 或 undefined
+     * @return 处理任何替换的文本，如果为 null、undefined 字符串输入则返回 null
      */
-    public static
+    public static replaceOnce(text: string, searchString: string, replacement: string): string {
+        return this.replaceStr(text, searchString, replacement, 1, false);
+    }
 
-    stripAll(strs
-                 :
-                 string[], stripChars
-                 :
-                 string
-    ):
-        string[];
+    /**
+     * <p>不区分大小写将一个字符串替换为一个较大字符串中的另一个字符串，一次。</p>
+     *
+     * <p>传递给此方法的 null 或 undefined 引用是无操作的。</p>
+     *
+     * <pre>
+     * StringUtils.replaceOnceIgnoreCase(null, *, *)        = null
+     * StringUtils.replaceOnceIgnoreCase("", *, *)          = ""
+     * StringUtils.replaceOnceIgnoreCase("any", null, *)    = "any"
+     * StringUtils.replaceOnceIgnoreCase("any", *, null)    = "any"
+     * StringUtils.replaceOnceIgnoreCase("any", "", *)      = "any"
+     * StringUtils.replaceOnceIgnoreCase("aba", "a", null)  = "aba"
+     * StringUtils.replaceOnceIgnoreCase("aba", "a", "")    = "ba"
+     * StringUtils.replaceOnceIgnoreCase("aba", "a", "z")   = "zba"
+     * StringUtils.replaceOnceIgnoreCase("FoOFoofoo", "foo", "") = "Foofoo"
+     * </pre>
+     *
+     * @param text 要搜索和替换的文本，可能为 null 或 undefined
+     * @param searchString 要搜索的字符串（不区分大小写），可能为 null 或 undefined
+     * @param replacement 替换它的字符串，可能为 null 或 undefined
+     * @return 处理任何替换的文本，如果为 null、undefined 字符串输入则返回 null
+     */
+    public static replaceOnceIgnoreCase(text: string, searchString: string, replacement: string): string {
+        return this.replaceStr(text, searchString, replacement, 1, true);
+    }
 
-    public static
+    /**
+     * <p>反转字符串</p>
+     *
+     * <p>null 或 undefined 字符串将返回 null </p>
+     *
+     * <pre>
+     * StringUtils.reverse(null)  = null
+     * StringUtils.reverse("")    = ""
+     * StringUtils.reverse("bat") = "tab"
+     * </pre>
+     *
+     * @param str 要反转的字符串，可能为 null 或 undefined
+     * @return 反转的字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static reverse(str: string): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        return this.toChars(str).reverse().join("");
+    }
 
-    stripAll(strs
-                 :
-                 unknown, stripChars
-                 :
-                 unknown
-    ):
-        string[] {
+    /**
+     * <p>反转由特定字符分隔的字符串。</p>
+     *
+     * <p>分隔符之间的字符串不反转。因此 javascript.and.typescript 变为 typescript.and.javascript （如果分隔符是 '.'）。</p>
+     *
+     * <pre>
+     * StringUtils.reverseDelimited(null, *)      = null
+     * StringUtils.reverseDelimited("", *)        = ""
+     * StringUtils.reverseDelimited("a.b.c", 'x') = "a.b.c"
+     * StringUtils.reverseDelimited("a.b.c", ".") = "c.b.a"
+     * </pre>
+     *
+     * @param str 要反转的字符串，可能为 null 或 undefined
+     * @param separatorChar 要使用的分隔符
+     * @return 反转的字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static reverseDelimited(str: string, separatorChar: string): string {
+        if (ObjectUtils.anyNull(str, separatorChar)) {
+            return null;
+        }
+        return str.split(separatorChar).reverse().join(separatorChar);
+    }
+
+    /**
+     * <p>获取字符串最右边的 length 个字符。</p>
+     *
+     * <p>如果 length 个字符不可用，或者字符串为 null 或 undefined，则字符串将无异常返回。
+     * 如果 length 为负数，则返回一个空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.right(null, *)    = null
+     * StringUtils.right(*, -ve)     = ""
+     * StringUtils.right("", *)      = ""
+     * StringUtils.right("abc", 0)   = ""
+     * StringUtils.right("abc", 2)   = "bc"
+     * StringUtils.right("abc", 4)   = "abc"
+     * </pre>
+     *
+     * @param str 要从中获取最右边字符的字符串，可能为 null 或 undefined
+     * @param length 所需字符串的长度
+     * @return 最右边的字符，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static right(str: string, length: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (length < 0) {
+            return this.EMPTY;
+        }
+        if (str.length <= length) {
+            return str;
+        }
+        return str.substring(str.length - length);
+    }
+
+    /**
+     * <p>用指定的字符串右填充一个字符串。</p>
+     *
+     * <p>字符串被填充到 size 的大小。</p>
+     *
+     * <pre>
+     * StringUtils.rightPad(null, *, *)      = null
+     * StringUtils.rightPad("", 3, "z")      = "zzz"
+     * StringUtils.rightPad("bat", 3, "yz")  = "bat"
+     * StringUtils.rightPad("bat", 5, "yz")  = "batyz"
+     * StringUtils.rightPad("bat", 8, "yz")  = "batyzyzy"
+     * StringUtils.rightPad("bat", 1, "yz")  = "bat"
+     * StringUtils.rightPad("bat", -1, "yz") = "bat"
+     * StringUtils.rightPad("bat", 5, null)  = "bat  "
+     * StringUtils.rightPad("bat", 5, "")    = "bat  "
+     * </pre>
+     *
+     * @param str 要填充的字符串，可能为 null 或 undefined
+     * @param size 要填充的大小
+     * @param padStr 要填充的字符串，null、undefined 或空视为单个空白
+     * @return 如果不需要填充，则右填充字符串或原始字符串，如果为 null 或 undefined 字符串输入，则返回 null
+     */
+    public static rightPad(str: string, size: number, padStr = this.SPACE): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (this.isEmpty(padStr)) {
+            padStr = this.SPACE;
+        }
+        return str.padEnd(str.length + size, padStr);
+    }
+
+    /**
+     * <p>旋转（循环移位）一串 {@code shift} 字符。</p>
+     * <ul>
+     *  <li>如果 {@code shift > 0}，右循环移位（例如：ABCDEF => FABCDE）</li>
+     *  <li>如果 {@code shift < 0}，左循环移位（例如：ABCDEF => BCDEFA）</li>
+     * </ul>
+     *
+     * <pre>
+     * StringUtils.rotate(null, *)        = null
+     * StringUtils.rotate("", *)          = ""
+     * StringUtils.rotate("abcdefg", 0)   = "abcdefg"
+     * StringUtils.rotate("abcdefg", 2)   = "fgabcde"
+     * StringUtils.rotate("abcdefg", -2)  = "cdefgab"
+     * StringUtils.rotate("abcdefg", 7)   = "abcdefg"
+     * StringUtils.rotate("abcdefg", -7)  = "abcdefg"
+     * StringUtils.rotate("abcdefg", 9)   = "fgabcde"
+     * StringUtils.rotate("abcdefg", -9)  = "cdefgab"
+     * </pre>
+     *
+     * @param str 要旋转的字符串，可能为 null 或 undefined
+     * @param shift 移位的次数（正：右移，负：左移）
+     * @return 旋转后的字符串，如果 shift === 0 则为原始字符串，如果输入字符串为 null 或 undefined，则返回 null
+     */
+    public static rotate(str: string, shift: number): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+
+        const strLen = str.length;
+        if (shift === 0 || strLen === 0 || shift % strLen === 0) {
+            return str;
+        }
+
+        const buf = [];
+        const offset = -(shift % strLen);
+        buf.push(this.substring(str, offset), this.substring(str, 0, offset));
+        return buf.join("");
+    }
+
+    /**
+     * <p>将提供的文本拆分为具有最大长度、指定分隔符的数组。</p>
+     *
+     * <p>返回的字符串数组中不包含分隔符。相邻的分隔符被视为一个分隔符。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 分隔字符在空白处拆分。</p>
+     *
+     * <p>如果找到超过 max 个分隔的子字符串，则最后一个返回的字符串包括第一个 max - 1 个返回的字符串之后的所有字符（包括分隔符）。</p>
+     *
+     * <pre>
+     * StringUtils.split(null, *, *)            = null
+     * StringUtils.split("", *, *)              = []
+     * StringUtils.split("ab cd ef", null, 0)   = ["ab", "cd", "ef"]
+     * StringUtils.split("ab   cd ef", null, 0) = ["ab", "cd", "ef"]
+     * StringUtils.split("ab:cd:ef", ":", 0)    = ["ab", "cd", "ef"]
+     * StringUtils.split("ab:cd:ef", ":", 2)    = ["ab", "cd:ef"]
+     * </pre>
+     *
+     * @param str 要解析的字符串，可能为 null 或 undefined
+     * @param separatorChars 用作分隔符的字符，null 或 undefined 在空格上拆分
+     * @param max 包含在数组中的最大元素数。零或负值意味着没有限制
+     * @return 已解析字符串数组，如果为 null 或 undefined 字符串输入，则返回 null
+     */
+    public static split(str: string, separatorChars = this.EMPTY, max = -1): string[] {
+        return this.splitWorker(str, separatorChars, max, false);
+    }
+
+    /**
+     * <p>将提供的文本拆分为一个数组，指定分隔符字符串。返回最多 max 个子字符串。</p>
+     *
+     * <p>分隔符不会包含在返回的字符串数组中。相邻的分隔符被视为一个分隔符。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 分隔字符在空白处拆分。</p>
+     *
+     * <pre>
+     * StringUtils.splitByWholeSeparator(null, *, *)               = null
+     * StringUtils.splitByWholeSeparator("", *, *)                 = []
+     * StringUtils.splitByWholeSeparator("ab de fg", null, 0)      = ["ab", "de", "fg"]
+     * StringUtils.splitByWholeSeparator("ab   de fg", null, 0)    = ["ab", "de", "fg"]
+     * StringUtils.splitByWholeSeparator("ab:cd:ef", ":", 2)       = ["ab", "cd:ef"]
+     * StringUtils.splitByWholeSeparator("ab-!-cd-!-ef", "-!-", 5) = ["ab", "cd", "ef"]
+     * StringUtils.splitByWholeSeparator("ab-!-cd-!-ef", "-!-", 2) = ["ab", "cd-!-ef"]
+     * </pre>
+     *
+     * @param str 要解析的字符串，可能为 null 或 undefined
+     * @param separatorChars 包含要用作分隔符的字符串的字符串，null 或 undefined 在空白处拆分
+     * @param max 返回数组中包含的最大元素数。零或负值意味着没有限制。
+     * @return 已解析字符串的数组，如果输入了 null 或 undefined 字符串，则返回 null
+     */
+    public static splitByWholeSeparator(str: string, separatorChars: string, max = -1): string[] {
+        return this.splitByWholeSeparatorWorker(str, separatorChars, max, false);
+    }
+
+    /**
+     * <p>将提供的文本拆分为一个数组，指定分隔符字符串。返回最多 max 个子字符串。</p>
+     *
+     * <p>返回的字符串数组中不包含分隔符。相邻分隔符被视为空标记的分隔符。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 分隔字符在空白处拆分。</p>
+     *
+     * <pre>
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens(null, *, *)               = null
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens("", *, *)                 = []
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens("ab de fg", null, 0)      = ["ab", "de", "fg"]
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens("ab   de fg", null, 0)    = ["ab", "", "", "de", "fg"]
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens("ab:cd:ef", ":", 2)       = ["ab", "cd:ef"]
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens("ab-!-cd-!-ef", "-!-", 5) = ["ab", "cd", "ef"]
+     * StringUtils.splitByWholeSeparatorPreserveAllTokens("ab-!-cd-!-ef", "-!-", 2) = ["ab", "cd-!-ef"]
+     * </pre>
+     *
+     * @param str 要解析的字符串，可能为 null 或 undefined
+     * @param separatorChars 包含要用作分隔符的字符串的字符串，null 或 undefined 在空白处拆分
+     * @param max 返回数组中包含的最大元素数。零或负值意味着没有限制。
+     * @return 已解析字符串的数组，如果输入了 null 或 undefined 字符串，则返回 null
+     */
+    public static splitByWholeSeparatorPreserveAllTokens(str: string, separatorChars: string, max = -1): string[] {
+        return this.splitByWholeSeparatorWorker(str, separatorChars, max, true);
+    }
+
+    private static splitByWholeSeparatorWorker(str: string, separator: string, max: number, preserveAllTokens: boolean): string[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+
+        const len = str.length;
+
+        if (len === 0) {
+            return [];
+        }
+
+        if (this.isEmpty(separator)) {
+            return this.splitWorker(str, null, max, preserveAllTokens);
+        }
+
+        const separatorLength = separator.length;
+
+        const substrings = [];
+        let numberOfSubstrings = 0;
+        let beg = 0;
+        let end = 0;
+        while (end < len) {
+            end = str.indexOf(separator, beg);
+
+            if (end > -1) {
+                if (end > beg) {
+                    numberOfSubstrings += 1;
+
+                    if (numberOfSubstrings === max) {
+                        end = len;
+                        substrings.push(str.substring(beg));
+                    } else {
+                        substrings.push(str.substring(beg, end));
+                        beg = end + separatorLength;
+                    }
+                } else {
+                    if (preserveAllTokens) {
+                        numberOfSubstrings += 1;
+                        if (numberOfSubstrings === max) {
+                            end = len;
+                            substrings.push(str.substring(beg));
+                        } else {
+                            substrings.push(this.EMPTY);
+                        }
+                    }
+                    beg = end + separatorLength;
+                }
+            } else {
+                substrings.push(str.substring(beg));
+                end = len;
+            }
+        }
+        return substrings;
+    }
+
+    /**
+     * <p>将提供的文本拆分为具有最大长度的数组，指定分隔符，保留所有标记，包括由相邻分隔符创建的空标记。</p>
+     *
+     * <p>返回的字符串数组中不包含分隔符。相邻分隔符被视为空标记的分隔符。相邻的分隔符被视为一个分隔符。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 分隔字符在空白处拆分。</p>
+     *
+     * <p>如果找到超过 max 个分隔的子字符串，则最后一个返回的字符串包括第一个 max - 1 个返回的字符串之后的所有字符（包括分隔符）。</p>
+     *
+     * <pre>
+     * StringUtils.splitPreserveAllTokens(null, *, *)            = null
+     * StringUtils.splitPreserveAllTokens("", *, *)              = []
+     * StringUtils.splitPreserveAllTokens("ab de fg", null, 0)   = ["ab", "de", "fg"]
+     * StringUtils.splitPreserveAllTokens("ab   de fg", null, 0) = ["ab", "", "", "de", "fg"]
+     * StringUtils.splitPreserveAllTokens("ab:cd:ef", ":", 0)    = ["ab", "cd", "ef"]
+     * StringUtils.splitPreserveAllTokens("ab:cd:ef", ":", 2)    = ["ab", "cd:ef"]
+     * StringUtils.splitPreserveAllTokens("ab   de fg", null, 2) = ["ab", "  de fg"]
+     * StringUtils.splitPreserveAllTokens("ab   de fg", null, 3) = ["ab", "", " de fg"]
+     * StringUtils.splitPreserveAllTokens("ab   de fg", null, 4) = ["ab", "", "", "de fg"]
+     * </pre>
+     *
+     * @param str 要解析的字符串，可能为 null 或 undefined
+     * @param separatorChars 用作分隔符的字符，null 或 undefined 在空格上拆分
+     * @param max 包含在数组中的最大元素数。零或负值意味着没有限制
+     * @return 已解析字符串数组，如果字符串输入为 null 或 undefined，则返回 null
+     */
+    public static splitPreserveAllTokens(str: string, separatorChars = this.EMPTY, max = -1): string[] {
+        return this.splitWorker(str, separatorChars, max, true);
+    }
+
+    private static splitWorker(str: string, separatorChars, max: number, preserveAllTokens: boolean): string[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        const len = str.length;
+        if (len === 0) {
+            return [];
+        }
+        const list = [];
+        let sizePlus1 = 1;
+        let i = 0
+        let start = 0;
+        let match = false;
+        let lastMatch = false;
+        if (ObjectUtils.isNull(separatorChars)) {
+            while (i < len) {
+                if (this.isWhitespace(str.charAt(i))) {
+                    if (match || preserveAllTokens) {
+                        lastMatch = true;
+                        if (sizePlus1++ === max) {
+                            i = len;
+                            lastMatch = false;
+                        }
+                        list.push(str.substring(start, i));
+                        match = false;
+                    }
+                    start = ++i;
+                    continue;
+                }
+                lastMatch = false;
+                match = true;
+                i++;
+            }
+        } else if (separatorChars.length === 1) {
+            const sep = separatorChars.charAt(0);
+            while (i < len) {
+                if (str.charAt(i) === sep) {
+                    if (match || preserveAllTokens) {
+                        lastMatch = true;
+                        if (sizePlus1++ === max) {
+                            i = len;
+                            lastMatch = false;
+                        }
+                        list.push(str.substring(start, i));
+                        match = false;
+                    }
+                    start = ++i;
+                    continue;
+                }
+                lastMatch = false;
+                match = true;
+                i++;
+            }
+        } else {
+            while (i < len) {
+                if (separatorChars.indexOf(str.charAt(i)) >= 0) {
+                    if (match || preserveAllTokens) {
+                        lastMatch = true;
+                        if (sizePlus1++ === max) {
+                            i = len;
+                            lastMatch = false;
+                        }
+                        list.push(str.substring(start, i));
+                        match = false;
+                    }
+                    start = ++i;
+                    continue;
+                }
+                lastMatch = false;
+                match = true;
+                i++;
+            }
+        }
+        if (match || preserveAllTokens && lastMatch) {
+            list.push(str.substring(start, i));
+        }
+        return list;
+    }
+
+    /**
+     * <p>检查字符串是否以指定的前缀开头。</p>
+     *
+     * <p>null 或 undefined 无异常处理。两个 null 或 undefined 引用被认为是相等的。比较默认区分大小写。</p>
+     *
+     * <pre>
+     * StringUtils.startsWith(null, null)      = true
+     * StringUtils.startsWith(null, "abc")     = false
+     * StringUtils.startsWith("abcdef", null)  = false
+     * StringUtils.startsWith("abcdef", "abc") = true
+     * StringUtils.startsWith("ABCDEF", "abc") = false
+     * </pre>
+     *
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param prefix 要查找的前缀，可能为 null 或 undefined
+     * @param ignoreCase 指示比较是否应忽略大小写（不区分大小写）。
+     * @return 如果字符串以前缀、区分大小写，或两者都为 null、undefined 则返回 true
+     * @see String#startsWith
+     */
+    public static startsWith(str: string, prefix: string, ignoreCase = false): boolean {
+        if (ObjectUtils.anyNull(str, prefix)) {
+            return str === prefix;
+        }
+        const preLen = prefix.length;
+        if (preLen > str.length) {
+            return false;
+        }
+        return ignoreCase ? str.toLowerCase().startsWith(prefix) : str.startsWith(prefix);
+    }
+
+    /**
+     * <p>检查字符串是否以任何提供的区分大小写的前缀开头。</p>
+     *
+     * <pre>
+     * StringUtils.startsWithAny(null, null)      = false
+     * StringUtils.startsWithAny(null, "abc")  = false
+     * StringUtils.startsWithAny("abcxyz", null)     = false
+     * StringUtils.startsWithAny("abcxyz", "") = true
+     * StringUtils.startsWithAny("abcxyz", "abc") = true
+     * StringUtils.startsWithAny("abcxyz", null, "xyz", "abc") = true
+     * StringUtils.startsWithAny("abcxyz", null, "xyz", "ABCX") = false
+     * StringUtils.startsWithAny("ABCXYZ", null, "xyz", "abc") = false
+     * </pre>
+     *
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param searchStrings 区分大小写的字符串前缀，可能为空或包含 null、undefined
+     * @return 如果输入字符串是 null 或 undefined 并且没有提供 searchStrings 则返回 true，
+     * 或者输入字符串以任何提供的区分大小写的 searchStrings 起始。
+     */
+    public static startsWithAny(str: string, ...searchStrings: string[]): boolean {
+        if (this.isEmpty(str) || ArrayUtils.isEmpty(searchStrings)) {
+            return false;
+        }
+        for (const searchString of searchStrings) {
+            if (this.startsWith(str, searchString)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * <p>不区分大小写检查字符串是否以指定的前缀开头。</p>
+     *
+     * <p>null 或 undefined 无异常处理。两个 null 或 undefined 引用被认为是相等的。比较不区分大小写。</p>
+     *
+     * <pre>
+     * StringUtils.startsWithIgnoreCase(null, null)      = true
+     * StringUtils.startsWithIgnoreCase(null, "abc")     = false
+     * StringUtils.startsWithIgnoreCase("abcdef", null)  = false
+     * StringUtils.startsWithIgnoreCase("abcdef", "abc") = true
+     * StringUtils.startsWithIgnoreCase("ABCDEF", "abc") = true
+     * </pre>
+     *
+     * @param str 要检查的字符串，可能为 null 或 undefined
+     * @param prefix 要查找的前缀，可能为 null 或 undefined
+     * @return 如果字符串以前缀、不区分大小写，或两者都为 null、undefined 则返回 true
+     * @see String#startsWith
+     */
+    public static startsWithIgnoreCase(str: string, prefix: string): boolean {
+        return this.startsWith(str, prefix, true);
+    }
+
+    /**
+     * <p>从字符串的开头和结尾删除任何一组字符。
+     * 这类似于 {@link String#trim} 但允许剥离字符以进行控制。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。空字符串 ("") 输入返回空字符串。</p>
+     *
+     * <p>如果 stripChars 字符串是 null 或 undefined，
+     * 则按照 {@link isWhitespace} 的定义去除空格。</p>
+     *
+     * <pre>
+     * StringUtils.strip(null, *)          = null
+     * StringUtils.strip("", *)            = ""
+     * StringUtils.strip("abc", null)      = "abc"
+     * StringUtils.strip("  abc", null)    = "abc"
+     * StringUtils.strip("abc  ", null)    = "abc"
+     * StringUtils.strip(" abc ", null)    = "abc"
+     * StringUtils.strip("  abcyx", "xyz") = "  abc"
+     * </pre>
+     *
+     * @param str 要从中删除字符的字符串，可能为 null 或 undefined
+     * @param stripChars 要删除的字符，null 或 undefined 被视为空格
+     * @return 剥离的字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static strip(str: string, stripChars = null): string {
+        str = this.stripStart(str, stripChars);
+        return this.stripEnd(str, stripChars);
+    }
+
+    /**
+     * <p>从数组中每个字符串的开头和结尾去除空格。
+     * 空白由 {@link isWhitespace} 定义。</p>
+     *
+     * <p>每次返回一个新数组，长度为零除外。
+     * null 或 undefined 数组将返回 null。
+     * 一个空数组将返回自身。
+     * null 或 undefined 数组条目将被忽略。</p>
+     *
+     * <pre>
+     * StringUtils.stripAll(null)             = null
+     * StringUtils.stripAll([])               = []
+     * StringUtils.stripAll(["abc", "  abc"]) = ["abc", "abc"]
+     * StringUtils.stripAll(["abc  ", null])  = ["abc", null]
+     * </pre>
+     *
+     * @param strs 要从中删除空格的数组，可能为 null 或 undefined
+     * @return 剥离的字符串，如果为数组输入为 null 或 undefined 则返回 null
+     */
+    public static stripAll(...strs: string[]): string[] {
+        return this.stripAllWithChars(strs, null);
+    }
+
+    /**
+     * <p>从数组中每个字符串的开头和结尾删除一组字符中的任何一个。</p>
+     * <p>空格由 {@link isWhitespace} 定义。</p>
+     *
+     * <p>每次返回一个新数组，长度为零除外。
+     * null 或 undefined 数组将返回 null。
+     * 一个空数组将返回自身。
+     * null 或 undefined 数组条目将被忽略。
+     * null 或 undefined 剥离字符将去除由 {@link isWhitespace} 定义的空白。</p>
+     *
+     * <pre>
+     * StringUtils.stripAll(null, *)                = null
+     * StringUtils.stripAll([], *)                  = []
+     * StringUtils.stripAll(["abc", "  abc"], null) = ["abc", "abc"]
+     * StringUtils.stripAll(["abc  ", null], null)  = ["abc", null]
+     * StringUtils.stripAll(["abc  ", null], "yz")  = ["abc  ", null]
+     * StringUtils.stripAll(["yabcz", null], "yz")  = ["abc", null]
+     * </pre>
+     *
+     * @param strs 要从中删除字符的数组，可能为 null 或 undefined
+     * @param stripChars 要删除的字符，null 或 undefined 被视为空格
+     * @return 剥离的字符串，如果数组输入为 null 或 undefined 则返回 null
+     */
+    public static stripAllWithChars(strs: string[], stripChars = null): string[] {
         if (!Array.isArray(strs)) {
             throw new TypeError("strs 必须是数组或可变参数");
         }
@@ -2515,27 +3524,177 @@ export class StringUtils {
     }
 
     /**
-     * 从指定的字符串中获取子字符串以避免异常。<br />
-     * 负开始位置可用于从字符串末尾开始/结束的n个字符。<br />
-     * 返回的子字符串从 start 位置的字符 start，在 end 位置之前 end。
-     * 所有位置计数都是从零开始的——即，从字符串的开头开始使用 start = 0。
-     * 负的开始和结束位置可用于指定相对于字符串结尾的偏移量。<br />
-     * 如果 start 不是严格地在 end 的左侧，则返回 ""。
+     * <p>从字符串的末尾删除任何一组字符。</p>
      *
-     * @param str 从中获取子字符串的字符串，可能为 null
-     * @param start 开始的位置，负数表示从字符串的末尾开始倒数这么多字符
-     * @param end 结束的位置（可不填），负数表示从字符串的末尾开始倒数这么多字符
-     * @return {string} 从开始位置到结束位置的子字符串，如果字符串为 null 则返回 null
+     * <p>null 或 undefined 输入字符串返回 null。
+     * 空字符串 ("") 输入返回空字符串。</p>
+     *
+     * <p>如果 stripChars 字符串是 null 或 undefined，
+     * 则按照 {@link isWhitespace} 的定义去除空格。</p>
+     *
+     * <pre>
+     * StringUtils.stripEnd(null, *)          = null
+     * StringUtils.stripEnd("", *)            = ""
+     * StringUtils.stripEnd("abc", "")        = "abc"
+     * StringUtils.stripEnd("abc", null)      = "abc"
+     * StringUtils.stripEnd("  abc", null)    = "  abc"
+     * StringUtils.stripEnd("abc  ", null)    = "abc"
+     * StringUtils.stripEnd(" abc ", null)    = " abc"
+     * StringUtils.stripEnd("  abcyx", "xyz") = "  abc"
+     * StringUtils.stripEnd("120.00", ".0")   = "12"
+     * </pre>
+     *
+     * @param str 要从中删除字符的字符串，可能为 null 或 undefined
+     * @param stripChars 要删除的字符集，null 或 undefined 被视为空格
+     * @return 剥离的字符串，如果为 null 或 undefined 字符串输入则返回 null
      */
-    public static
+    public static stripEnd(str: string, stripChars: string): string {
+        let end = this.getLength(str);
+        if (end === 0) {
+            return str;
+        }
 
-    substring(str
-                  :
-                  string, start
-                  :
-                  number, end ?: number
-    ):
-        string {
+        if (ObjectUtils.isNull(stripChars)) {
+            while (end != 0 && this.isWhitespace(str.charAt(end - 1))) {
+                end--;
+            }
+        } else if (stripChars === "") {
+            return str;
+        } else {
+            while (end != 0 && stripChars.includes(str.charAt(end - 1))) {
+                end--;
+            }
+        }
+        return str.substring(0, end);
+    }
+
+    /**
+     * <p>从字符串的开头去除一组字符中的任何一个。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * 空字符串 ("") 输入返回空字符串。</p>
+     *
+     * <p>如果 stripChars 字符串是 null 或 undefined，
+     * 则按照 {@link isWhitespace} 的定义去除空格。</p>
+     *
+     * <pre>
+     * StringUtils.stripStart(null, *)          = null
+     * StringUtils.stripStart("", *)            = ""
+     * StringUtils.stripStart("abc", "")        = "abc"
+     * StringUtils.stripStart("abc", null)      = "abc"
+     * StringUtils.stripStart("  abc", null)    = "abc"
+     * StringUtils.stripStart("abc  ", null)    = "abc  "
+     * StringUtils.stripStart(" abc ", null)    = "abc "
+     * StringUtils.stripStart("yxabc  ", "xyz") = "abc  "
+     * </pre>
+     *
+     * @param str 要从中删除字符的字符串，可能为 null 或 undefined
+     * @param stripChars 要删除的字符集，null 或 undefined 被视为空格
+     * @return 剥离的字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static stripStart(str: string, stripChars: string): string {
+        const strLen = this.getLength(str);
+        if (strLen === 0) {
+            return str;
+        }
+        let start = 0;
+        if (ObjectUtils.isNull(stripChars)) {
+            while (start != str.length && this.isWhitespace(str.charAt(start))) {
+                start++;
+            }
+        } else if (this.isEmpty(stripChars)) {
+            return str;
+        } else {
+            while (start != str.length && stripChars.includes(str.charAt(start))) {
+                start++;
+            }
+        }
+        return str.substring(start);
+    }
+
+    /**
+     * <p>从返回的字符串的开头和结尾去除空格
+     * 如果输入为 null 或 undefined 则返回空字符串</p>
+     *
+     * <p>这类似于 {@link trimToEmpty} 但删除了空格。
+     * 空白由 {@link isWhitespace} 定义。</p>
+     *
+     * <pre>
+     * StringUtils.stripToEmpty(null)     = ""
+     * StringUtils.stripToEmpty("")       = ""
+     * StringUtils.stripToEmpty("   ")    = ""
+     * StringUtils.stripToEmpty("abc")    = "abc"
+     * StringUtils.stripToEmpty("  abc")  = "abc"
+     * StringUtils.stripToEmpty("abc  ")  = "abc"
+     * StringUtils.stripToEmpty(" abc ")  = "abc"
+     * StringUtils.stripToEmpty(" ab c ") = "ab c"
+     * </pre>
+     *
+     * @param str 要剥离的字符串，可能为 null 或 undefined
+     * @return 修剪后的字符串，如果输入为 null 或 undefined 则为空字符串
+     */
+    public static stripToEmpty(str: string): string {
+        return ObjectUtils.isNull(str) ? this.EMPTY : this.strip(str, null);
+    }
+
+    /**
+     * <p>从返回的字符串的开头和结尾去除空格
+     * 如果字符串在剥离后为空 ("")则返回 null</p>
+     *
+     * <p>这类似于 {@link trimToNull} 但删除了空格。
+     * 空白由 {@link isWhitespace} 定义。</p>
+     *
+     * <pre>
+     * StringUtils.stripToNull(null)     = null
+     * StringUtils.stripToNull("")       = null
+     * StringUtils.stripToNull("   ")    = null
+     * StringUtils.stripToNull("abc")    = "abc"
+     * StringUtils.stripToNull("  abc")  = "abc"
+     * StringUtils.stripToNull("abc  ")  = "abc"
+     * StringUtils.stripToNull(" abc ")  = "abc"
+     * StringUtils.stripToNull(" ab c ") = "ab c"
+     * </pre>
+     *
+     * @param str 要剥离的字符串，可能为 null 或 undefined
+     * @return 剥离的字符串，如果空格、空、null 或 undefined 字符串输入则返回 null
+     */
+    public static stripToNull(str: string): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        str = this.strip(str, null);
+        return this.isEmpty(str) ? null : str;
+    }
+
+    /**
+     * <p>从指定的字符串中获取子字符串，避免异常。</p>
+     *
+     * <p>负起始位置可用于从字符串末尾开始 n 个字符。</p>
+     *
+     * <p>返回的子字符串以 start 位置中的字符开始，并在 end 位置之前结束。
+     * 所有位置计数都是从零开始的——即，从字符串的开头开始使用 start = 0。
+     * 负的开始和结束位置可用于指定相对于字符串结尾的偏移量。</p>
+     *
+     * <p>如果 start 不严格位于 end 的左侧，则返回 ""。</p>
+     *
+     * <pre>
+     * StringUtils.substring(null, *, *)    = null
+     * StringUtils.substring("", * ,  *)    = "";
+     * StringUtils.substring("abc", 0, 2)   = "ab"
+     * StringUtils.substring("abc", 2, 0)   = ""
+     * StringUtils.substring("abc", 2, 4)   = "c"
+     * StringUtils.substring("abc", 4, 6)   = ""
+     * StringUtils.substring("abc", 2, 2)   = ""
+     * StringUtils.substring("abc", -2, -1) = "b"
+     * StringUtils.substring("abc", -4, 2)  = "ab"
+     * </pre>
+     *
+     * @param str 要从中获取子字符串的字符串，可能为 null 或 undefined
+     * @param start 开始的位置，负数表示从字符串的末尾倒数这么多字符
+     * @param end 结束的位置（不包括），负数表示从字符串的末尾倒数这么多字符
+     * @return 从开始位置到结束位置的子字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static substring(str: string, start: number, end ?: number): string {
         if (ObjectUtils.isNull(str)) {
             return null;
         }
@@ -2544,18 +3703,19 @@ export class StringUtils {
             start = str.length + start;
         }
 
+        if (start < 0) {
+            start = 0;
+        }
+
         if (ObjectUtils.isNull(end)) {
-            if (start < 0) {
-                start = 0;
-            }
             if (start > str.length) {
                 return this.EMPTY;
             }
-            return str.substring(start);
         } else {
             if (end < 0) {
                 end = str.length + end;
             }
+
             if (end > str.length) {
                 end = str.length;
             }
@@ -2564,220 +3724,78 @@ export class StringUtils {
                 return this.EMPTY;
             }
 
-            if (start < 0) {
-                start = 0;
-            }
             if (end < 0) {
                 end = 0;
             }
-
-            return str.substring(start, end);
         }
+
+        return str.substring(start, end);
     }
 
     /**
-     * 获取字符串最左边的 length 个字符。
-     * 如果字符串为 null，则字符串将无一例外地返回。如果 length 为负，则返回空字符串。
+     * <p>获取第一次出现分隔符后的子字符串。不返回分隔符。</p>
      *
-     * @param str 从中获取最左边字符的字符串，可能为空
-     * @param length 所需字符串的长度
-     * @return {string} 最左边的字符，如果空字符串为null，则返回 null
+     * <p>null 或 undefined 字符串输入将返回 null。
+     * 空 ("") 字符串输入将返回空字符串。
+     * 如果输入字符串不是 null 或 undefined，则 null 或 undefined 分隔符将返回空字符串。</p>
+     *
+     * <p>如果没有找到，则返回空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.substringAfter(null, *)      = null
+     * StringUtils.substringAfter("", *)        = ""
+     * StringUtils.substringAfter(*, null)      = ""
+     * StringUtils.substringAfter("abc", "a")   = "bc"
+     * StringUtils.substringAfter("abcba", "b") = "cba"
+     * StringUtils.substringAfter("abc", "c")   = ""
+     * StringUtils.substringAfter("abc", "d")   = ""
+     * StringUtils.substringAfter("abc", "")    = "abc"
+     * </pre>
+     *
+     * @param str 要从中获取子字符串的字符串，可能为 null 或 undefined
+     * @param separator 要搜索的字符串，可能为 null 或 undefined
+     * @return 第一次出现分隔符后的子字符串，如果为 null 或 undefined 字符串输入则返回 null
      */
-    public static
-
-    left(str
-             :
-             string, length
-             :
-             number
-    ):
-        string {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-        if (length < 0) {
-            return this.EMPTY;
-        }
-        if (str.length <= length) {
+    public static substringAfter(str: string, separator: string): string {
+        if (this.isEmpty(str)) {
             return str;
         }
-        return str.substr(0, length);
-    }
-
-    /**
-     * 获取字符串最右边的 length 个字符。
-     * 如果字符串为 null，则字符串将无一例外地返回。如果 length 为负，则返回空字符串。
-     *
-     * @param str 从中获取最右边字符的字符串，可能为空
-     * @param length 所需字符串的长度
-     * @return {string} 最右边的字符，如果空字符串为null，则返回 null
-     */
-    public static
-
-    right(str
-              :
-              string, length
-              :
-              number
-    ):
-        string {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-        if (length < 0) {
-            return this.EMPTY;
-        }
-        if (str.length <= length) {
-            return str;
-        }
-        return str.substr(str.length - length);
-    }
-
-    /**
-     * 获取字符串中间的 length 个字符。
-     * 如果字符串为 null，则字符串将无一例外地返回。如果 length 为负，则返回空字符串。
-     *
-     * @param str 从中获取中间字符的字符串，可能为空
-     * @param pos 起始位置，负数视为零
-     * @param length 所需字符串的长度
-     * @return {string} 中间的字符，如果空字符串为null，则返回 null
-     */
-    public static
-
-    mid(str
-            :
-            string, pos
-            :
-            number, length
-            :
-            number
-    ):
-        string {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-        if (length < 0 || pos > str.length) {
-            return this.EMPTY;
-        }
-        if (pos < 0) {
-            pos = 0;
-        }
-        if (str.length <= pos + length) {
-            return str.substring(pos);
-        }
-        return str.substring(pos, pos + length);
-    }
-
-    /**
-     * 获取分隔符第一次出现之前的子字符串，不返回分隔符。
-     * 字符串为 null 将返回null。空 ("") 字符串输入将返回空字符串。分隔符为 null 将返回输入字符串。
-     * 如果未找到任何内容，则返回输入字符串。
-     *
-     * @param str 从中获取子字符串的字符串，可能为null
-     * @param separator 要搜索的字符串，可能为 null
-     * @return {string} 所述分离器的第一发生前的子串，如果搜索字符串为 null，则返回 null
-     */
-    public static
-
-    substringBefore(str
-                        :
-                        string, separator
-                        :
-                        string
-    ):
-        string {
-        if (BooleanUtils.or(this.isEmpty(str), ObjectUtils.isNull(separator))) {
-            return str;
-        }
-        if (this.isEmpty(separator)) {
+        if (ObjectUtils.isNull(separator)) {
             return this.EMPTY;
         }
         const pos = str.indexOf(separator);
-        if (pos == this.INDEX_NOT_FOUND) {
-            return str;
-        }
-        return str.substring(0, pos);
-    }
-
-    /**
-     * 获取分隔符第一次出现后的子字符串，不返回分隔符。
-     * null 字符串输入将返回 null。 空 ("") 字符串输入将返回空字符串。
-     * 如果输入字符串不是 null 则 null 分隔符将返回空字符串。
-     * 如果未找到任何内容，则返回空字符串。
-     *
-     * @param str 从中获取子字符串的字符串，可能为null
-     * @param separator 要搜索的字符串，可能为空
-     * @return {string} 分离器的第一次出现，之后的子输入字符串如果 null 则返回空字符串
-     */
-    public static
-
-    substringAfter(str
-                       :
-                       string, separator
-                       :
-                       string
-    ):
-        string {
-        if (this.isAnyEmpty(str, separator)) {
-            return str;
-        }
-        if (this.isEmpty(separator)) {
+        if (pos === this.INDEX_NOT_FOUND) {
             return this.EMPTY;
         }
-        const pos = str.indexOf(separator);
-        if (pos == this.INDEX_NOT_FOUND) {
-            return str;
-        }
-        return str.substring(0, pos);
+        return str.substring(pos + separator.length);
     }
 
     /**
-     * 获取最后一次出现分隔符之前的子字符串。 不返回分隔符。
-     * null 字符串输入将返回 null 。 空 ("") 字符串输入将返回空字符串。 空或null分隔符将返回输入字符串。
-     * 如果未找到任何内容，则返回字符串输入。
+     * <p>获取最后一次出现分隔符之后的子字符串。不返回分隔符。</p>
      *
-     * @param str 从中获取子字符串的字符串，可能为 null
-     * @param separator 要搜索的字符串，可能为空
-     * @return {string} 隔板的最后一次出现前的子字符串， null如果空字符串输入
-     */
-    public static
-
-    substringBeforeLast(str
-                            :
-                            string, separator
-                            :
-                            string
-    ):
-        string {
-        if (this.isAnyEmpty(str, separator)) {
-            return str;
-        }
-        const pos = str.lastIndexOf(separator);
-        if (pos == this.INDEX_NOT_FOUND) {
-            return str;
-        }
-        return str.substring(0, pos);
-    }
-
-    /**
-     * 获取最后一次出现分隔符后的子字符串。不返回分隔符。
-     * null 字符串输入将返回 null。 空 ("") 字符串输入将返回空字符串。
-     * 如果输入字符串不是 null 则空或 null 分隔符将返回空字符串。
-     * 如果未找到任何内容，则返回空字符串。
+     * <p>null 或 undefined 字符串输入将返回 null。
+     * 空 ("") 字符串输入将返回空字符串。
+     * 如果输入字符串不是 null 或 undefined，则空、null 或 undefined 分隔符将返回空字符串。</p>
      *
-     * @param str 从中获取子字符串的字符串，可能为空
-     * @param separator 要搜索的字符串，可能为空
-     * @return {string} 隔板的最后出现，后子null ，如果为空字符串输入
+     * <p>如果没有找到，则返回空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.substringAfterLast(null, *)      = null
+     * StringUtils.substringAfterLast("", *)        = ""
+     * StringUtils.substringAfterLast(*, "")        = ""
+     * StringUtils.substringAfterLast(*, null)      = ""
+     * StringUtils.substringAfterLast("abc", "a")   = "bc"
+     * StringUtils.substringAfterLast("abcba", "b") = "a"
+     * StringUtils.substringAfterLast("abc", "c")   = ""
+     * StringUtils.substringAfterLast("a", "a")     = ""
+     * StringUtils.substringAfterLast("a", "z")     = ""
+     * </pre>
+     *
+     * @param str 要从中获取子字符串的字符串，可能为 null 或 undefined
+     * @param separator  要搜索的字符串，可能为 null 或 undefined
+     * @return 最后一次出现分隔符后的子字符串，如果为 null 或 undefined 字符串输入则返回 null
      */
-    public static
-
-    substringAfterLast(str
-                           :
-                           string, separator
-                           :
-                           string
-    ):
-        string {
+    public static substringAfterLast(str: string, separator: string): string {
         if (this.isEmpty(str)) {
             return str;
         }
@@ -2785,79 +3803,171 @@ export class StringUtils {
             return this.EMPTY;
         }
         const pos = str.lastIndexOf(separator);
-        if (
-            pos === this.INDEX_NOT_FOUND ||
-            pos === str.length - separator.length
-        ) {
+        if (pos === this.INDEX_NOT_FOUND || pos === str.length - separator.length) {
             return this.EMPTY;
         }
         return str.substring(pos + separator.length);
     }
 
     /**
-     * 获取嵌套在同一字符串的两个实例之间的字符串。
-     * null输入字符串返回null。null标签返回null
+     * <p>获取第一次出现分隔符之前的子字符串。不返回分隔符。</p>
      *
-     * @param str 包含子字符串的字符串，可能为空
-     * @param open 子字符串之前的字符串，可能为空
-     * @param close 子字符串之后的字符串，可能为空
-     * @return {string} 子字符串，如果不匹配则为null
+     * <p>null 或 undefined 字符串输入将返回 null。
+     * 空 ("") 字符串输入将返回空字符串。
+     * null 或 undefined 分隔符将返回输入字符串。</p>
+     *
+     * <p>如果没有找到，则返回空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.substringBefore(null, *)      = null
+     * StringUtils.substringBefore("", *)        = ""
+     * StringUtils.substringBefore("abc", "a")   = ""
+     * StringUtils.substringBefore("abcba", "b") = "a"
+     * StringUtils.substringBefore("abc", "c")   = "ab"
+     * StringUtils.substringBefore("abc", "d")   = "abc"
+     * StringUtils.substringBefore("abc", "")    = ""
+     * StringUtils.substringBefore("abc", null)  = "abc"
+     * </pre>
+     *
+     * @param str 要从中获取子字符串的字符串，可能为 null 或 undefined
+     * @param separator 要搜索的字符串，可能为 null 或 undefined
+     * @return 第一次出现分隔符之前的子字符串，如果为 null 或 undefined 字符串输入则返回 null
      */
-    public static
+    public static substringBefore(str: string, separator: string): string {
+        if (this.isEmpty(str) || ObjectUtils.isNull(separator)) {
+            return str;
+        }
+        if (separator === this.EMPTY) {
+            return this.EMPTY;
+        }
+        const pos = str.indexOf(separator);
+        if (pos === this.INDEX_NOT_FOUND) {
+            return str;
+        }
+        return str.substring(0, pos);
+    }
 
-    substringBetween(
-        str
-            :
-            string,
-        open
-            :
-            string,
-        close
-            :
-            string
-    ):
-        string {
-        if (ObjectUtils.allNotNull(str, open, close)) {
-            const start = str.indexOf(open);
-            if (start != this.INDEX_NOT_FOUND) {
-                const end = str.indexOf(close, start + open.length);
-                if (end != this.INDEX_NOT_FOUND) {
-                    return str.substring(start + open.length, end);
-                }
+    /**
+     * <p>获取最后一次出现分隔符之前的子字符串。不返回分隔符。</p>
+     *
+     * <p> null 或 undefined 字符串输入将返回 null。
+     * 空 ("") 字符串输入将返回空字符串。
+     * 空、null 或 undefined 分隔符将返回输入字符串。</p>
+     *
+     * <p>如果没有找到，则返回空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.substringBeforeLast(null, *)      = null
+     * StringUtils.substringBeforeLast("", *)        = ""
+     * StringUtils.substringBeforeLast("abcba", "b") = "abc"
+     * StringUtils.substringBeforeLast("abc", "c")   = "ab"
+     * StringUtils.substringBeforeLast("a", "a")     = ""
+     * StringUtils.substringBeforeLast("a", "z")     = "a"
+     * StringUtils.substringBeforeLast("a", null)    = "a"
+     * StringUtils.substringBeforeLast("a", "")      = "a"
+     * </pre>
+     *
+     * @param str 要从中获取子字符串的字符串，可能为 null 或 undefined
+     * @param separator 要搜索的字符串，可能为 null 或 undefined
+     * @return 最后一次出现分隔符之前的子字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static substringBeforeLast(str: string, separator: string): string {
+        if (this.isAnyEmpty(str, separator)) {
+            return str;
+        }
+        const pos = str.lastIndexOf(separator);
+        if (pos === this.INDEX_NOT_FOUND) {
+            return str;
+        }
+        return str.substring(0, pos);
+    }
+
+    /**
+     * <p>获取嵌套在同一字符串的两个实例之间的字符串。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 标签返回 null。</p>
+     *
+     * <pre>
+     * StringUtils.substringBetween(null, *)            = null
+     * StringUtils.substringBetween("", "")             = ""
+     * StringUtils.substringBetween("", "tag")          = null
+     * StringUtils.substringBetween("tagabctag", null)  = null
+     * StringUtils.substringBetween("tagabctag", "")    = ""
+     * StringUtils.substringBetween("tagabctag", "tag") = "abc"
+     * </pre>
+     *
+     * @param str 包含子字符串的字符串， 可能为 null 或 undefined
+     * @param tag 子字符串前后的字符串，可能为 null 或 undefined
+     * @return 子字符串，如果不匹配则返回 null
+     */
+    public static substringBetween(str: string, tag: string): string;
+    /**
+     * <p>获取嵌套在两个字符串之间的字符串。仅返回第一个匹配项。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 的 open或close 返回 null（不匹配）。
+     * 空 ("") open或close返回一个空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.substringBetween("wx[b]yz", "[", "]") = "b"
+     * StringUtils.substringBetween(null, *, *)          = null
+     * StringUtils.substringBetween(*, null, *)          = null
+     * StringUtils.substringBetween(*, *, null)          = null
+     * StringUtils.substringBetween("", "", "")          = ""
+     * StringUtils.substringBetween("", "", "]")         = null
+     * StringUtils.substringBetween("", "[", "]")        = null
+     * StringUtils.substringBetween("yabcz", "", "")     = ""
+     * StringUtils.substringBetween("yabcz", "y", "z")   = "abc"
+     * StringUtils.substringBetween("yabczyabcz", "y", "z")   = "abc"
+     * </pre>
+     *
+     * @param str 包含子字符串的字符串，可以为 null 或 undefined
+     * @param open 子字符串之前的字符串，可能为 null 或 undefined
+     * @param close 子字符串之后的字符串，可能为 null 或 undefined
+     * @return 子字符串，如果不匹配则返回 null
+     */
+    public static substringBetween(str: string, open: string, close?: string): string {
+        if (!ObjectUtils.allNotNull(str, open, close)) {
+            return null;
+        }
+        const start = str.indexOf(open);
+        if (start != this.INDEX_NOT_FOUND) {
+            const end = str.indexOf(close, start + open.length);
+            if (end != this.INDEX_NOT_FOUND) {
+                return str.substring(start + open.length, end);
             }
         }
         return null;
     }
 
     /**
-     * 在字符串中搜索由开始和结束标记分隔的子字符串，返回数组中所有匹配的子字符串。
-     * null输入字符串返回null 。 null打开/关闭返回null （不匹配）。 空 ("") 打开/关闭返回null （不匹配）。
+     * <p>获取嵌套在两个字符串之间的字符串。仅返回第一个匹配项。</p>
      *
-     * @param str 包含子字符串的字符串，空返回空，空返回空
-     * @param open 标识子字符串开头的字符串，空返回 null
-     * @param close 标识子字符串结尾的字符串，空返回 null
-     * @return {string} 子字符串的字符串数组，如果不匹配则为null
+     * <p>null 或 undefined 输入字符串返回 null。
+     * null 或 undefined 的 open 或 close 返回 null（不匹配）。
+     * 空 ("") open 或 close 返回一个空字符串。</p>
+     *
+     * <pre>
+     * StringUtils.substringBetween("wx[b]yz", "[", "]") = "b"
+     * StringUtils.substringBetween(null, *, *)          = null
+     * StringUtils.substringBetween(*, null, *)          = null
+     * StringUtils.substringBetween(*, *, null)          = null
+     * StringUtils.substringBetween("", "", "")          = ""
+     * StringUtils.substringBetween("", "", "]")         = null
+     * StringUtils.substringBetween("", "[", "]")        = null
+     * StringUtils.substringBetween("yabcz", "", "")     = ""
+     * StringUtils.substringBetween("yabcz", "y", "z")   = "abc"
+     * StringUtils.substringBetween("yabczyabcz", "y", "z")   = "abc"
+     * </pre>
+     *
+     * @param str 要从中获取子字符串的字符串，可能为 null 或 undefined
+     * @param open 子字符串之前的字符串，可能为 null 或 undefined
+     * @param close 子字符串之后的字符串，可能为 null 或 undefined
+     * @return 子字符串，如果不匹配则返回 null
      */
-    public static
-
-    substringsBetween(
-        str
-            :
-            string,
-        open
-            :
-            string,
-        close
-            :
-            string
-    ):
-        string[] {
-        if (
-            BooleanUtils.or(
-                ObjectUtils.isNull(str),
-                this.isAnyEmpty(open, close)
-            )
-        ) {
+    public static substringsBetween(str: string, open: string, close: string): string[] {
+        if (ObjectUtils.isNull(str) || this.isEmpty(str) || this.isEmpty(close)) {
             return null;
         }
         const strLen = str.length;
@@ -2881,244 +3991,346 @@ export class StringUtils {
             list.push(str.substring(start, end));
             pos = end + closeLen;
         }
-        if (ArrayUtils.isEmpty(list)) {
+        if (list.length === 0) {
             return null;
-        }
-        return list;
-    }
-
-    public static
-
-    split(
-        str
-            :
-            string,
-        separatorChars = null,
-        max = -1
-    ):
-        string[] {
-        return this.splitWorker(str, separatorChars, max, false);
-    }
-
-    public static
-
-    splitByWholeSeparator(
-        str
-            :
-            string,
-        separatorChars
-            :
-            string,
-        max = -1
-    ):
-        string[] {
-        return this.splitByWholeSeparatorWorker(
-            str,
-            separatorChars,
-            max,
-            false
-        );
-    }
-
-    public static
-
-    splitByWholeSeparatorPreserveAllTokens(
-        str
-            :
-            string,
-        separatorChars
-            :
-            string,
-        max = -1
-    ):
-        string[] {
-        return this.splitByWholeSeparatorWorker(str, separatorChars, max, true);
-    }
-
-    private static
-
-    splitByWholeSeparatorWorker(
-        str
-            :
-            string,
-        separator
-            :
-            string,
-        max
-            :
-            number,
-        preserveAllTokens
-            :
-            boolean
-    ):
-        string[] {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-
-        const len = str.length;
-        if (len === 0) {
-            return [];
-        }
-        if (this.isEmpty(separator)) {
-            return this.splitWorker(str, null, max, preserveAllTokens);
-        }
-
-        const separatorLength = separator.length;
-        const substrings = [];
-
-        let numberOfSubstrings = 0;
-        let beg = 0;
-        let end = 0;
-        while (end < len) {
-            end = str.indexOf(separator, beg);
-
-            if (end > -1) {
-                if (end > beg) {
-                    numberOfSubstrings += 1;
-
-                    if (numberOfSubstrings == max) {
-                        end = len;
-                        substrings.push(str.substring(beg));
-                    } else {
-                        substrings.push(str.substring(beg, end));
-                        beg = end + separatorLength;
-                    }
-                } else {
-                    if (preserveAllTokens) {
-                        numberOfSubstrings += 1;
-                        if (numberOfSubstrings == max) {
-                            end = len;
-                            substrings.push(str.substring(beg));
-                        } else {
-                            substrings.push(this.EMPTY);
-                        }
-                    }
-                    beg = end + separatorLength;
-                }
-            } else {
-                substrings.push(str.substring(beg));
-                end = len;
-            }
-        }
-        return substrings;
-    }
-
-    public static
-
-    splitPreserveAllTokens(
-        str
-            :
-            string,
-        separatorChar
-            :
-            string,
-        max = -1
-    ):
-        string[] {
-        return this.splitWorker(str, separatorChar, max, true);
-    }
-
-    private static
-
-    splitWorker(
-        str
-            :
-            string,
-        separatorChars,
-        max
-            :
-            number,
-        preserveAllTokens
-            :
-            boolean
-    ):
-        string[] {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-        const len = str.length;
-        if (len === 0) {
-            return [];
-        }
-        const list = [];
-        let sizePlus1 = 1;
-        let i = 0,
-            start = 0;
-        let match = false;
-        let lastMatch = false;
-        if (separatorChars === null) {
-            while (i < len) {
-                if (this.isWhitespace(str.charAt(i))) {
-                    if (BooleanUtils.or(match, preserveAllTokens)) {
-                        lastMatch = true;
-                        if (sizePlus1++ === max) {
-                            i = len;
-                            lastMatch = false;
-                        }
-                        list.push(str.substring(start, i));
-                        match = false;
-                    }
-                    start = ++i;
-                    continue;
-                }
-                lastMatch = false;
-                match = true;
-                i++;
-            }
-        } else if (separatorChars.length() == 1) {
-            const sep = separatorChars.charAt(0);
-            while (i < len) {
-                if (str.charAt(i) === sep) {
-                    if (BooleanUtils.or(match, preserveAllTokens)) {
-                        lastMatch = true;
-                        if (sizePlus1++ === max) {
-                            i = len;
-                            lastMatch = false;
-                        }
-                        list.push(str.substring(start, i));
-                        match = false;
-                    }
-                    start = ++i;
-                    continue;
-                }
-                lastMatch = false;
-                match = true;
-                i++;
-            }
-        } else {
-            while (i < len) {
-                if (separatorChars.indexOf(str.charAt(i)) >= 0) {
-                    if (BooleanUtils.or(match, preserveAllTokens)) {
-                        lastMatch = true;
-                        if (sizePlus1++ === max) {
-                            i = len;
-                            lastMatch = false;
-                        }
-                        list.push(str.substring(start, i));
-                        match = false;
-                    }
-                    start = ++i;
-                    continue;
-                }
-                lastMatch = false;
-                match = true;
-                i++;
-            }
-        }
-        if (BooleanUtils.or(match, preserveAllTokens) && lastMatch) {
-            list.push(str.substring(start, i));
         }
         return list;
     }
 
     /**
-     *  * 测试两个字符串区域是否相等。参数 str 的子字符串与参数 other 的子字符串进行比较。
+     * <p>交换字符串的大小写，将大写更改为小写，将小写更改为大写。</p>
+     *
+     * <ul>
+     *  <li>大写字符转换为小写</li>
+     *  <li>小写字符转换为大写</li>
+     * </ul>
+     *
+     * <pre>
+     * StringUtils.swapCase(null)                 = null
+     * StringUtils.swapCase("")                   = ""
+     * StringUtils.swapCase("The dog has a BONE") = "tHE DOG HAS A bone"
+     * </pre>
+     *
+     * @param str 要交换大小写的字符串，可能为 null 或 undefined
+     * @return 更改后的字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static swapCase(str: string): string {
+        if (this.isEmpty(str)) {
+            return str;
+        }
+
+        const strLen = str.length;
+        const newChars = new Array[strLen];
+        for (let i = 0; i < strLen; i++) {
+            const oldChar = str.charAt(i);
+            let newChar;
+            if (this.isUpperCase(oldChar)) {
+                newChar = oldChar.toLowerCase();
+            } else if (this.isLowerCase(oldChar)) {
+                newChar = oldChar.toUpperCase();
+            } else {
+                newChar = oldChar;
+            }
+            newChars[i] = newChar;
+        }
+        return newChars.join("");
+    }
+
+    /**
+     * <p>将字符串转换为代码点数组。</p>
+     *
+     * <pre>
+     * StringUtils.toCodePoints(null)   =  null
+     * StringUtils.toCodePoints("")     =  []  // empty array
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @return {} 代码点数组
+     */
+    public static toCodePoints(str: string): number[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (str.length === 0) {
+            return [];
+        }
+
+        const result = new Array[str.length];
+        for (let i = 0; i < result.length; i++) {
+            result[i] = str.codePointAt(i);
+        }
+        return result;
+    }
+
+    /**
+     * <p>将字符串转换为字符编码数组。</p>
+     *
+     * <pre>
+     * StringUtils.toCharCodes(null)   =  null
+     * StringUtils.toCharCodes("")     =  []  // empty array
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @return {} 字符编码数组
+     */
+    public static toCharCodes(str: string): number[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (str.length === 0) {
+            return [];
+        }
+
+        const result = new Array[str.length];
+        for (let i = 0; i < result.length; i++) {
+            result[i] = str.charCodeAt(i);
+        }
+        return result;
+    }
+
+    /**
+     * <p>将字符串转换为字符数组。</p>
+     *
+     * <pre>
+     * StringUtils.toChars(null)   =  null
+     * StringUtils.toChars("")     =  []  // empty array
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @return {} 字符数组
+     */
+    public static toChars(str: string): string[] {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (str.length === 0) {
+            return [];
+        }
+
+        const result = new Array[str.length];
+        for (let i = 0; i < result.length; i++) {
+            result[i] = str.charAt(i);
+        }
+        return result;
+    }
+
+    /**
+     * <p>将代码点数组转换为字符串。</p>
+     *
+     * <pre>
+     * StringUtils.fromCodePoint(null)          =  null
+     * StringUtils.fromCodePoint(97, 98, 98)  =  "abc"
+     * </pre>
+     *
+     * @param codePoints 代码点数组，可能为 null 或 undefined
+     * @return {} 转换后的字符串, 如果代码点数组输入为 null 或 undefined 则返回 null
+     */
+    public static fromCodePoint(...codePoints: number[]): string {
+        return ObjectUtils.isNull(codePoints) ? null : String.fromCodePoint(...codePoints);
+    }
+
+    /**
+     * <p>将字符编码数组转换为字符串。</p>
+     *
+     * <pre>
+     * StringUtils.fromChars(null)          =  null
+     * StringUtils.fromChars(97, 98, 98)  =  "abc"
+     * </pre>
+     *
+     * @param charCodes 字符编码数组，可能为 null 或 undefined
+     * @return {} 转换后的字符串, 如果字符编码数组输入为 null 或 undefined 则返回 null
+     */
+    public static fromCharCodes(...charCodes: number[]): string {
+        return ObjectUtils.isNull(charCodes) ? null : String.fromCharCode(...charCodes);
+    }
+
+    /**
+     * <p>将字符串数组转换为字符串。</p>
+     *
+     * <pre>
+     * StringUtils.fromChars(null)             =  null
+     * StringUtils.fromChars("", "a", "anas")  =  "aanas"
+     * </pre>
+     *
+     * @param chars 字符串数组，可能为 null 或 undefined
+     * @return {} 转换后的字符串, 如果字符串数组输入为 null 或 undefined 则返回 null
+     */
+    public static fromChars(...chars: string[]): string {
+        return ObjectUtils.isNull(chars) ? null : chars.join("");
+    }
+
+    /**
+     * <p>移除此字符串两端的控制字符 (char <= 32)，通过返回 null 处理 null 或 undefined。</p>
+     *
+     * <p>使用 {@link String#trim} 修剪字符串。 Trim 删除开始和结束字符 <= 32。要去除空格，请使用 {@link strip}。</p>
+     *
+     * <p>要修剪您选择的字符，请使用 {@link strip} 方法。</p>
+     *
+     * <pre>
+     * StringUtils.trim(null)          = null
+     * StringUtils.trim("")            = ""
+     * StringUtils.trim("     ")       = ""
+     * StringUtils.trim("abc")         = "abc"
+     * StringUtils.trim("    abc    ") = "abc"
+     * </pre>
+     *
+     * @param str 要修剪的字符串，可以为 null 或 undefined
+     * @return 修剪后的字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static trim(str: string): string {
+        return ObjectUtils.isNull(str) ? null : str.trim();
+    }
+
+    /**
+     * <p>如果在修剪后字符串为空 ("")、null 或 undefined，则从此字符串的两端删除控制字符 (char <= 32)，返回 null。
+     *
+     * <p>使用 {@link String#trim} 修剪字符串。修剪删除开始和结束字符 <= 32。
+     * 要去除空格，请使用 {@link stripToNull}。</p>
+     *
+     * <pre>
+     * StringUtils.trimToNull(null)          = null
+     * StringUtils.trimToNull("")            = null
+     * StringUtils.trimToNull("     ")       = null
+     * StringUtils.trimToNull("abc")         = "abc"
+     * StringUtils.trimToNull("    abc    ") = "abc"
+     * </pre>
+     *
+     * @param str 要修剪的字符串，可能为 null 或 undefined
+     * @return 修剪后的字符串，如果只有 chars <= 32，空、null 或 undefined 字符串输入
+     */
+    public static trimToNull(str: string): string {
+        const trimStr = this.trim(str);
+        return this.isEmpty(trimStr) ? null : trimStr;
+    }
+
+    /**
+     * <p>如果修剪后字符串为空 ("")、null 或 undefined，则从此字符串的两端删除控制字符 (char <= 32)，返回空字符串 ("")。
+     *
+     * <p>使用 {@link String#trim} 修剪字符串。
+     * Trim 删除开始和结束字符 <= 32。
+     * 要去除空格，请使用 {@link stripToEmpty}。</p>
+     *
+     * <pre>
+     * StringUtils.trimToEmpty(null)          = ""
+     * StringUtils.trimToEmpty("")            = ""
+     * StringUtils.trimToEmpty("     ")       = ""
+     * StringUtils.trimToEmpty("abc")         = "abc"
+     * StringUtils.trimToEmpty("    abc    ") = "abc"
+     * </pre>
+     *
+     * @param str 要修剪的字符串，可能为 null 或 undefined
+     * @return 修剪后的字符串，如果 null 或 undefined 输入则为空字符串
+     */
+    public static trimToEmpty(str: string): string {
+        return ObjectUtils.isNull(str) ? this.EMPTY : str.trim();
+    }
+
+    /**
+     * <p>截断字符串. 这将把 "Now is the time for all good men" 变成 "is the time for all".</p>
+     *
+     * <p>具体来说：</p>
+     * <ul>
+     *   <li>如果字符串的长度小于 maxWidth 个字符，则返回它。</li>
+     *   <li>否则将其截断为 substring(str, offset, maxWidth)。/li>
+     *   <li>如果 maxWidth 小于 0，则抛出 {@link IllegalArgumentError}。</li>
+     *   <li>如果 offset 小于 0，则抛出 {@link IllegalArgumentError}。</li>
+     *   <li>在任何情况下，它都不会返回长度大于 maxWidth 的字符串。</li>
+     * </ul>
+     *
+     * <pre>
+     * StringUtils.truncate(null, 0, 0) = null
+     * StringUtils.truncate(null, 2, 4) = null
+     * StringUtils.truncate("", 0, 10) = ""
+     * StringUtils.truncate("", 2, 10) = ""
+     * StringUtils.truncate("abcdefghij", 0, 3) = "abc"
+     * StringUtils.truncate("abcdefghij", 5, 6) = "fghij"
+     * StringUtils.truncate("raspberry peach", 10, 15) = "peach"
+     * StringUtils.truncate("abcdefghijklmno", 0, 10) = "abcdefghij"
+     * StringUtils.truncate("abcdefghijklmno", -1, 10) = throws an IllegalArgumentException
+     * StringUtils.truncate("abcdefghijklmno", Integer.MIN_VALUE, 10) = throws an IllegalArgumentException
+     * StringUtils.truncate("abcdefghijklmno", Integer.MIN_VALUE, Integer.MAX_VALUE) = throws an IllegalArgumentException
+     * StringUtils.truncate("abcdefghijklmno", 0, Integer.MAX_VALUE) = "abcdefghijklmno"
+     * StringUtils.truncate("abcdefghijklmno", 1, 10) = "bcdefghijk"
+     * StringUtils.truncate("abcdefghijklmno", 2, 10) = "cdefghijkl"
+     * StringUtils.truncate("abcdefghijklmno", 3, 10) = "defghijklm"
+     * StringUtils.truncate("abcdefghijklmno", 4, 10) = "efghijklmn"
+     * StringUtils.truncate("abcdefghijklmno", 5, 10) = "fghijklmno"
+     * StringUtils.truncate("abcdefghijklmno", 5, 5) = "fghij"
+     * StringUtils.truncate("abcdefghijklmno", 5, 3) = "fgh"
+     * StringUtils.truncate("abcdefghijklmno", 10, 3) = "klm"
+     * StringUtils.truncate("abcdefghijklmno", 10, Integer.MAX_VALUE) = "klmno"
+     * StringUtils.truncate("abcdefghijklmno", 13, 1) = "n"
+     * StringUtils.truncate("abcdefghijklmno", 13, Integer.MAX_VALUE) = "no"
+     * StringUtils.truncate("abcdefghijklmno", 14, 1) = "o"
+     * StringUtils.truncate("abcdefghijklmno", 14, Integer.MAX_VALUE) = "o"
+     * StringUtils.truncate("abcdefghijklmno", 15, 1) = ""
+     * StringUtils.truncate("abcdefghijklmno", 15, Integer.MAX_VALUE) = ""
+     * StringUtils.truncate("abcdefghijklmno", Integer.MAX_VALUE, Integer.MAX_VALUE) = ""
+     * StringUtils.truncate("abcdefghij", 3, -1) = throws an IllegalArgumentException
+     * StringUtils.truncate("abcdefghij", -2, 4) = throws an IllegalArgumentException
+     * </pre>
+     *
+     * @param str 要截断的字符串，可能为 null 或 undefined
+     * @param maxWidth 结果字符串的最大长度，必须为正数
+     * @param offset 源字符串的左边缘
+     * @return 截断字符串，如果为 null、undefined 字符串输入则返回 null
+     * @throws {@link IllegalArgumentError} 如果 offset 或 maxWidth 小于 0
+     */
+    public static truncate(str: string, maxWidth: number, offset = 0): string {
+        if (offset < 0) {
+            throw new RangeError("偏移量不能为负数");
+        }
+        if (maxWidth < 0) {
+            throw new RangeError("最大长度不能为负数");
+        }
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        if (offset > str.length) {
+            return this.EMPTY;
+        }
+        if (str.length > maxWidth) {
+            const ix = Math.min(offset + maxWidth, str.length);
+            return str.substring(offset, ix);
+        }
+        return str.substring(offset);
+    }
+
+    /**
+     * <p>根据 {@link String#toUpperCase} 将字符串转换为大写。</p>
+     *
+     * <p>null 或 undefined 输入字符串返回 null。</p>
+     *
+     * <pre>
+     * StringUtils.upperCase(null)  = null
+     * StringUtils.upperCase("")    = ""
+     * StringUtils.upperCase("aBc") = "ABC"
+     * </pre>
+     *
+     * @param str 符串转大写，可能为 null 或 undefined
+     * @param locales 定义大小写转换规则的语言环境
+     * @return 大写字符串，如果为 null 或 undefined 字符串输入则返回 null
+     */
+    public static upperCase(str: string, locales?: string | string[]): string {
+        if (ObjectUtils.isNull(str)) {
+            return null;
+        }
+        return str.toLocaleLowerCase(locales);
+    }
+
+
+
+
+
+    /**
+     * 测试两个字符串区域是否相等。参数 str 的子字符串与参数 other 的子字符串进行比较。
+     *
      * <p>
      * 如果这些子字符串表示相同的字符序列，则结果为 true，当且仅当 ignoreCase 为 true 时忽略大小写。
      * 要比较的 str 的子串从索引 strOffset 开始，长度为 length。
      * 要比较的 other 的子串从索引 otherOffset 开始，长度为 length。
      * </p>
+     *
      * 当且仅当以下至少一项为真时，结果为 false:
      * <ul>
      *  <li>strOffset 小于 0</li>
@@ -3146,33 +4358,11 @@ export class StringUtils {
      * @return {boolean} 如果此字符串的指定子区域与字符串参数的指定子区域匹配，则为 true；否则为 false。
      * 匹配是精确匹配还是不区分大小写取决于 ignoreCase 参数。
      */
-    public static
-
-    regionMatches(
-        str1
-            :
-            string,
-        str1Offset
-            :
-            number,
-        str2
-            :
-            string,
-        str2Offset
-            :
-            number,
-        length
-            :
-            number,
-        ignoreCase
-            :
-            boolean
-    ):
-        boolean {
-        const strArr = this.toCharArray(str1);
+    public static regionMatches(str1: string, str1Offset: number, str2: string, str2Offset: number, length: number, ignoreCase: boolean): boolean {
+        const strArr = this.toChars(str1);
         let to = str1Offset;
 
-        const otherArr = this.toCharArray(str2);
+        const otherArr = this.toChars(str2);
         let po = str2Offset;
 
         if (
@@ -3207,266 +4397,47 @@ export class StringUtils {
     }
 
     /**
-     * 将此字符串转换为新的字符数组。
+     * 下划线格式字符串转为小驼峰格式，如果字符串输入为 null 或 undefined 则返回 ""
      *
-     * @param str 待转换字符串，不能为 null
-     * @return {Array} 一个新分配的字符数组，其长度是这个字符串的长度，其内容被初始化为包含这个字符串所代表的字符序列。
+     * @param str 要转换的字符串
+     * @return 转换后的字符串，如果输入字符串为 null 或 undefined 则返回 ""
      */
-    public static
-
-    toCharArray(str
-                    :
-                    string
-    ):
-        string[] {
-        const charArray = new Array(str.length);
-        for (let i = 0; i < str.length; i++) {
-            charArray.push(str.charAt(i));
+    public static underLineToCamelCase(str: string): string {
+        if (this.isEmpty(str)) {
+            return this.EMPTY;
         }
-        return charArray;
-    }
-
-    /**
-     * 判断是否为大写字母
-     *
-     * @param {String} ch 待判断字符
-     * @returns {boolean} 为大写字母返回true，否则返回false
-     */
-    public static
-
-    isUpperCase(ch
-                    :
-                    string
-    ):
-        boolean {
-        const code = ch.charCodeAt(0);
-        return BooleanUtils.and(code >= 65, code <= 90);
-    }
-
-    /**
-     * 判断是否为大写字母
-     *
-     * @param {string} ch 待判断字符
-     * @returns {boolean} 为大写字母返回true，否则返回false
-     */
-    public static
-
-    isLowerCase(ch
-                    :
-                    string
-    ):
-        boolean {
-        const code = ch.charCodeAt(0);
-        return BooleanUtils.and(code >= 97, code <= 122);
-    }
-
-    /**
-     * 下划线格式字符串转为小驼峰格式
-     */
-    public static
-
-    underLineToCamelCase(str
-                             :
-                             string
-    ):
-        string {
         const strArr = str.split("_");
         for (let i = 1; i < strArr.length; i++) {
-            strArr[i] =
-                strArr[i].charAt(0).toUpperCase() + strArr[i].substring(1);
+            strArr[i] = strArr[i].charAt(0).toUpperCase() + strArr[i].substring(1);
         }
         return strArr.join("");
     }
 
     /**
-     * 小驼峰格式字符串转下划线格式
+     * 小驼峰格式字符串转下划线格式，如果字符串输入为 null 或 undefined 则返回 ""
+     *
+     * @param str 要转换的字符串
+     * @return 转换后的字符串，如果输入字符串为 null 或 undefined 则返回 ""
      */
-    public static
+    public static camelCaseToUnderLine(str: string): string {
+        if (this.isEmpty(str)) {
+            return this.EMPTY;
+        }
 
-    camelCaseToUnderLine(str
-                             :
-                             string
-    ):
-        string {
         const newStr = [];
-        const indexArr = Array.of(0);
+        const indexArr = [0];
         for (let i = 1; i < str.length; i++) {
             if (StringUtils.isUpperCase(str[i])) {
                 indexArr.push(i);
             }
         }
         indexArr.forEach((value, index) => {
-            newStr.push(
-                str.charAt(value).toLowerCase() +
-                str.substring(value + 1, indexArr[index + 1])
-            );
+            newStr.push(str.charAt(value).toLowerCase() + str.substring(value + 1, indexArr[index + 1]));
         });
         return newStr.join("_");
     }
 
-    public static
-
-    getLength(str
-                  :
-                  string
-    ):
-        number {
-        return ObjectUtils.isNull(str) ? 0 : str.length;
-    }
-
-    /**
-     * <p>左填充一个具有指定字符串的字符串。</p>
-     *
-     * <p>填充到 size 的大小。</p>
-     *
-     * <pre>
-     * StringUtils.leftPad(null, *, *)      = null
-     * StringUtils.leftPad("", 3, "z")      = "zzz"
-     * StringUtils.leftPad("bat", 3, "yz")  = "bat"
-     * StringUtils.leftPad("bat", 5, "yz")  = "yzbat"
-     * StringUtils.leftPad("bat", 8, "yz")  = "yzyzybat"
-     * StringUtils.leftPad("bat", 1, "yz")  = "bat"
-     * StringUtils.leftPad("bat", -1, "yz") = "bat"
-     * StringUtils.leftPad("bat", 5, null)  = "  bat"
-     * StringUtils.leftPad("bat", 5, "")    = "  bat"
-     * </pre>
-     *
-     * @param str 要填充的字符串，可能为 null 或 undefined
-     * @param size 要填充的大小
-     * @param padStr 要填充的字符串，null、undefined 或空视为单个空白
-     * @return 如果不需要填充，则为左填充字符串或原始字符串，如果为空字符串输入，则返回 null
-     */
-    public static
-
-    leftPad(str
-                :
-                string, size
-                :
-                number, padStr
-                :
-                string
-    ):
-        string {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-        if (this.isEmpty(padStr)) {
-            padStr = this.SPACE;
-        }
-        const padLen = padStr.length;
-        const strLen = str.length;
-        const pads = size - strLen;
-        if (pads <= 0) {
-            return str;
-        }
-        if (padLen === 1 && pads <= this.PAD_LIMIT) {
-            return this.repeat(padStr, pads).concat(str);
-        }
-
-        if (pads === padLen) {
-            return padStr.concat(str);
-        } else if (pads < padLen) {
-            return padStr.substring(0, pads).concat(str);
-        } else {
-            const padding = [];
-            for (let i = 0; i < padStr.length; i++) {
-                padding[i] = padStr.charAt(i % padLen);
-            }
-            return padding.join("").concat(str);
-        }
-    }
-
-    /**
-     * <p>用指定的字符串右填充一个字符串。</p>
-     *
-     * <p>字符串被填充到 size 的大小。</p>
-     *
-     * <pre>
-     * StringUtils.rightPad(null, *, *)      = null
-     * StringUtils.rightPad("", 3, "z")      = "zzz"
-     * StringUtils.rightPad("bat", 3, "yz")  = "bat"
-     * StringUtils.rightPad("bat", 5, "yz")  = "batyz"
-     * StringUtils.rightPad("bat", 8, "yz")  = "batyzyzy"
-     * StringUtils.rightPad("bat", 1, "yz")  = "bat"
-     * StringUtils.rightPad("bat", -1, "yz") = "bat"
-     * StringUtils.rightPad("bat", 5, null)  = "bat  "
-     * StringUtils.rightPad("bat", 5, "")    = "bat  "
-     * </pre>
-     *
-     * @param str 要填充的字符串，可能为 null 或 undefined
-     * @param size 要填充的大小
-     * @param padStr 要填充的字符串，null、undefined 或空视为单个空白
-     * @return 如果不需要填充，则右填充字符串或原始字符串，如果为空字符串输入，则返回 null
-     */
-    public static
-
-    rightPad(str
-                 :
-                 string, size
-                 :
-                 number, padStr
-                 :
-                 string
-    ):
-        string {
-        if (ObjectUtils.isNull(str)) {
-            return null;
-        }
-        if (this.isEmpty(padStr)) {
-            padStr = this.SPACE;
-        }
-        const padLen = padStr.length;
-        const strLen = str.length;
-        const pads = size - strLen;
-        if (pads <= 0) {
-            return str;
-        }
-        if (padLen === 1 && pads <= this.PAD_LIMIT) {
-            return this.repeat(padStr, pads).concat(str);
-        }
-
-        if (pads === padLen) {
-            return str.concat(padStr);
-        } else if (pads < padLen) {
-            return str.concat(padStr.substring(0, pads));
-        } else {
-            const padding = [];
-            for (let i = 0; i < padStr.length; i++) {
-                padding[i] = padStr.charAt(i % padLen);
-            }
-            return str.concat(padding.join(""));
-        }
-    }
-
-    /**
-     * <p>使用重复到给定长度的指定字符串返回填充。</p>
-     *
-     * <pre>
-     * StringUtils.repeat('e', 0)  = ""
-     * StringUtils.repeat('e', 3)  = "eee"
-     * StringUtils.repeat('e', -2) = ""
-     * </pre>
-     *
-     * @param str 重复的字符串
-     * @param repeat 重复字符的次数，负数视为零
-     * @return {} 具有重复字符串的字符串
-     */
-    public static
-
-    repeat(str
-               :
-               string, repeat
-               :
-               number
-    ):
-        string {
-        if (repeat <= 0) {
-            return this.EMPTY;
-        }
-        return ArrayUtils.fill(str, repeat).join("");
-    }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    private constructor() {
     }
 }
