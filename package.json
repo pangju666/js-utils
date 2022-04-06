@@ -1,5 +1,5 @@
 {
-    "name": "@pangju666/js-utils",
+    "name": "pangju-utils",
     "version": "1.0.0",
     "author": "pangju",
     "description": "将常用js函数整合为工具类，并将一些好用的库进行二次封装",
@@ -19,8 +19,7 @@
         "pretest": "npm run build",
         "lint": "eslint src/**/*.{js,ts}",
         "test": "jest --config jest.config.js",
-        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-        "prepare": "npm run build"
+        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
     },
     "files": [
         "lib"
