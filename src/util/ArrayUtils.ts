@@ -1,5 +1,4 @@
 import {ObjectUtils} from "./ObjectUtils";
-import {RandomUtils} from "./RandomUtils";
 import {IllegalArgumentError, IndexOutOfBoundsError} from "../core/runtimeError";
 import {Predicate, Comparator, ToString} from "../core/TypeAlias";
 
@@ -729,19 +728,6 @@ export class ArrayUtils {
                 this.swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
                 break;
             }
-        }
-    }
-
-
-    /**
-     * 使用 Fisher-Yates 算法随机排列指定数组的元素。
-     *
-     * @param array 要洗牌的数组
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
-     */
-    public static shuffle<T>(array: T[]): void {
-        for (let i = array.length; i > 1; i--) {
-            this.swap(array, i - 1, RandomUtils.nextInt(0, i), 1);
         }
     }
 

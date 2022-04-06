@@ -10,113 +10,67 @@ import { Comparator, Condition } from "../core/TypeAlias";
  */
 export class ObjectUtils {
     /**
-     * 判断对象或属性是否不为 undefined
+     * 判断值是否不为 undefined
      *
      * <pre>
-     *      const obj = { item: { name: "admin" } };
-     *      ObjectUtils.nonExist(obj, "item.name")      = false;
-     *      ObjectUtils.nonExist(obj, "item.password")  = true;
-     *      const obj2 = null;
-     *      ObjectUtils.nonExist(obj2, "item.password") = true;
+     *      ObjectUtils.nonExist(null)      = true;
+     *      ObjectUtils.nonExist(undefined)  = false;
+     *      ObjectUtils.nonExist({ name: "admin" }) = true;
      * </pre>
      *
      * @param value 待判断的值
-     * @param expression 属性表达式，属性之间使用 . 进行分隔
-     * @return {} 对象为 undefined 则返回 false，否则为 true
+     * @return {} 值为 undefined 则返回 false，否则为 true
      */
-    public static nonExist(value: unknown, expression?: string): boolean {
-        if (
-            this.isNull(expression) ||
-            this.isBasicType(value) ||
-            expression === ""
-        ) {
-            return value !== undefined;
-        }
-
-        if (this.isNull(value)) {
-            return false;
-        }
-
-        let propertyVal;
-        for (const propertyName of expression.split(".")) {
-            propertyVal = value[propertyName];
-            if (propertyVal === undefined) {
-                return false;
-            }
-        }
-        return true;
+    public static nonExist(value: unknown): boolean {
+        return value !== undefined;
     }
 
     /**
-     * 判断对象是否为 undefined
+     * 判断值是否为 undefined
      *
      * <pre>
-     *      const obj = { item: { name: "admin" } };
-     *      ObjectUtils.isExist(obj, "item.name")      = true;
-     *      ObjectUtils.isExist(obj, "item.password")  = false;
-     *      const obj2 = null;
-     *      ObjectUtils.isExist(obj2, "item.password") = false;
+     *      ObjectUtils.isExist(null)      = false;
+     *      ObjectUtils.isExist(undefined)  = true;
+     *      ObjectUtils.isExist({ name: "admin" }) = false;
      * </pre>
      *
      * @param value 待判断的值
-     * @param expression 属性表达式，属性之间使用 . 进行分隔
-     * @return {} 对象为 undefined 则返回 true，否则为 false
+     * @return {} 值为 undefined 则返回 true，否则为 false
      */
-    public static isExist(value: unknown, expression?: string): boolean {
-        return !this.nonExist(value, expression);
+    public static isExist(value: unknown): boolean {
+        return !this.nonExist(value);
     }
 
     /**
-     * 判断对象是否不为 null 或 undefined
+     * 判断值是否不为 null 或 undefined
      *
      * <pre>
-     *      const obj = { item: { name: "admin", password: null } };
-     *      ObjectUtils.nonNull(obj, "item.name")      = true;
-     *      ObjectUtils.nonNull(obj, "item.password")  = false;
-     *      const obj2 = null;
-     *      ObjectUtils.nonNull(obj2, "item.password") = false;
+     *      ObjectUtils.nonNull(undefined) = false;
+     *      ObjectUtils.nonNull(null)  = false;
+     *      ObjectUtils.nonNull({ name: "admin" }) = true;
      * </pre>
      *
      * @param value 待判断的值
-     * @param expression 属性表达式，属性之间使用 . 进行分隔
-     * @return {} 对象为 null 或 undefined 则返回 false，否则为 true
+     * @return {} 值为 null 或 undefined 则返回 false，否则为 true
      */
-    public static nonNull(value: unknown, expression?: string): boolean {
-        if (
-            this.isNull(expression) ||
-            this.isBasicType(value) ||
-            expression === ""
-        ) {
-            return value !== undefined && value !== null;
-        }
-
-        let propertyVal;
-        for (const propertyName of expression.split(".")) {
-            propertyVal = value[propertyName];
-            if (propertyVal === undefined || propertyVal === null) {
-                return false;
-            }
-        }
-        return true;
+    public static nonNull(value: unknown): boolean {
+        return value !== undefined && value !== null;
     }
 
     /**
-     * 判断对象是否为 null 或 undefined
+     * 判断值是否为 null 或 undefined
      *
      * <pre>
-     *      const obj = { item: { name: "admin", password: null } };
-     *      ObjectUtils.isNull(obj, "item.name")      = false;
-     *      ObjectUtils.isNull(obj, "item.password")  = true;
-     *      const obj2 = null;
-     *      ObjectUtils.isNull(obj2, "item.password") = true;
+     *      ObjectUtils.isNull(undefined) = true;
+     *      ObjectUtils.isNull(null)  = true;
+     *      ObjectUtils.isNull({ name: "admin" }) = false;
      * </pre>
      *
      * @param value 待判断的值
-     * @param expression 属性表达式，属性之间使用 . 进行分隔
-     * @return {} 对象为 null 或 undefined 则返回 true，否则为 false
+     * @return {} 值为 null 或 undefined 则返回 true，否则为 false
      */
-    public static isNull(value: unknown, expression?: string): boolean {
-        return !this.nonNull(value, expression);
+    public static isNull(value: unknown): boolean {
+        return !this.nonNull(value);
     }
 
     /**
@@ -174,12 +128,24 @@ export class ObjectUtils {
     }
 
     /**
+     * 拷贝源对象至目录对象，如果源对象为 null 或 undefined，则什么也不发生
+     *
+     * @param source 源对象
+     * @param target 目标对象
+     */
+    public static copy(source: unknown, target: unknown): void {
+        if (this.nonNull(source)) {
+            Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+        }
+    }
+
+    /**
      * 浅克隆目标对象
      *
      * @param obj 待克隆对象
      * @return {} 克隆出的新对象，如果输入为 null、undefined 则为 null
      */
-    public static clone(obj: unknown): unknown {
+    public static clone<T>(obj: T): T {
         if (this.isNull(obj)) {
             return null;
         }
@@ -188,10 +154,7 @@ export class ObjectUtils {
             return obj;
         }
 
-        if (Array.isArray(obj)) {
-            return [...obj];
-        }
-        return Object.assign({}, obj);
+        return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
     }
 
     /**
@@ -242,14 +205,15 @@ export class ObjectUtils {
     }
 
     /**
-     * 如果传递的对象为 null 或 undefined，则返回默认值。
+     * 如果传递的对象为 null 或 undefined，则返回默认值。<br/>
+     * 等价于（ES2020）：value ?? defaultVal
      *
      * @param value 待取值变量
      * @param defaultVal 默认值
      * @return {} 如果不为 null 或 undefined 则返回对象，否则返回默认值
      */
     public static defaultIfNull<T>(value: T, defaultVal: T): T {
-        return this.nonNull(value) ? value : defaultVal;
+        return value ?? defaultVal;
     }
 
     /**
