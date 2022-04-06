@@ -1,5 +1,5 @@
 {
-    "name": "@pangju666/js-utils",
+    "name": "pangju-utils",
     "version": "2.0.0",
     "author": "pangju",
     "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
