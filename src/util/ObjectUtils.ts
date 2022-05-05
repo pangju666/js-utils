@@ -1,5 +1,6 @@
-import { IllegalArgumentError, NullError } from "../core/runtimeError";
-import { Comparator, Condition } from "../core/TypeAlias";
+import {IllegalArgumentError, NullError} from "../core/runtimeError";
+import {Comparator, Condition} from "../core/TypeAlias";
+import structuredClone from "core-js/actual/structured-clone";
 
 /**
  * 对象工具类
@@ -142,45 +143,71 @@ export class ObjectUtils {
     /**
      * 浅克隆目标对象
      *
-     * @param obj 待克隆对象
-     * @return {} 克隆出的新对象，如果输入为 null、undefined 则为 null
+     * @param value 待克隆值
+     * @return {} 克隆出的新值，如果输入为 null、undefined 则为 null
      */
-    public static clone<T>(obj: T): T {
-        if (this.isNull(obj)) {
+    public static clone<T>(value: T): T {
+        if (this.isNull(value)) {
             return null;
         }
-
-        if (this.isBasicType(obj)) {
-            return obj;
+        if (this.isBasicType(value)) {
+            return value;
         }
-
-        return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+        return Object.create(Object.getPrototypeOf(value), Object.getOwnPropertyDescriptors(value));
     }
 
     /**
-     * 深克隆目标对象
+     * 深克隆目标对象, 基于{@link https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm 结构化克隆算法}
      *
-     * @param obj 待克隆对象
-     * @return {} 克隆出的新对象，如果输入为 null、undefined 则为 null
+     * @param value 待克隆对象
+     * @return {} 深克隆后的新值
      */
-    public static deepClone(obj: unknown): unknown {
-        if (this.isNull(obj)) {
-            return null;
+    public static deepClone(value: unknown): unknown {
+        return this.deepCloneImpl(value, new WeakSet());
+    }
+
+    private static deepCloneImpl(value: unknown, hash = new WeakSet()): unknown {
+        // 非 object 类型或 ERROR 对象，无法深度拷贝，直接返回原值
+        if (this.isNull(value) || value instanceof Error || typeof value !== "object") {
+            return value;
+        }
+        // dom节点，无法深度拷贝，直接返回原值
+        if (typeof window !== "undefined" && (value instanceof Node || value instanceof HTMLCollection)) {
+            return value;
+        }
+        // 判断传入的待拷贝值的引用是否存在于hash中
+        if (hash.has(value)) {
+            return value;
         }
 
-        if (this.isBasicType(obj)) {
-            return obj;
+        if (typeof structuredClone !== "undefined") {
+            return structuredClone(value);
         }
-
-        if (Array.isArray(obj)) {
-            return obj.map((item) => this.deepClone(item));
+        const newValue = {};
+        for (const key of Object.keys(value)) {
+            const currentValue = value[key];
+            if (this.isNull(currentValue) || value instanceof Error || typeof currentValue !== "object") {
+                newValue[key] = currentValue;
+            } else if (Array.isArray(currentValue)) {
+                newValue[key] = currentValue.map(item => this.deepCloneImpl(item, hash))
+            } else if (currentValue instanceof Set) {
+                const newSet = new Set();
+                currentValue.forEach(item => {
+                    newSet.add(this.deepCloneImpl(item));
+                })
+                newValue[key] = newSet;
+            } else if (currentValue instanceof Map) {
+                const newMap = new Map();
+                currentValue.forEach((itemValue, itemKey) => {
+                    newMap.set(itemKey, this.deepCloneImpl(itemValue, hash));
+                })
+                newValue[key] = newMap;
+            } else {
+                hash.add(value);
+                newValue[key] = this.deepCloneImpl(currentValue, hash);
+            }
         }
-
-        const newObj = {};
-        for (const propName of Object.getOwnPropertyNames(obj)) {
-            newObj[propName] = this.deepClone(obj[propName]);
-        }
-        return newObj;
+        return newValue;
     }
 
     /**
@@ -410,6 +437,7 @@ export class ObjectUtils {
         }
         return compareTo(value1, value2) === 0;
     }
+
     /**
      * 比较两个对象是否相等，其中一个或两个对象可能为 null 或 undefined。
      *
@@ -470,14 +498,15 @@ export class ObjectUtils {
      */
     public static isBasicType(value: unknown): boolean {
         if (this.isNull(value)) {
-            return false;
+            return true;
         }
 
         return (
             typeof value === "string" ||
             typeof value === "number" ||
             typeof value === "boolean" ||
-            typeof value === "symbol"
+            typeof value === "symbol" ||
+            typeof value === "bigint"
         );
     }
 
@@ -498,5 +527,6 @@ export class ObjectUtils {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
+    private constructor() {
+    }
 }
