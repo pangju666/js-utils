@@ -1,6 +1,6 @@
 import {IllegalArgumentError, NullError} from "../core/runtimeError";
 import {Comparator, Condition} from "../core/TypeAlias";
-import structuredClone from "core-js/actual/structured-clone";
+// import structuredClone from "core-js/actual/structured-clone";
 
 /**
  * 对象工具类
@@ -180,9 +180,9 @@ export class ObjectUtils {
             return value;
         }
 
-        if (typeof structuredClone !== "undefined") {
+       /* if (typeof structuredClone !== "undefined") {
             return structuredClone(value);
-        }
+        }*/
         const newValue = {};
         for (const key of Object.keys(value)) {
             const currentValue = value[key];
