@@ -1,9 +1,13 @@
-src/
-test/
+src
+test
+
 tsconfig.json
 jestconfig.json
+rollup.config.js
+
+.babelrc
 .eslintrc
-.prettierrc.js
-.editorconfig
+.eslintignore
+.npmignore
 .gitignore
 
