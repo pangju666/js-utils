@@ -12,7 +12,7 @@
     "module": "ES6",
     "moduleResolution": "Node",
     // 是否允许编译js文件
-    "allowJs": false,
+    "allowJs": true,
     // 严格模式
     "strict": false,
     // 未使用变量报错
@@ -23,10 +23,10 @@
     "resolveJsonModule": true,
     // 允许export=导出，由import from 导入
     "esModuleInterop": true,
-    // 允许默认导入
-    "allowSyntheticDefaultImports": true,
     // 删除注释
     "removeComments": false,
+    // 允许默认导入
+    "allowSyntheticDefaultImports": true,
     // 生成定义文件
     "declaration": true,
     // 生成定义sourceMap
@@ -36,7 +36,7 @@
     // 导入库类型定义
     "lib": ["esnext", "dom"],
     // 导入指定类型包
-    "types": []
+    "types": ["jest"]
   },
   "exclude": ["node_modules", "dist"],
   "include": [
