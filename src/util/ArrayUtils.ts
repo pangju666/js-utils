@@ -1,7 +1,7 @@
-import { ObjectUtils } from "./ObjectUtils";
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { IndexOutOfBoundsError } from "../error/IndexOutOfBoundsError";
-import { ArrayPredicate, Comparator, ToString } from "../type/TypeAlias";
+import {ObjectUtils} from "./ObjectUtils";
+import {IllegalArgumentError} from "../error/IllegalArgumentError";
+import {IndexOutOfBoundsError} from "../error/IndexOutOfBoundsError";
+import {ArrayPredicate, Comparator, ToString} from "../type/TypeAlias";
 
 /**
  * 数组工具类
@@ -460,7 +460,7 @@ export class ArrayUtils {
    * @param array 要检查为null、undefined 或为空的数组
    * @return 相同的数组，如果 输入数组为 null、undefined 或空数组，则返回空数组
    */
-  public static nullToEmpty<T>(array: T[]): T[] {
+  public static emptyIfNull<T>(array: T[]): T[] {
     if (this.isEmpty(array)) {
       return [];
     }

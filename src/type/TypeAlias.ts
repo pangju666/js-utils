@@ -51,18 +51,10 @@ export type PropertyNameConverter = (propertyName: string) => string;
  * @param propertyName 对象属性名
  * @param value 对象属性名对应的值
  */
-export type PropertyNameExcluder = (
+export type PropertyNameExclude = (
   propertyName: string,
   value: unknown
 ) => boolean;
-
-/**
- * 判断值是否符合条件
- *
- * @param value 待判断的值
- * @return {} 条件是否成立
- */
-export type Condition = (value: unknown) => boolean;
 
 /**
  * 获取结果
