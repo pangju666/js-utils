@@ -1,17 +1,16 @@
 {
-    "name": "pangju-utils",
-    "version": "2.1.0",
-    "author": "pangju",
-    "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
-    "keywords": [
-        "utils",
-        "tools"
-    ],
-    "private": false,
-    "scripts": {
-        "build": "rollup -c \"rollup.config.js\"",
-        "lint": "eslint src/**/*.{js,ts}",
-        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+  "name": "pangju-utils",
+  "version": "2.2.0",
+  "author": "pangju",
+  "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
+  "keywords": [
+    "utils",
+    "tools"
+  ],
+  "private": false,
+  "scripts": {
+    "build": "rollup -c \"rollup.config.js\"",
+    "lint": "eslint src/**/*.{js,ts}",
         "test": "jest --no-cache --config jest.config.js"
     },
     "repository": {
@@ -42,7 +41,6 @@
     },
     "lint-staged": {
         "*./src/**/*.{js,ts}": [
-            "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
             "eslint src/**/*.{js,ts}"
         ]
     },

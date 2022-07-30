@@ -1,8 +1,8 @@
-import { describe, test, expect } from "@jest/globals";
-import { StringUtils } from "src/util/StringUtils";
+import { describe, test } from "@jest/globals";
+import { RandomStringUtils } from "../src/util/RandomStringUtils";
 
 describe("StringUtils Test", () => {
   test("isEmpty Test", () => {
-    expect(StringUtils.isEmpty("")).toBeTruthy();
+    console.log(RandomStringUtils.randomChinese(10));
   });
 });
