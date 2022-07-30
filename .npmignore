@@ -2,7 +2,9 @@ src
 test
 
 tsconfig.json
-jestconfig.json
+tsconfig.test.json
+
+jest.config.js
 rollup.config.js
 
 .babelrc

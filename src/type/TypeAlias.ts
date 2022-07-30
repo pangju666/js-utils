@@ -15,7 +15,19 @@ export type Comparator<T> = (o1: T, o2: T) => number;
  * @param obj 待测试的数组
  * @return {} 是否通过测试，通过则返回 true，否则为 false
  */
-export type Predicate<T> = (element: T, index?: number, obj?: T[]) => boolean;
+export type ArrayPredicate<T> = (
+  element: T,
+  index?: number,
+  obj?: T[]
+) => boolean;
+
+/**
+ * 根据给定参数测试此谓词。
+ *
+ * @param t 输入参数
+ * @return {} 如果输入参数匹配谓词则返回 true，否则为 false
+ */
+export type Predicate<T> = (t: T) => boolean;
 
 /**
  * 将值以字符串形式输出
@@ -39,16 +51,10 @@ export type PropertyNameConverter = (propertyName: string) => string;
  * @param propertyName 对象属性名
  * @param value 对象属性名对应的值
  */
-export type PropertyNameExcluder = (propertyName: string, value: unknown) => boolean;
-
-
-/**
- * 判断值是否符合条件
- *
- * @param value 待判断的值
- * @return {} 条件是否成立
- */
-export type Condition = (value: unknown) => boolean;
+export type PropertyNameExclude = (
+  propertyName: string,
+  value: unknown
+) => boolean;
 
 /**
  * 获取结果
@@ -56,24 +62,3 @@ export type Condition = (value: unknown) => boolean;
  * @return {} 结果
  */
 export type Supplier<T> = () => T;
-
-/**
- * 树形结构
- *
- * @param <K> 键值类型
- * @param <T> 数据类型
- */
-export interface TreeProp {
-    /**
-     * 编号属性名
-     */
-    id: string;
-    /**
-     * 父级节编号属性名
-     */
-    parentId: string;
-    /**
-     * 子级属性名
-     */
-    children: string;
-}
