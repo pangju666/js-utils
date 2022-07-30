@@ -1,17 +1,16 @@
 {
-    "name": "pangju-utils",
-    "version": "2.1.0",
-    "author": "pangju",
-    "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
-    "keywords": [
-        "utils",
-        "tools"
-    ],
-    "private": false,
-    "scripts": {
-        "build": "rollup -c \"rollup.config.js\"",
-        "lint": "eslint src/**/*.{js,ts}",
-        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+  "name": "pangju-utils",
+  "version": "2.2.0",
+  "author": "pangju",
+  "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
+  "keywords": [
+    "utils",
+    "tools"
+  ],
+  "private": false,
+  "scripts": {
+    "build": "rollup -c \"rollup.config.js\"",
+    "lint": "eslint src/**/*.{js,ts}",
         "test": "jest --no-cache --config jest.config.js"
     },
     "repository": {
@@ -42,7 +41,6 @@
     },
     "lint-staged": {
         "*./src/**/*.{js,ts}": [
-            "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
             "eslint src/**/*.{js,ts}"
         ]
     },
@@ -61,15 +59,12 @@
         "@rollup/plugin-babel": "^5.3.1",
         "@rollup/plugin-commonjs": "^22.0.0",
         "@rollup/plugin-node-resolve": "^13.3.0",
-        "@types/jest": "^28.1.3",
         "@typescript-eslint/eslint-plugin": "^5.29.0",
         "@typescript-eslint/parser": "^5.29.0",
         "eslint": "^8.18.0",
-        "eslint-config-prettier": "^8.5.0",
         "husky": "^8.0.1",
         "jest": "^28.1.1",
         "lint-staged": "^13.0.2",
-        "prettier": "^2.7.1",
         "rollup": "^2.75.7",
         "rollup-plugin-dts": "^4.2.2",
         "rollup-plugin-terser": "^7.0.2",

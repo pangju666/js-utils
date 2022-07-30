@@ -38,8 +38,10 @@
     // 导入指定类型包
     "types": []
   },
+  // 排除目录
   "exclude": ["node_modules", "dist"],
+  // 导入目录
   "include": [
-    "src/*" // 导入目录
+    "src/*"
   ]
 }
