@@ -109,12 +109,66 @@ export class RandomUtils {
     let result;
     if (ObjectUtils.isNull(endExclusive)) {
       if (ObjectUtils.isNull(startInclusive)) {
-        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length);
+        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length, true);
       } else {
-        result = this.randomArray(0, startInclusive - 1, length);
+        result = this.randomArray(0, startInclusive - 1, length, true);
       }
     } else {
-      result = this.randomArray(startInclusive, endExclusive, length);
+      result = this.randomArray(startInclusive, endExclusive, length, true);
+    }
+    return result.map((item) => Math.floor(item));
+  }
+
+  /**
+   * 返回 [0, {@link Number.MAX_SAFE_INTEGER}] 内的不重复随机整数数组
+   *
+   * @param length 数组长度，不可小于 1 且不能为 null 或 undefined
+   * @throws {IllegalArgumentError} 如果 length 为 null 或 undefined 或 length 小于 1
+   * @return {} 随机无重复元素的整数数组
+   */
+  public static nextNoRepeatIntArray(length: number): number[];
+
+  /**
+   * 返回指定范围 [0, bound] 内的不重复随机整数数组。
+   *
+   * @param length 数组长度，不可小于 1 且不能为 null 或 undefined
+   * @param bound 可以返回的最大值，必须为非负数
+   * @throws {IllegalArgumentError} 如果 (bound 为负数) 或
+   * （length 为 null 或 undefined 或 length 小于 1）
+   * @return {} 随机无重复元素的整数数组
+   */
+  public static nextNoRepeatIntArray(length: number, bound: number): number[];
+
+  /**
+   * 返回指定范围内的不重复随机整数数组。
+   *
+   * @param length 数组长度，不可小于 1 且不能为 null 或 undefined
+   * @param startInclusive 可以返回的最小值，必须为非负数
+   * @param endExclusive 可以返回的最大值，必须为非负数
+   * @throws {IllegalArgumentError} 如果 （startInclusive > endExclusive 或 startInclusive 为负数） 或
+   * （length 为 null 或 undefined 或 length 小于 1）
+   * @return {} 随机无重复元素的整数数组
+   */
+  public static nextNoRepeatIntArray(
+      length: number,
+      startInclusive: number,
+      endExclusive: number
+  ): number[];
+
+  static nextNoRepeatIntArray(
+      length: number,
+      startInclusive?: number,
+      endExclusive?: number
+  ): number[] {
+    let result;
+    if (ObjectUtils.isNull(endExclusive)) {
+      if (ObjectUtils.isNull(startInclusive)) {
+        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length, false);
+      } else {
+        result = this.randomArray(0, startInclusive - 1, length, false);
+      }
+    } else {
+      result = this.randomArray(startInclusive, endExclusive, length, false);
     }
     return result.map((item) => Math.floor(item));
   }
@@ -198,11 +252,11 @@ export class RandomUtils {
   ): number[] {
     if (ObjectUtils.isNull(endExclusive)) {
       if (ObjectUtils.isNull(startInclusive)) {
-        return this.randomArray(0, Number.MAX_VALUE, length);
+        return this.randomArray(0, Number.MAX_VALUE, length, true);
       }
-      return this.randomArray(0, startInclusive - 1, length);
+      return this.randomArray(0, startInclusive - 1, length, true);
     }
-    return this.randomArray(startInclusive, endExclusive, length);
+    return this.randomArray(startInclusive, endExclusive, length, true);
   }
 
   private static random(min: number, max: number): number {
@@ -221,9 +275,10 @@ export class RandomUtils {
   }
 
   private static randomArray(
-    min: number,
-    max: number,
-    length: number
+      min: number,
+      max: number,
+      length: number,
+      repeat: boolean,
   ): number[] {
     if (ObjectUtils.isNull(length)) {
       throw new IllegalArgumentError("长度不可为 null 或 undefined。");
@@ -249,7 +304,11 @@ export class RandomUtils {
 
     const result = new Array(length);
     for (let i = 0; i < length; i++) {
-      result[i] = Math.random() * (max - min + 1) + min;
+      let value;
+      do {
+        value = Math.random() * (max - min + 1) + min;
+      } while (!repeat && result.includes(value))
+      result[i] = value;
     }
     return result;
   }
