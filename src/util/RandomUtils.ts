@@ -1,5 +1,4 @@
 import {IllegalArgumentError} from "../error/IllegalArgumentError";
-import {ArrayUtils} from "./ArrayUtils";
 import {ObjectUtils} from "./ObjectUtils";
 
 /**
@@ -241,7 +240,11 @@ export class RandomUtils {
     }
 
     if (min === max) {
-      return ArrayUtils.fill(min, length);
+      const array = new Array(length);
+      for (let i = 0; i < length; i++) {
+        array[i] = min;
+      }
+      return array;
     }
 
     const result = new Array(length);
