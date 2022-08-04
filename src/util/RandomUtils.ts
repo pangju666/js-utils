@@ -1,6 +1,6 @@
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { ArrayUtils } from "./ArrayUtils";
-import { ObjectUtils } from "./ObjectUtils";
+import {IllegalArgumentError} from "../error/IllegalArgumentError";
+import {ArrayUtils} from "./ArrayUtils";
+import {ObjectUtils} from "./ObjectUtils";
 
 /**
  * 随机数工具类
@@ -29,9 +29,6 @@ export class RandomUtils {
     const result = this.nextIntArray(0, 1, length);
     return result.map((item) => item === 1);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
 
   /**
    * 返回 [0, {@link Number.MAX_SAFE_INTEGER}] 内的随机整数
@@ -252,5 +249,9 @@ export class RandomUtils {
       result[i] = Math.random() * (max - min + 1) + min;
     }
     return result;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {
   }
 }
