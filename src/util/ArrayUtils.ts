@@ -2,6 +2,7 @@ import {ObjectUtils} from "./ObjectUtils";
 import {IllegalArgumentError} from "../error/IllegalArgumentError";
 import {IndexOutOfBoundsError} from "../error/IndexOutOfBoundsError";
 import {ArrayPredicate, Comparator, ToString} from "../type/TypeAlias";
+import {RandomUtils} from "./RandomUtils";
 
 /**
  * 数组工具类
@@ -776,13 +777,25 @@ export class ArrayUtils {
         n = n_offset;
       } else {
         this.swap(
-          array,
-          startIndexInclusive,
-          startIndexInclusive + n_offset,
-          offset
+            array,
+            startIndexInclusive,
+            startIndexInclusive + n_offset,
+            offset
         );
         break;
       }
+    }
+  }
+
+  /**
+   * 使用 Fisher-Yates 算法随机排列指定数组的元素。
+   *
+   * @param array 要洗牌的数组
+   * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates 洗牌算法</a>
+   */
+  public static shuffle<T>(array: T[]): void {
+    for (let i = array.length; i > 1; i--) {
+      this.swap(array, i - 1, RandomUtils.nextInt(i), 1);
     }
   }
 
