@@ -1,7 +1,6 @@
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { NullError } from "../error/NullError";
-import { Comparator, Predicate } from "../type/TypeAlias";
-// import {StringUtils} from "./StringUtils";
+import {IllegalArgumentError} from "../error/IllegalArgumentError";
+import {NullError} from "../error/NullError";
+import {Comparator, Predicate} from "../type/TypeAlias";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 
@@ -500,7 +499,8 @@ export class ObjectUtils {
    * @param types 期待类型集合
    * @return {} 如果值为某个期待类型，则为 true，否则为 false
    */
-  public static isAnyType(value: unknown, ...types: any[]): boolean {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public static isAnyType(value: unknown, ...types: Function[]): boolean {
     if (this.isNull(value) || this.isEmpty(types)) {
       return false;
     }
