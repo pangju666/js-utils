@@ -210,6 +210,9 @@ export class ArrayUtils {
     if (ObjectUtils.isNull(array)) {
       return 0;
     }
+    if (!Array.isArray(array)) {
+      return 0;
+    }
     return array.length;
   }
 
