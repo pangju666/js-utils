@@ -86,8 +86,71 @@ export class NumberUtils {
         return min;
     }
 
-    public static a(...array: number[]): number {
-        return array.reduce()
+    /**
+     * 返回一组数字相加的总和。
+     *
+     * @param array 一组数字，不能为 null 或 undefined
+     * @return {} 这组数字的总和
+     */
+    public static sum(...array: number[]): number {
+        return array.reduce((a, b) => a + b);
+    }
+
+    /**
+     * 返回一组数字的平均数。
+     *
+     * @param array 一组数字，不能为 null 或 undefined
+     * @return {number} 这组数字的平均数
+     */
+    public static average(...array: number[]): number {
+        return this.sum(...array) / array.length;
+    }
+
+    /**
+     * 返回一组数字的众数（出现频率超过总数的 1/2 的数字），如果不存在则返回-1。
+     *
+     * @param array 一组数字，不能为 null 或 undefined
+     * @return {number} 这组数字的众数
+     */
+    public static mode(array: number[]): number {
+        let count = 0, tmp = 0;
+
+        for (const num of array) {
+            if (count === 0) {
+                tmp = num;
+                count = 1;
+            } else {
+                num === tmp ? ++count : --count;
+            }
+        }
+        count = 0;
+        for (const num of array) {
+            if (num === tmp) {
+                ++count;
+            }
+        }
+        if (count <= array.length / 2) {
+            tmp = -1;
+        }
+        return tmp;
+    }
+
+    /**
+     * 返回一组数字相加的中位数。若并未排序，则会先对其排序再求中位数。
+     *
+     * @param array 一组数字，不能为 null 或 undefined
+     * @return {number} 这组数字的总和
+     */
+    public static median(...array: number[]): number {
+        array.sort((a, b) => a - b);
+
+        if (array.length % 2 !== 0) {
+            return array[(array.length - 1) / 2];
+        }
+
+        const rightIndex = array.length / 2;
+        const leftIndex = rightIndex - 1;
+        return (array[leftIndex] + array[rightIndex]) / 2;
     }
 
     /**
@@ -114,24 +177,32 @@ export class NumberUtils {
      * 返回提供的数值表达式，对其四舍五入并保留指定的精度。
      *
      * @param value 数值表达式。
-     * @param digits 小数点后的位数。必须在 0 - 20 的范围内，包括 0 到 20。
+     * @param digits 小数点后的位数。必须在 0 - 20 的范围内，包括 0 到 20。如果参数为小数，则向下取整。
      * @throws {IllegalArgumentError} 如果 digits 参数 不在 0-20 之间
      * @return {} 参数四舍五入并保留指定的精度后的值。
      */
     public static round(value: number, digits = 0): number {
-        return Number(Math.round(Number(value + "e" + digits)) + "e-" + digits);
+        if (digits < 0 || digits > 20) {
+            throw new IllegalArgumentError("小数点后的位数，必须在 0 - 20 的范围内");
+        }
+        const fractionDigits = Math.floor(digits);
+        return Number(Math.round(Number(value + "e" + fractionDigits)) + "e-" + fractionDigits);
     }
 
     /**
      * 返回提供的数值表达式，并保留指定的精度。
      *
      * @param value 数值表达式。
-     * @param digits 小数点后的位数。必须在 0 - 20 的范围内，包括 0 到 20。
+     * @param digits 小数点后的位数，必须在 0 - 20 的范围内，包括 0 到 20。如果参数为小数，则向下取整。
      * @throws {IllegalArgumentError} 如果 digits 参数 不在 0-20 之间
      * @return {} 参数保留指定的精度后的值。
      */
     public static toFixed(value: number, digits = 0): number {
-        return Number(Math.floor(Number(value + "e" + digits)) + "e-" + digits);
+        if (digits < 0 || digits > 20) {
+            throw new IllegalArgumentError("小数点后的位数，必须在 0 - 20 的范围内");
+        }
+        const fractionDigits = Math.floor(digits);
+        return Number(Math.floor(Number(value + "e" + fractionDigits)) + "e-" + fractionDigits);
     }
 
     private static validateArray(array: number[]): void {
