@@ -84,4 +84,28 @@ export class TreeUtils {
     }
     return treeNodes;
   }
+
+  /**
+   * 遍历全部树节点
+   *
+   * @param nodes 节点数组
+   * @param childrenKey 子节点key
+   * @param callback 节点回调函数
+   * @throws {TypeError} 如果子节点不为数组则抛出
+   */
+  public static forEach<T>(
+    nodes: T[],
+    childrenKey: string,
+    callback: (value: T, nodes: T[]) => void
+  ): void {
+    for (const node of nodes) {
+      callback(node, nodes);
+      if (ObjectUtils.nonNull(node[childrenKey])) {
+        if (!Array.isArray(node[childrenKey])) {
+          throw new TypeError("子节点必须为数组");
+        }
+        this.forEach(node[childrenKey], childrenKey, callback);
+      }
+    }
+  }
 }

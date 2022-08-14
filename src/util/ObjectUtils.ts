@@ -1,6 +1,6 @@
-import {IllegalArgumentError} from "../error/IllegalArgumentError";
-import {NullError} from "../error/NullError";
-import {Comparator, Predicate} from "../type/TypeAlias";
+import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { NullError } from "../error/NullError";
+import { Comparator, Predicate } from "../type/TypeAlias";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 
@@ -14,6 +14,48 @@ import {Comparator, Predicate} from "../type/TypeAlias";
 export class ObjectUtils {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
+
+  /**
+   * 根据属性路径字符串或数组获取对象的属性
+   *
+   * 例如：
+   * const a = {
+   *     b: "test",
+   *     c: {
+   *         d: "test2"
+   *     },
+   *     e: ["test4"],
+   *     f: [{g: "test3"}]
+   * };
+   * getProp(a, "b") => "test"
+   * getProp(a, "c.d") => "test2"
+   * getProp(a, "e[0]") => "test4"
+   * getProp(a, "f[0].g") => "test3"
+   *
+   * @param obj 测试对象
+   * @param key 属性路径字符串或数组，如 "a.b"、"a"、"a[0].b"，如果参数为 null、undefined、""、[] 则返回对象本身
+   * @return {} 对象属性值，如果对象为 null、undefined 则返回对象本身
+   */
+  public static getProp(obj: unknown, key: string | Array<string>): unknown {
+    if (this.isEmpty(key)) {
+      return obj;
+    }
+
+    let props = key;
+    if (!Array.isArray(key)) {
+      props = (props as string)
+        // 替换[为.
+        .replace(/\[/g, ".")
+        // 替换]为
+        .replace(/]/g, "")
+        // 分隔路径
+        .split(".");
+      if (props.length <= 1) {
+        return obj[props[0]];
+      }
+    }
+    return (props as Array<string>).reduce((value, prop) => value[prop], obj);
+  }
 
   /**
    * 判断值是否不为 undefined
