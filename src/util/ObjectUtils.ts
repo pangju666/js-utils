@@ -1,7 +1,6 @@
 import { IllegalArgumentError } from "../error/IllegalArgumentError";
 import { NullError } from "../error/NullError";
 import { Comparator, Predicate } from "../type/TypeAlias";
-import { StringUtils } from "./StringUtils";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 
@@ -47,7 +46,7 @@ export class ObjectUtils {
       throw new TypeError("key 必须为字符串类型");
     }
 
-    if (StringUtils.isEmpty(key)) {
+    if (ObjectUtils.isNull(key) || key.length === 0) {
       return defaultValue;
     }
 
