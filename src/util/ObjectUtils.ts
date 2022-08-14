@@ -1,6 +1,7 @@
 import { IllegalArgumentError } from "../error/IllegalArgumentError";
 import { NullError } from "../error/NullError";
 import { Comparator, Predicate } from "../type/TypeAlias";
+import { StringUtils } from "./StringUtils";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 
@@ -16,7 +17,7 @@ export class ObjectUtils {
   private constructor() {}
 
   /**
-   * 根据属性路径字符串或数组获取对象的属性
+   * 根据属性路径字符串获取对象的属性
    *
    * 例如：
    * const a = {
@@ -33,28 +34,29 @@ export class ObjectUtils {
    * getProp(a, "f[0].g") => "test3"
    *
    * @param obj 测试对象
-   * @param key 属性路径字符串或数组，如 "a.b"、"a"、"a[0].b"，如果参数为 null、undefined、""、[] 则返回对象本身
-   * @return {} 对象属性值，如果对象为 null、undefined 则返回对象本身
+   * @param key 属性路径字符串，如 "a.b"、"a"、"a[0].b"，如果参数为 null、undefined、"" 则返回默认值
+   * @param defaultValue 默认值
+   * @return {} 对象属性值，如果对象为 null、undefined 则返回默认值
    */
-  public static getProp(obj: unknown, key: string | Array<string>): unknown {
-    if (this.isEmpty(key)) {
-      return obj;
+  public static getProp(
+    obj: unknown,
+    key: string,
+    defaultValue: unknown
+  ): unknown {
+    if (ObjectUtils.nonNull(key) && typeof key !== "string") {
+      throw new TypeError("key 必须为字符串类型");
     }
 
-    let props = key;
-    if (!Array.isArray(key)) {
-      props = (props as string)
-        // 替换[为.
-        .replace(/\[/g, ".")
-        // 替换]为
-        .replace(/]/g, "")
-        // 分隔路径
-        .split(".");
-      if (props.length <= 1) {
-        return obj[props[0]];
-      }
+    if (StringUtils.isEmpty(key)) {
+      return defaultValue;
     }
-    return (props as Array<string>).reduce((value, prop) => value[prop], obj);
+
+    const props = key.replace(/\[/g, ".").replace(/]/g, "").split(".");
+    if (props.length <= 1) {
+      return this.defaultIfNull(obj[props[0]], defaultValue);
+    }
+    const propValue = props.reduce((value, prop) => (value || {})[prop], obj);
+    return this.defaultIfNull(propValue, defaultValue);
   }
 
   /**
