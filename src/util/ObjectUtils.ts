@@ -532,7 +532,8 @@ export class ObjectUtils {
       typeof value === "number" ||
       typeof value === "boolean" ||
       typeof value === "symbol" ||
-      typeof value === "bigint"
+      typeof value === "bigint" ||
+      typeof value === "function"
     );
   }
 
@@ -548,7 +549,24 @@ export class ObjectUtils {
     if (this.isNull(value) || this.isEmpty(types)) {
       return false;
     }
-    return types.some((type) => value instanceof type);
+    return types.some((type) => {
+      if (type === String && typeof value === "string") {
+        return true;
+      } else if (type === Number && typeof value === "number") {
+        return true;
+      } else if (type === BigInt && typeof value === "bigint") {
+        return true;
+      } else if (type === Boolean && typeof value === "boolean") {
+        return true;
+      } else if (type === Symbol && typeof value === "symbol") {
+        return true;
+      } else if (type === Object && typeof value === "object") {
+        return true;
+      } else if (type === Function && typeof value === "function") {
+        return true;
+      }
+      return value instanceof type || value.constructor === type;
+    });
   }
 
   private static deepCloneImpl(value: unknown, hash = new WeakSet()): unknown {
