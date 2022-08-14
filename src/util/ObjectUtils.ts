@@ -1,6 +1,6 @@
-import {IllegalArgumentError} from "../error/IllegalArgumentError";
-import {NullError} from "../error/NullError";
-import {Comparator, Predicate} from "../type/TypeAlias";
+import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { NullError } from "../error/NullError";
+import { Comparator, Predicate } from "../type/TypeAlias";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 
@@ -14,6 +14,49 @@ import {Comparator, Predicate} from "../type/TypeAlias";
 export class ObjectUtils {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
+
+  /**
+   * 根据属性路径字符串获取对象的属性
+   *
+   * 例如：
+   * const a = {
+   *     b: "test",
+   *     c: {
+   *         d: "test2"
+   *     },
+   *     e: ["test4"],
+   *     f: [{g: "test3"}]
+   * };
+   * getProp(a, "b") => "test"
+   * getProp(a, "c.d") => "test2"
+   * getProp(a, "e[0]") => "test4"
+   * getProp(a, "f[0].g") => "test3"
+   *
+   * @param obj 测试对象
+   * @param key 属性路径字符串，如 "a.b"、"a"、"a[0].b"，如果参数为 null、undefined、"" 则返回默认值
+   * @param defaultValue 默认值
+   * @return {} 对象属性值，如果对象为 null、undefined 则返回默认值
+   */
+  public static getProp(
+    obj: unknown,
+    key: string,
+    defaultValue: unknown
+  ): unknown {
+    if (ObjectUtils.nonNull(key) && typeof key !== "string") {
+      throw new TypeError("key 必须为字符串类型");
+    }
+
+    if (ObjectUtils.isNull(key) || key.length === 0) {
+      return defaultValue;
+    }
+
+    const props = key.replace(/\[/g, ".").replace(/]/g, "").split(".");
+    if (props.length <= 1) {
+      return this.defaultIfNull(obj[props[0]], defaultValue);
+    }
+    const propValue = props.reduce((value, prop) => (value || {})[prop], obj);
+    return this.defaultIfNull(propValue, defaultValue);
+  }
 
   /**
    * 判断值是否不为 undefined
@@ -488,7 +531,8 @@ export class ObjectUtils {
       typeof value === "number" ||
       typeof value === "boolean" ||
       typeof value === "symbol" ||
-      typeof value === "bigint"
+      typeof value === "bigint" ||
+      typeof value === "function"
     );
   }
 
@@ -504,7 +548,24 @@ export class ObjectUtils {
     if (this.isNull(value) || this.isEmpty(types)) {
       return false;
     }
-    return types.some((type) => value instanceof type);
+    return types.some((type) => {
+      if (type === String && typeof value === "string") {
+        return true;
+      } else if (type === Number && typeof value === "number") {
+        return true;
+      } else if (type === BigInt && typeof value === "bigint") {
+        return true;
+      } else if (type === Boolean && typeof value === "boolean") {
+        return true;
+      } else if (type === Symbol && typeof value === "symbol") {
+        return true;
+      } else if (type === Object && typeof value === "object") {
+        return true;
+      } else if (type === Function && typeof value === "function") {
+        return true;
+      }
+      return value instanceof type || value.constructor === type;
+    });
   }
 
   private static deepCloneImpl(value: unknown, hash = new WeakSet()): unknown {
