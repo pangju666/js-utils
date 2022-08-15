@@ -1,6 +1,6 @@
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { NullError } from "../error/NullError";
-import { Comparator, Predicate } from "../type/TypeAlias";
+import {IllegalArgumentError} from "../error/IllegalArgumentError";
+import {NullError} from "../error/NullError";
+import {Comparator, Predicate} from "../type/TypeAlias";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 
@@ -19,6 +19,7 @@ export class ObjectUtils {
    * 根据属性路径字符串获取对象的属性
    *
    * 例如：
+   * <pre>
    * const a = {
    *     b: "test",
    *     c: {
@@ -31,6 +32,7 @@ export class ObjectUtils {
    * getProp(a, "c.d") => "test2"
    * getProp(a, "e[0]") => "test4"
    * getProp(a, "f[0].g") => "test3"
+   * </pre>
    *
    * @param obj 测试对象
    * @param key 属性路径字符串，如 "a.b"、"a"、"a[0].b"，如果参数为 null、undefined、"" 则返回默认值
