@@ -44,11 +44,11 @@ export class ObjectUtils {
     key: string,
     defaultValue: unknown
   ): unknown {
-    if (ObjectUtils.nonNull(key) && typeof key !== "string") {
+    if (this.nonNull(key) && typeof key !== "string") {
       throw new TypeError("key 必须为字符串类型");
     }
 
-    if (ObjectUtils.anyNull(obj, key) || key.length === 0) {
+    if (this.anyNull(obj, key) || key.length === 0) {
       return defaultValue;
     }
 
