@@ -1,6 +1,6 @@
 {
   "name": "pangju-utils",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": "pangju",
   "description": "常用js工具类，命名和实现参考Apache Java Common Utils",
   "keywords": [
