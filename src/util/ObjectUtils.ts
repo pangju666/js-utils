@@ -48,7 +48,7 @@ export class ObjectUtils {
       throw new TypeError("key 必须为字符串类型");
     }
 
-    if (ObjectUtils.isNull(key) || key.length === 0) {
+    if (ObjectUtils.allNull(obj, key) || key.length === 0) {
       return defaultValue;
     }
 
