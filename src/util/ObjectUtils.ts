@@ -1,6 +1,6 @@
-import {IllegalArgumentError} from "../error/IllegalArgumentError";
-import {NullError} from "../error/NullError";
-import {Comparator, Predicate} from "../type/TypeAlias";
+import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { NullError } from "../error/NullError";
+import { Comparator, Predicate } from "../type/TypeAlias";
 
 // import structuredClone from "interface-js/actual/structured-clone";
 

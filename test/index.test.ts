@@ -1,5 +1,5 @@
-import {describe, test} from "@jest/globals";
-import {ObjectUtils} from "../src";
+import { describe, test } from "@jest/globals";
+import { ObjectUtils } from "../src";
 
 describe("StringUtils Test", () => {
   test("isEmpty Test", () => {

@@ -35,7 +35,6 @@ export class RandomUtils {
    * @return {} 随机整数
    */
   public static nextInt(): number;
-
   /**
    * 返回指定范围 [0, bound] 内的随机整数。
    *
@@ -44,7 +43,6 @@ export class RandomUtils {
    * @return {} 随机整数
    */
   public static nextInt(bound: number): number;
-
   /**
    * 返回指定范围 [startInclusive, endExclusive] 内的随机整数。
    *
@@ -54,7 +52,6 @@ export class RandomUtils {
    * @return {} 随机整数
    */
   public static nextInt(startInclusive: number, endExclusive: number): number;
-
   static nextInt(startInclusive?: number, endExclusive?: number): number {
     if (ObjectUtils.isNull(endExclusive)) {
       if (ObjectUtils.isNull(startInclusive)) {
@@ -73,7 +70,6 @@ export class RandomUtils {
    * @return {} 随机整数数组
    */
   public static nextIntArray(length: number): number[];
-
   /**
    * 返回指定范围 [0, bound] 内的随机整数数组。
    *
@@ -84,7 +80,6 @@ export class RandomUtils {
    * @return {} 随机整数数组
    */
   public static nextIntArray(length: number, bound: number): number[];
-
   /**
    * 返回指定范围内的随机整数数组。
    *
@@ -100,7 +95,6 @@ export class RandomUtils {
     startInclusive: number,
     endExclusive: number
   ): number[];
-
   static nextIntArray(
     length: number,
     startInclusive?: number,
@@ -127,7 +121,6 @@ export class RandomUtils {
    * @return {} 随机无重复元素的整数数组
    */
   public static nextNoRepeatIntArray(length: number): number[];
-
   /**
    * 返回指定范围 [0, bound] 内的不重复随机整数数组。
    *
@@ -138,10 +131,6 @@ export class RandomUtils {
    * @return {} 随机无重复元素的整数数组
    */
   public static nextNoRepeatIntArray(length: number, bound: number): number[];
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
-
   /**
    * 返回指定范围内的不重复随机整数数组。
    *
@@ -157,6 +146,23 @@ export class RandomUtils {
     startInclusive: number,
     endExclusive: number
   ): number[];
+  static nextNoRepeatIntArray(
+    length: number,
+    startInclusive?: number,
+    endExclusive?: number
+  ): number[] {
+    let result;
+    if (ObjectUtils.isNull(endExclusive)) {
+      if (ObjectUtils.isNull(startInclusive)) {
+        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length, false);
+      } else {
+        result = this.randomArray(0, startInclusive - 1, length, false);
+      }
+    } else {
+      result = this.randomArray(startInclusive, endExclusive, length, false);
+    }
+    return result.map((item) => Math.floor(item));
+  }
 
   /**
    * 返回 [0, {@link Number.MAX_VALUE}] 内的随机浮点数
@@ -164,7 +170,6 @@ export class RandomUtils {
    * @return {} 随机整数
    */
   public static nextFloat(): number;
-
   /**
    * 返回指定范围 [0, bound] 内的随机浮点数。
    *
@@ -173,7 +178,6 @@ export class RandomUtils {
    * @return {} 随机浮点数
    */
   public static nextFloat(bound: number): number;
-
   /**
    * 返回指定范围内的随机浮点数。
    *
@@ -183,7 +187,6 @@ export class RandomUtils {
    * @return {} 随机浮点数
    */
   public static nextFloat(startInclusive: number, endExclusive: number): number;
-
   static nextFloat(startInclusive?: number, endExclusive?: number): number {
     if (ObjectUtils.isNull(endExclusive)) {
       if (ObjectUtils.isNull(startInclusive)) {
@@ -202,7 +205,6 @@ export class RandomUtils {
    * @return {} 随机浮点数数组
    */
   public static nextFloatArray(length: number): number[];
-
   /**
    * 返回指定范围 [0, bound] 内的随机浮点数数组。
    *
@@ -213,7 +215,6 @@ export class RandomUtils {
    * @return {} 随机浮点数数组
    */
   public static nextFloatArray(length: number, bound: number): number[];
-
   /**
    * 返回指定范围内的随机浮点数数组。
    *
@@ -229,7 +230,6 @@ export class RandomUtils {
     startInclusive: number,
     endExclusive: number
   ): number[];
-
   static nextFloatArray(
     length: number,
     startInclusive?: number,
@@ -257,24 +257,6 @@ export class RandomUtils {
     }
 
     return Math.random() * (max - min + 1) + min;
-  }
-
-  static nextNoRepeatIntArray(
-    length: number,
-    startInclusive?: number,
-    endExclusive?: number
-  ): number[] {
-    let result;
-    if (ObjectUtils.isNull(endExclusive)) {
-      if (ObjectUtils.isNull(startInclusive)) {
-        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length, false);
-      } else {
-        result = this.randomArray(0, startInclusive - 1, length, false);
-      }
-    } else {
-      result = this.randomArray(startInclusive, endExclusive, length, false);
-    }
-    return result.map((item) => Math.floor(item));
   }
 
   private static randomArray(
@@ -315,4 +297,7 @@ export class RandomUtils {
     }
     return result;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
 }
