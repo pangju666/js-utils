@@ -7,9 +7,10 @@ import dts from "rollup-plugin-dts";
 import path from "path";
 import pkg from "./package.json";
 
+// eslint-disable-next-line no-undef
 const resolvePath = (...args) => path.resolve(__dirname, ...args);
 
-module.exports = [
+export default [
   // 生成 .d.ts 类型声明文件
   {
     input: resolvePath("src/index.ts"),

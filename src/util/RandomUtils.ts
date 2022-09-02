@@ -1,5 +1,5 @@
-import {IllegalArgumentError} from "../error/IllegalArgumentError";
-import {ObjectUtils} from "./ObjectUtils";
+import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { ObjectUtils } from "./ObjectUtils";
 
 /**
  * 随机数工具类
@@ -139,6 +139,9 @@ export class RandomUtils {
    */
   public static nextNoRepeatIntArray(length: number, bound: number): number[];
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
+
   /**
    * 返回指定范围内的不重复随机整数数组。
    *
@@ -150,28 +153,10 @@ export class RandomUtils {
    * @return {} 随机无重复元素的整数数组
    */
   public static nextNoRepeatIntArray(
-      length: number,
-      startInclusive: number,
-      endExclusive: number
+    length: number,
+    startInclusive: number,
+    endExclusive: number
   ): number[];
-
-  static nextNoRepeatIntArray(
-      length: number,
-      startInclusive?: number,
-      endExclusive?: number
-  ): number[] {
-    let result;
-    if (ObjectUtils.isNull(endExclusive)) {
-      if (ObjectUtils.isNull(startInclusive)) {
-        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length, false);
-      } else {
-        result = this.randomArray(0, startInclusive - 1, length, false);
-      }
-    } else {
-      result = this.randomArray(startInclusive, endExclusive, length, false);
-    }
-    return result.map((item) => Math.floor(item));
-  }
 
   /**
    * 返回 [0, {@link Number.MAX_VALUE}] 内的随机浮点数
@@ -274,11 +259,29 @@ export class RandomUtils {
     return Math.random() * (max - min + 1) + min;
   }
 
+  static nextNoRepeatIntArray(
+    length: number,
+    startInclusive?: number,
+    endExclusive?: number
+  ): number[] {
+    let result;
+    if (ObjectUtils.isNull(endExclusive)) {
+      if (ObjectUtils.isNull(startInclusive)) {
+        result = this.randomArray(0, Number.MAX_SAFE_INTEGER, length, false);
+      } else {
+        result = this.randomArray(0, startInclusive - 1, length, false);
+      }
+    } else {
+      result = this.randomArray(startInclusive, endExclusive, length, false);
+    }
+    return result.map((item) => Math.floor(item));
+  }
+
   private static randomArray(
-      min: number,
-      max: number,
-      length: number,
-      repeat: boolean,
+    min: number,
+    max: number,
+    length: number,
+    repeat: boolean
   ): number[] {
     if (ObjectUtils.isNull(length)) {
       throw new IllegalArgumentError("长度不可为 null 或 undefined。");
@@ -307,13 +310,9 @@ export class RandomUtils {
       let value;
       do {
         value = Math.random() * (max - min + 1) + min;
-      } while (!repeat && result.includes(value))
+      } while (!repeat && result.includes(value));
       result[i] = value;
     }
     return result;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {
   }
 }

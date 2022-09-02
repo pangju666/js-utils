@@ -20,8 +20,10 @@
   "scripts": {
     "prepare": "husky install",
     "build": "rollup -c rollup.config.js",
-    "lint-staged": "lint-staged -c .lintstagedrc.json",
-    "test": "jest --no-cache --config jest.config.js"
+    "lint": "eslint **/*.{ts,js} --fix",
+    "prettier": "prettier --write **/*.{ts,js}",
+    "test": "jest --no-cache --config jest.config.js",
+    "lint-staged": "lint-staged"
   },
   "type": "module",
   "types": "./dist/pangju-utils.d.ts",
@@ -35,8 +37,6 @@
   "files": [
     "dist"
   ],
-  "lint-staged": {
-  },
   "dependencies": {
     "@babel/runtime": "^7.18.9",
     "core-js": "^3.25.0",
@@ -55,8 +55,8 @@
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
-    "@typescript-eslint/parser": "^5.36.1",
-    "eslint": "^8.23.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "8.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-tsdoc": "^0.2.16",

@@ -1,8 +1,8 @@
-import {ObjectUtils} from "./ObjectUtils";
-import {IllegalArgumentError} from "../error/IllegalArgumentError";
-import {IndexOutOfBoundsError} from "../error/IndexOutOfBoundsError";
-import {ArrayPredicate, Comparator, ToString} from "../type/TypeAlias";
-import {RandomUtils} from "./RandomUtils";
+import { ObjectUtils } from "./ObjectUtils";
+import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { IndexOutOfBoundsError } from "../error/IndexOutOfBoundsError";
+import { ArrayPredicate, Comparator, ToString } from "../type/TypeAlias";
+import { RandomUtils } from "./RandomUtils";
 
 /**
  * 数组工具类
@@ -780,10 +780,10 @@ export class ArrayUtils {
         n = n_offset;
       } else {
         this.swap(
-            array,
-            startIndexInclusive,
-            startIndexInclusive + n_offset,
-            offset
+          array,
+          startIndexInclusive,
+          startIndexInclusive + n_offset,
+          offset
         );
         break;
       }
