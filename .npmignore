@@ -1,15 +1,18 @@
+.husky
+docs
 src
 test
 
-tsconfig.json
-tsconfig.test.json
+.babelrc
+.eslintignore
+.eslintrc
+.gitignore
+.lintstagedrc
+.npmignore
+.prettierignore
 
 jest.config.js
 rollup.config.js
 
-.babelrc
-.eslintrc
-.eslintignore
-.npmignore
-.gitignore
-
+tsconfig.json
+typedoc.json
