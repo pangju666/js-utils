@@ -100,7 +100,7 @@ export class TreeUtils {
   ): void {
     for (const node of nodes) {
       callback(node, nodes);
-      if (ObjectUtils.nonNull(node[childrenKey])) {
+      if (ObjectUtils.isNotNull(node[childrenKey])) {
         if (!Array.isArray(node[childrenKey])) {
           throw new TypeError("子节点必须为数组");
         }

@@ -11,3 +11,4 @@ export { RandomStringUtils } from "./util/RandomStringUtils";
 export { RegexUtils } from "./util/RegexUtils";
 export { TreeUtils } from "./util/TreeUtils";
 export { StringUtils } from "./util/StringUtils";
+export * from "./type/TypeAlias";

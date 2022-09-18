@@ -1,11 +1,23 @@
 /**
  * 比较它的两个参数的顺序。返回负整数、零或正整数，因为第一个参数小于、等于或大于第二个参数
  *
- * @param o1 第一个要比较的对象。
- * @param o2 第二个要比较的对象。
- * @return {} 作为第一个参数的负整数、零或正整数小于、等于或大于第二个参数。
+ * @category 函数类型别名
+ * @typeParam T -待比较值类型
+ * @param o1 第一个要比较的参数。
+ * @param o2 第二个要比较的参数。
+ * @returns {} 负整数、零或正整数，代表第一个参数小于、等于或大于第二个参数对象。
  */
 export type Comparator<T> = (o1: T, o2: T) => number;
+
+/**
+ * 根据给定参数测试此谓词。
+ *
+ * @category 函数类型别名
+ * @typeParam T -输入参数类型
+ * @param t 输入参数
+ * @returns {} 如果输入参数匹配谓词则返回 true，否则为 false
+ */
+export type Predicate<T> = (t: T) => boolean;
 
 /**
  * 使用指定的参数执行返回 true 或 false 的测试。
@@ -20,14 +32,6 @@ export type ArrayPredicate<T> = (
   index?: number,
   obj?: T[]
 ) => boolean;
-
-/**
- * 根据给定参数测试此谓词。
- *
- * @param t 输入参数
- * @return {} 如果输入参数匹配谓词则返回 true，否则为 false
- */
-export type Predicate<T> = (t: T) => boolean;
 
 /**
  * 将值以字符串形式输出

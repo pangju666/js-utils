@@ -1210,7 +1210,7 @@ export class StringUtils {
    * @return value 中的第一个非空白值，如果没有非空白值，则返回 null
    */
   public static firstNonBlank(...values: string[]): string {
-    if (ObjectUtils.nonNull(values)) {
+    if (ObjectUtils.isNotNull(values)) {
       for (const val of values) {
         if (this.isNotBlank(val)) {
           return val;
@@ -1240,7 +1240,7 @@ export class StringUtils {
    * @return values 中的第一个非空值，如果没有非空值，则为 null
    */
   public static firstNonEmpty(...values: string[]): string {
-    if (ObjectUtils.nonNull(values)) {
+    if (ObjectUtils.isNotNull(values)) {
       for (const val of values) {
         if (this.isNotEmpty(val)) {
           return val;
@@ -2778,7 +2778,7 @@ export class StringUtils {
    * @return 如果找到，则删除字符串的子字符串，如果为 null 或 undefined 字符串输入则返回 null
    */
   public static removeStartIgnoreCase(str: string, remove: string): string {
-    if (ObjectUtils.nonNull(str) && this.startsWithIgnoreCase(str, remove)) {
+    if (ObjectUtils.isNotNull(str) && this.startsWithIgnoreCase(str, remove)) {
       return str.substring(this.getLength(remove));
     }
     return str;

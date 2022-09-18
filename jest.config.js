@@ -1,17 +1,15 @@
 export default {
   preset: "ts-jest",
-  testEnvironment: "node",
+  // testEnvironment: "node",
   transform: {
-    "^.+\\.ts$": "ts-jest",
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
   },
-  extensionsToTreatAsEsm: [".ts"],
-  moduleFileExtensions: ["ts", "js"],
   moduleNameMapper: {
     "^src/(.*)": "<rootDir>/src/$1",
-  },
-  globals: {
-    "ts-jest": {
-      useESM: true,
-    },
   },
 };

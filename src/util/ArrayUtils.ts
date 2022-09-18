@@ -653,7 +653,7 @@ export class ArrayUtils {
     for (let i = 0; i < array.length; i++) {
       const key = array[i];
       let count = occurrences.get(key);
-      if (ObjectUtils.nonNull(count)) {
+      if (ObjectUtils.isNotNull(count)) {
         --count;
         if (count === 0) {
           occurrences.delete(key);

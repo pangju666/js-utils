@@ -403,7 +403,7 @@ export class RandomStringUtils {
     const length = ObjectUtils.defaultIfCondition(
       RandomUtils.nextInt(minLength, maxLength),
       minLength,
-      ObjectUtils.nonNull(maxLength)
+      ObjectUtils.isNotNull(maxLength)
     );
 
     if (startCharCode === endCharCode) {
@@ -434,7 +434,7 @@ export class RandomStringUtils {
     const length = ObjectUtils.defaultIfCondition(
       RandomUtils.nextInt(minLength, maxLength),
       minLength,
-      ObjectUtils.nonNull(maxLength)
+      ObjectUtils.isNotNull(maxLength)
     );
 
     const chars = new Array(length);

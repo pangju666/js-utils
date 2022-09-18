@@ -4,13 +4,13 @@
   "entryPoints": ["src/index.ts"],
   "entryPointStrategy": "resolve",
   "excludeExternals": true,
-  "excludeNotDocumented": false,
+  "excludeNotDocumented": true,
   "excludeInternal": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "externalPattern": [
-    "**/lib/**",
-    "**/node_modules/**"
+    "lib/**",
+    "node_modules/**"
   ],
   "includes": "src",
   "includeVersion": true,
