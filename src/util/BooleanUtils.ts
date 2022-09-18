@@ -4,6 +4,7 @@ import { IllegalArgumentError } from "../error/IllegalArgumentError";
 /**
  * 布尔工具类
  *
+ * @category 工具类
  * @author 胖橘
  * @version 1.0
  * @since 1.0
@@ -11,31 +12,32 @@ import { IllegalArgumentError } from "../error/IllegalArgumentError";
 export class BooleanUtils {
   /**
    * false 字符串
+   * @category 只读常量
    */
   public static readonly FALSE = "false";
-
   /**
    * no 字符串
+   * @category 只读常量
    */
   public static readonly NO = "no";
-
   /**
    * off 字符串
+   * @category 只读常量
    */
   public static readonly OFF = "off";
-
   /**
    * on 字符串
+   * @category 只读常量
    */
   public static readonly ON = "on";
-
   /**
    * true 字符串
+   * @category 只读常量
    */
   public static readonly TRUE = "true";
-
   /**
    * yes 字符串
+   * @category 只读常量
    */
   public static readonly YES = "yes";
 
@@ -128,6 +130,7 @@ export class BooleanUtils {
   }
 
   /**
+   * {@label BASE}
    * <p> 使用 0 为 false 的约定将数字转换为布尔值，其他所有内容为 true。 </p>
    *
    * <pre>
@@ -141,6 +144,7 @@ export class BooleanUtils {
    */
   public static toBoolean(value: number): boolean;
   /**
+   * {@label BASE1}
    * <p>将数字转换为指定转换值的布尔值。</p>
    *
    * <p>如果 trueValue 和 falseValue 是相同的数字， 则返回值将是 true 如果 value 匹配它。</p>
@@ -165,6 +169,7 @@ export class BooleanUtils {
     falseValue: number
   ): boolean;
   /**
+   * {@label BASE2}
    * <p>将字符串转换为布尔值（针对性能进行了优化）。</p>
    *
    * <p>'true'、 'on'、 'y'、 't' 或 'yes'（不区分大小写）将返回 true。否则，返回 false。</p>
@@ -189,6 +194,7 @@ export class BooleanUtils {
    */
   public static toBoolean(str: string): boolean;
   /**
+   * {@label BASE3}
    * <p>如果未找到匹配项，则将字符串转换为引发异常的布尔值。</p>
    *
    * <pre>
