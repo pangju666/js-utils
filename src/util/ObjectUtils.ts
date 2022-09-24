@@ -1,6 +1,6 @@
 import { IllegalArgumentError } from "../error/IllegalArgumentError";
 import { NullError } from "../error/NullError";
-import { Comparator, Predicate } from "../type/TypeAlias";
+import { Comparator, Equalizer, Predicate } from "../type/TypeAlias";
 
 /**
  * 对象工具类
@@ -11,9 +11,6 @@ import { Comparator, Predicate } from "../type/TypeAlias";
  * @since 1.0
  */
 export class ObjectUtils {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
-
   /**
    * 根据属性表达式获取对象的属性
    *
@@ -323,12 +320,12 @@ export class ObjectUtils {
   }
 
   /**
-   * null、undefined 安全的值比较。
+   * null、undefined 安全的值比较（null 和 undefined 被认为相等）。
    *
    * @typeParam T -待比较值类型
    * @param c1 第一个可比较的值，可能为 null 或 undefined
    * @param c2 第二个可比较的值，可能为 null 或 undefined
-   * @param compareTo 值比较规则
+   * @param compareTo 值比较函数
    * @param nullGreater 如果为 true，则 null、undefined 被认为大于非 null、undefined 值，
    * 或者如果为 false，则 null、undefined 被认为小于非 null、undefined 值
    * @returns {} 如果 c1 < c2 则为负值，如果 c1 = c2 则为零，如果 c1 > c2 则为正值
@@ -339,10 +336,10 @@ export class ObjectUtils {
     compareTo: Comparator<T>,
     nullGreater = false
   ): number {
-    if (c1 === c2) {
-      return 0;
-    }
     if (this.isNull(c1)) {
+      if (this.isNull(c2)) {
+        return 0;
+      }
       return nullGreater ? 1 : -1;
     }
     if (this.isNull(c2)) {
@@ -501,17 +498,16 @@ export class ObjectUtils {
   }
 
   /**
-   * <p>null、undefined 安全的值比较。</p>
+   * <p>取一组值中最大的一个（null 和 undefined 被认为相等）。</p>
    *
    * @typeParam T -待比较值类型
-   * @param compareTo 值比较规则
+   * @param compareTo 值比较函数
    * @param values 待比较的一组值，可能为 null 或 undefined
    * @returns {}
    *  <ul>
-   *   <li>如果任何对象不为 null 或 undefined 且不相等，则为更大的对象。</li>
+   *   <li>如果所有对象都不为 null 或 undefined 且不相等，则为最大的对象。</li>
    *   <li>如果所有对象都不为 null 或 undefined 且相等，则为第一个。</li>
-   *   <li>如果任何可比较对象为 null 或 undefined，则非 null 或 undefined 对象中的较大者。</li>
-   *   <li>如果所有可比较对象都为 null 或 undefined，则返回 null。</li>
+   *   <li>如果所有对象都为 null 或 undefined，则返回 null。</li>
    *  </ul>
    */
   public static max<T>(compareTo: Comparator<T>, ...values: T[]): T {
@@ -524,7 +520,7 @@ export class ObjectUtils {
       if (index === 0) {
         result = value;
       }
-      if (this.compare(value, result, compareTo, false) > 0) {
+      if (this.compare(value, result, compareTo) > 0) {
         result = value;
       }
     });
@@ -532,17 +528,16 @@ export class ObjectUtils {
   }
 
   /**
-   * <p>null、undefined 安全的值比较。</p>
+   * <p>取一组值中最小的一个（null 和 undefined 被认为相等）。</p>
    *
    * @typeParam T -待比较值类型
-   * @param compareTo 值比较规则
+   * @param compareTo 值比较函数
    * @param values 待比较的一组值，可能为 null 或 undefined
    * @returns {}
    * <ul>
-   *   <li>如果任何对象不为 null 或 undefined 且不相等，则为更小的对象。</li>
+   *   <li>如果所有对象都不为 null 或 undefined 且不相等，则为最小的对象。</li>
    *   <li>如果所有对象都不为 null 或 undefined 且相等，则为第一个。</li>
-   *   <li>如果任何可比较对象为 null 或 undefined，则非 null 或 undefined 对象中的较小者。</li>
-   *   <li>如果所有可比较对象都为 null 或 undefined，则返回 null。</li>
+   *   <li>如果所有对象都为 null 或 undefined，则返回 null。</li>
    *  </ul>
    */
   public static min<T>(compareTo: Comparator<T>, ...values: T[]): T {
@@ -555,7 +550,7 @@ export class ObjectUtils {
       if (index === 0) {
         result = value;
       }
-      if (this.compare(value, result, compareTo, false) < 0) {
+      if (this.compare(value, result, compareTo) < 0) {
         result = value;
       }
     });
@@ -604,43 +599,47 @@ export class ObjectUtils {
   }
 
   /**
-   * 比较两个对象是否相等，其中一个或两个对象可能为 null 或 undefined。
+   * 判断两个值是否相等。<br />
+   * 任意一个参数为 null、undefined 则返回 false，若都为 null、undefined 则返回 true。 <br />
+   * 若 equalizer 为 null 或 undefined且两个值都不为 null、undefined 则调用{@link Object.is}进行判断
    *
    * @typeParam T -待比较值类型
    * @param value1 第一个对象，可能为 null 或 undefined
    * @param value2 第二个对象，可能为 null 或 undefined
-   * @param compareTo 值比较规则
-   * @returns {} 如果两个对象的值相同，则为 true，否则为 false
+   * @param equalizer 值相等判断函数
+   * @returns {} 符合相等判断规则，则为 true，否则为 false
    */
   public static equal<T>(
     value1: T,
     value2: T,
-    compareTo: Comparator<T>
+    equalizer?: Equalizer<T>
   ): boolean {
-    if (value1 === value2) {
-      return true;
+    if (this.isNull(value1)) {
+      return this.isNull(value2);
     }
-    if (this.isNull(value1) || this.isNull(value2)) {
-      return false;
+    if (this.isNull(equalizer) || typeof equalizer !== "function") {
+      return Object.is(value1, value2);
     }
-    return compareTo(value1, value2) === 0;
+    return equalizer(value1, value2);
   }
 
   /**
-   * 比较两个对象是否相等，其中一个或两个对象可能为 null 或 undefined。
+   * 比较两个对象是否相等。<br />
+   * 任意一个参数为 null、undefined 则返回 true，若都为 null、undefined 则返回 false。 <br />
+   * equalizer 若为 null 或 undefined，则调用{@link Object.is}进行判断
    *
    * @typeParam T -待比较值类型
    * @param value1 第一个对象，可能为 null 或 undefined
    * @param value2 第二个对象，可能为 null 或 undefined
-   * @param compareTo 值比较规则
-   * @returns {} 如果两个对象的值相同，则为 false，否则为 true
+   * @param equalizer 值相等判断函数
+   * @returns {} 符合相等判断规则，则为 false，否则为 true
    */
   public static notEqual<T>(
     value1: T,
     value2: T,
-    compareTo: Comparator<T>
+    equalizer?: Equalizer<T>
   ): boolean {
-    return !this.equal(value1, value2, compareTo);
+    return !this.equal(value1, value2, equalizer);
   }
 
   /**
@@ -836,4 +835,7 @@ export class ObjectUtils {
     }
     return newValue;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
 }

@@ -20,7 +20,7 @@
   "scripts": {
     "prepare": "husky install",
     "build": "rollup -c rollup.config.js",
-    "doc": "typedoc --out doc",
+    "doc": "typedoc --out doc --logLevel Verbose",
     "lint": "eslint **/*.{ts,js} --fix",
     "prettier": "prettier --write **/*.{ts,js}",
     "test": "jest --no-cache --config jest.config.js",

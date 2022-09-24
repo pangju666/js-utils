@@ -295,6 +295,29 @@ describe("ObjectUtilsTest", () => {
         1
       )
     ).toBe(15);
+    expect(ObjectUtils.max((left, right) => left - right, 1, 1, 1)).toBe(1);
+    expect(
+      ObjectUtils.max(
+        (left, right) => left - right,
+        1,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        2,
+        3,
+        4,
+        7,
+        3,
+        9,
+        10,
+        2,
+        15,
+        1,
+        null
+      )
+    ).toBe(15);
+    expect(
+      ObjectUtils.max((left, right) => left - right, null, null, null)
+    ).toBe(null);
   });
 
   test("minTest", () => {
@@ -322,28 +345,33 @@ describe("ObjectUtilsTest", () => {
   });
 
   test("equalsTest", () => {
-    expect(ObjectUtils.equal(1, 2, (left, right) => left - right)).toBeFalsy();
-    expect(ObjectUtils.equal(1, 1, (left, right) => left - right)).toBeTruthy();
     expect(
-      ObjectUtils.equal(1, null, (left, right) => left - right)
+      ObjectUtils.equal(1, 2, (left, right) => left === right)
     ).toBeFalsy();
     expect(
-      ObjectUtils.equal(null, 2, (left, right) => left - right)
+      ObjectUtils.equal(1, 1, (left, right) => left === right)
+    ).toBeTruthy();
+    expect(
+      ObjectUtils.equal(1, null, (left, right) => left === right)
     ).toBeFalsy();
+    expect(
+      ObjectUtils.equal(null, 2, (left, right) => left === right)
+    ).toBeFalsy();
+    expect(ObjectUtils.equal(null, null)).toBeTruthy();
   });
 
   test("notEqualTest", () => {
     expect(
-      ObjectUtils.notEqual(1, 2, (left, right) => left - right)
+      ObjectUtils.notEqual(1, 2, (left, right) => left === right)
     ).toBeTruthy();
     expect(
-      ObjectUtils.notEqual(1, 1, (left, right) => left - right)
+      ObjectUtils.notEqual(1, 1, (left, right) => left === right)
     ).toBeFalsy();
     expect(
-      ObjectUtils.notEqual(1, null, (left, right) => left - right)
+      ObjectUtils.notEqual(1, null, (left, right) => left === right)
     ).toBeTruthy();
     expect(
-      ObjectUtils.notEqual(null, 2, (left, right) => left - right)
+      ObjectUtils.notEqual(null, 2, (left, right) => left === right)
     ).toBeTruthy();
   });
 

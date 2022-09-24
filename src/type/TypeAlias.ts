@@ -1,8 +1,8 @@
 /**
- * 比较它的两个参数的顺序。返回负整数、零或正整数，因为第一个参数小于、等于或大于第二个参数
+ * 比较它的两个参数的大小。返回负整数、零或正整数，表示第一个参数小于、等于或大于第二个参数
  *
  * @category 回调函数
- * @typeParam T -待比较值类型
+ * @typeParam T -待比较参数类型
  * @param o1 第一个要比较的参数。
  * @param o2 第二个要比较的参数。
  * @returns {} 负整数、零或正整数，代表第一个参数小于、等于或大于第二个参数对象。
@@ -10,12 +10,23 @@
 export type Comparator<T> = (o1: T, o2: T) => number;
 
 /**
- * 根据给定参数测试此谓词。
+ * 判断两个参数是否相等。
+ *
+ * @category 回调函数
+ * @typeParam T -待比较参数类型
+ * @param o1 第一个参数。
+ * @param o2 第二个参数。
+ * @returns {} 相等则返回 true，否则为 false。
+ */
+export type Equalizer<T> = (o1: T, o2: T) => boolean;
+
+/**
+ * 判断给定参数是否通过测试。
  *
  * @category 回调函数
  * @typeParam T -输入参数类型
  * @param t 输入参数
- * @returns {} 如果输入参数匹配谓词则返回 true，否则为 false
+ * @returns {} 如果输入参数通过测试则返回 true，否则为 false
  */
 export type Predicate<T> = (t: T) => boolean;
 
