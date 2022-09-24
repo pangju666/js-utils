@@ -1,11 +1,14 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "disableSources": true,
-  "entryPoints": ["src/index.ts"],
+  "defaultCategory": "Other",
+  "entryPoints": [
+    "src/index.ts"
+  ],
   "entryPointStrategy": "resolve",
   "excludeExternals": true,
   "excludeNotDocumented": true,
-  "excludeInternal": true,
+  "excludeInternal": false,
   "excludePrivate": true,
   "excludeProtected": true,
   "externalPattern": [
@@ -15,6 +18,7 @@
   "includes": "src",
   "includeVersion": true,
   "name": "胖橘JavaScript工具包",
+  "searchInComments": true,
   "readme": "none",
   "tsconfig": "tsconfig.json"
 }

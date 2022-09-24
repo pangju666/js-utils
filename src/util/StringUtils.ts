@@ -1,9 +1,11 @@
 import { ObjectUtils } from "./ObjectUtils";
 import { BooleanUtils } from "./BooleanUtils";
 import { ArrayUtils } from "./ArrayUtils";
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { IndexOutOfBoundsError } from "../error/IndexOutOfBoundsError";
-import { Supplier } from "../type/TypeAlias";
+import {
+  IllegalArgumentError,
+  IndexOutOfBoundsError,
+} from "../error/runtimeError";
+import { Supplier } from "../type/FunctionAlias";
 
 /**
  * 字符串工具类

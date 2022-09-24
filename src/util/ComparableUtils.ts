@@ -1,5 +1,5 @@
 import { ObjectUtils } from "./ObjectUtils";
-import { Comparator, Predicate } from "../type/TypeAlias";
+import { Comparator, Predicate } from "../type/FunctionAlias";
 
 /**
  * 比较工具类

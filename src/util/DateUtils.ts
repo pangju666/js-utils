@@ -1,6 +1,5 @@
 import { ObjectUtils } from "./ObjectUtils";
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { ParseError } from "../error/ParseError";
+import { IllegalArgumentError, ParseError } from "../error/runtimeError";
 import * as dateFns from "date-fns";
 
 /**

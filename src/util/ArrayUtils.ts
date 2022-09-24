@@ -1,7 +1,9 @@
 import { ObjectUtils } from "./ObjectUtils";
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { IndexOutOfBoundsError } from "../error/IndexOutOfBoundsError";
-import { ArrayPredicate, Comparator, ToString } from "../type/TypeAlias";
+import {
+  IllegalArgumentError,
+  IndexOutOfBoundsError,
+} from "../error/runtimeError";
+import { ArrayPredicate, Comparator, ToString } from "../type/FunctionAlias";
 import { RandomUtils } from "./RandomUtils";
 
 /**

@@ -1,6 +1,5 @@
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
-import { NullError } from "../error/NullError";
-import { Comparator, Equalizer, Predicate } from "../type/TypeAlias";
+import { IllegalArgumentError, NullError } from "../error/runtimeError";
+import { Comparator, Equalizer, Predicate } from "../type/FunctionAlias";
 
 /**
  * 对象工具类

@@ -1,6 +1,7 @@
 /**
  * 树形结构
  *
+ * @internal
  * @author 胖橘
  * @version 1.0
  * @since 1.0

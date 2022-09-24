@@ -1,5 +1,5 @@
 import { ObjectUtils } from "./ObjectUtils";
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { IllegalArgumentError } from "../error/runtimeError";
 
 /**
  * 数字工具类

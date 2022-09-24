@@ -1,5 +1,5 @@
 import { describe, test, expect } from "@jest/globals";
-import { BooleanUtils, IllegalArgumentError } from "../src";
+import { BooleanUtils } from "../src";
 
 describe("BooleanUtilsTest", () => {
   test("andTest", () => {

@@ -1,4 +1,7 @@
-import { PropertyNameConverter, PropertyNameExclude } from "../type/TypeAlias";
+import {
+  PropertyNameConverter,
+  PropertyNameExclude,
+} from "../type/FunctionAlias";
 import { ObjectUtils } from "./ObjectUtils";
 import { StringUtils } from "./StringUtils";
 

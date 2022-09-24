@@ -1,4 +1,4 @@
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { IllegalArgumentError } from "../error/runtimeError";
 import { ObjectUtils } from "./ObjectUtils";
 
 /**

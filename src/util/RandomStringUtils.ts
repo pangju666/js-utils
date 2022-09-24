@@ -1,5 +1,5 @@
 import { StringUtils } from "./StringUtils";
-import { IllegalArgumentError } from "../error/IllegalArgumentError";
+import { IllegalArgumentError } from "../error/runtimeError";
 import { RandomUtils } from "./RandomUtils";
 import { ArrayUtils } from "./ArrayUtils";
 import { ObjectUtils } from "./ObjectUtils";
