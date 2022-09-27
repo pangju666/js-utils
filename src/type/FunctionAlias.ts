@@ -31,6 +31,14 @@ export type Equalizer<T> = (o1: T, o2: T) => boolean;
 export type Predicate<T> = (t: T) => boolean;
 
 /**
+ * 获取结果
+ *
+ * @category 回调函数
+ * @return {} 结果
+ */
+export type Supplier<T> = () => T;
+
+/**
  * 使用指定的参数执行返回 true 或 false 的测试。
  *
  * @category 回调函数
@@ -74,11 +82,3 @@ export type PropertyNameExclude = (
   propertyName: string,
   value: unknown
 ) => boolean;
-
-/**
- * 获取结果
- *
- * @category 回调函数
- * @return {} 结果
- */
-export type Supplier<T> = () => T;
