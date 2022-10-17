@@ -12,40 +12,30 @@ import { StringUtils } from "./StringUtils";
  */
 export class DateFormatUtils {
   /**
-   * 日期时间
-   * @category 日期格式字符串
+   * 日期 + 时间
+   * @category 日期格式
    */
   public static readonly DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
   /**
-   * 日期时间时区
-   * @category 日期格式字符串
+   * 日期 + 时间 + 时区
+   * @category 日期格式
    */
   public static readonly DATE_TIME_TIME_ZONE_FORMAT = "yyyy-MM-dd HH:mm:ssZZ";
   /**
    * 日期
-   * @category 日期格式字符串
+   * @category 日期格式
    */
   public static readonly DATE_FORMAT = "yyyy-MM-dd";
   /**
-   * 日期时区
-   * @category 日期格式字符串
+   * 日期 + 时区
+   * @category 日期格式
    */
   public static readonly DATE_TIME_ZONE_FORMAT = "yyyy-MM-ddZZ";
   /**
    * 时间
-   * @category 日期格式字符串
+   * @category 日期格式
    */
   public static readonly TIME_FORMAT = "HH:mm:ss";
-  /**
-   * 秒时间戳
-   * @category 日期格式字符串
-   */
-  public static readonly SECONDS_TIMESTAMP_FORMAT = "t";
-  /**
-   * 毫秒时间戳
-   * @category 日期格式字符串
-   */
-  public static readonly MILLISECONDS_TIMESTAMP_FORMAT = "T";
 
   /**
    * <p>将{@link Date 日期}或{@link number 时间戳}格式化为特定模式。</p>

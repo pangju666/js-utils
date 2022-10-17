@@ -1,5 +1,10 @@
 import { IllegalArgumentError, NullError } from "../error/runtimeError";
-import { Comparator, Equalizer, Predicate } from "../type/FunctionAlias";
+import {
+  Comparator,
+  Converter,
+  Equalizer,
+  Predicate,
+} from "../type/FunctionAlias";
 
 /**
  * 对象工具类
@@ -10,6 +15,177 @@ import { Comparator, Equalizer, Predicate } from "../type/FunctionAlias";
  * @since 1.0
  */
 export class ObjectUtils {
+  /**
+   * 将对象属性名称从驼峰格式转为下划线（_）格式
+   *
+   * @example
+   * ```js
+   * const obj = {
+   *       dateStr: "1",
+   *       dateTime: 11111,
+   *       "1111Adad": {
+   *         dateStr2: 1213123213,
+   *         "11111Aaaa": 12313123123,
+   *       },
+   *       "11111_arr": [1, 1, 1, 1, 1],
+   *       objArr: [
+   *         {
+   *           obj_aaa: 13132,
+   *           objaaa1Aaaasdad: 13132,
+   *         },
+   *       ],
+   * };
+   * ObjectUtils.propertyNameToUnderLine(obj);
+   * // 装换结果
+   * const result = {
+   *       date_str: "1",
+   *       date_time: 11111,
+   *       "1111_adad": {
+   *         date_str2: 1213123213,
+   *         "11111_aaaa": 12313123123,
+   *       },
+   *       "11111_arr": [1, 1, 1, 1, 1],
+   *       obj_arr: [
+   *         {
+   *           obj_aaa: 13132,
+   *           objaaa1_aaaasdad: 13132,
+   *         },
+   *       ],
+   * };
+   * ```
+   *
+   * @param obj 待转换的对象，基础类型无法转换
+   * @returns {} 此方法会对值进行深拷贝操作，因为会返回一个新的对象，不会影响原始值
+   * @see {@link ObjectUtils#convertPropertyNames}
+   */
+  public static propertyNameToUnderLine(obj: unknown): unknown {
+    return this.convertPropertyNames(obj, (propertyName) => {
+      if (this.isNull(propertyName) || propertyName.length === 0) {
+        return "";
+      }
+
+      const newStr = [];
+      const indexArr = [0];
+      for (let i = 1; i < propertyName.length; i++) {
+        const code = propertyName[i].charCodeAt(0);
+        if (code >= 65 && code <= 90) {
+          indexArr.push(i);
+        }
+      }
+      indexArr.forEach((value, index) => {
+        newStr.push(
+          propertyName.charAt(value).toLowerCase() +
+            propertyName.substring(value + 1, indexArr[index + 1])
+        );
+      });
+      return newStr.join("_");
+    });
+  }
+
+  /**
+   * 将对象属性名称从下划线格式（_）或中划线格式（-）转为驼峰格式
+   *
+   * @example
+   * ```js
+   * const obj = {
+   *       date_str: "1",
+   *       dateTime: 11111,
+   *       "date-str2": 11231313,
+   *       "1111_adad": {
+   *         date_str2: 1213123213,
+   *         "11111-aaaa": 12313123123,
+   *       },
+   *       "11111-arr": [1, 1, 1, 1, 1],
+   *       objArr: [
+   *         {
+   *           obj_aaa: 13132,
+   *           "objaaa1-aaaasdad": 13132,
+   *         },
+   *       ],
+   * };
+   * ObjectUtils.propertyNameToCamlCase(obj);
+   * // 装换结果
+   * const result = {
+   *       dateStr: "1",
+   *       dateTime: 11111,
+   *       "dateStr2": 11231313,
+   *       "1111Adad": {
+   *         dateStr2: 1213123213,
+   *         "11111Aaaa": 12313123123,
+   *       },
+   *       "11111Arr": [1, 1, 1, 1, 1],
+   *       objArr: [
+   *         {
+   *           objAaa: 13132,
+   *           "objaaa1Aaaasdad": 13132,
+   *         },
+   *       ],
+   * };
+   * ```
+   *
+   * @param obj 待转换的对象，基础类型无法转换
+   * @returns {} 此方法会对值进行深拷贝操作，因为会返回一个新的对象，不会影响原始值
+   * @see {@link ObjectUtils#convertPropertyNames}
+   */
+  public static propertyNameToCamlCase(obj: unknown): unknown {
+    return this.convertPropertyNames(obj, (propertyName) => {
+      if (this.isNull(propertyName) || propertyName.length === 0) {
+        return "";
+      }
+      const strArr = propertyName.split(/_|-/);
+      for (let i = 1; i < strArr.length; i++) {
+        strArr[i] = strArr[i].charAt(0).toUpperCase() + strArr[i].substring(1);
+      }
+      return strArr.join("");
+    });
+  }
+
+  /**
+   * 转换属性名称
+   *
+   * @param obj 待转换的对象，基础类型无法转换
+   * @param converter 属性名转换器，用于定义如何转换属性名称
+   * @returns {} 此方法会对值进行深拷贝操作，因为会返回一个新的对象，不会影响原始值
+   */
+  public static convertPropertyNames(
+    obj: unknown,
+    converter: Converter<string>
+  ): unknown {
+    if (this.isNull(obj)) {
+      return null;
+    }
+    if (this.isBasicType(obj)) {
+      return obj;
+    }
+
+    // 判断是否为数组
+    if (Array.isArray(obj)) {
+      return obj.map((curVal) => {
+        // 判断是否为基础类型
+        if (this.isBasicType(curVal)) {
+          return curVal;
+        }
+        // 执行转换操作
+        return this.convertPropertyNames(curVal, converter);
+      });
+    }
+
+    // 不为数组则直接执行对象转换
+    const newObj = {};
+    // 遍历属性名称
+    Object.keys(obj).forEach((propertyName) => {
+      const newPropertyName = converter(propertyName);
+      const val = obj[propertyName];
+      // 判断是否为基础类型或是否符合排除条件
+      if (this.isBasicType(val)) {
+        newObj[newPropertyName] = val;
+      } else {
+        newObj[newPropertyName] = this.convertPropertyNames(val, converter);
+      }
+    });
+    return newObj;
+  }
+
   /**
    * 根据属性表达式获取对象的属性
    *
@@ -800,8 +976,8 @@ export class ObjectUtils {
     }
 
     /* if (typeof structuredClone !== "undefined") {
-      return structuredClone(value);
-    }*/
+          return structuredClone(value);
+        }*/
     const newValue = {};
     for (const key of Object.keys(value)) {
       const currentValue = value[key];

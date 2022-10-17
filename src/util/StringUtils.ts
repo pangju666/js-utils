@@ -4008,7 +4008,7 @@ export class StringUtils {
     }
 
     const strLen = str.length;
-    const newChars = new Array[strLen]();
+    const newChars = new Array(strLen);
     for (let i = 0; i < strLen; i++) {
       const oldChar = str.charAt(i);
       let newChar;

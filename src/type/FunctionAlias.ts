@@ -34,9 +34,20 @@ export type Predicate<T> = (t: T) => boolean;
  * 获取结果
  *
  * @category 回调函数
+ * @typeParam T -结果类型
  * @return {} 结果
  */
 export type Supplier<T> = () => T;
+
+/**
+ * 对指定的参数进行转换
+ *
+ * @category 回调函数
+ * @typeParam T -输入参数类型
+ * @param t 输入参数
+ * @return {} 转换结果
+ */
+export type Converter<T> = (t) => T;
 
 /**
  * 使用指定的参数执行返回 true 或 false 的测试。
@@ -61,24 +72,3 @@ export type ArrayPredicate<T> = (
  * @return {} 输出字符串
  */
 export type ToString<T> = (value: T) => string;
-
-/**
- * 对象属性名转换器
- *
- * @category 回调函数
- * @param propertyName 对象属性名
- * @return {} 新的属性名
- */
-export type PropertyNameConverter = (propertyName: string) => string;
-
-/**
- * 对象属性名排除器
- *
- * @category 回调函数
- * @param propertyName 对象属性名
- * @param value 对象属性名对应的值
- */
-export type PropertyNameExclude = (
-  propertyName: string,
-  value: unknown
-) => boolean;

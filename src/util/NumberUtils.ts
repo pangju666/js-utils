@@ -4,29 +4,28 @@ import { IllegalArgumentError } from "../error/runtimeError";
 /**
  * 数字工具类
  *
+ * @category 工具类
  * @author 胖橘
  * @version 1.0
  * @since 1.0
  */
 export class NumberUtils {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
-
   /**
    * <p>将字符串转换为整数，如果转换失败则返回默认值。</p>
    *
    * <p>如果字符串为 null 或 undefined，则返回默认值。</p>
    *
-   * <pre>
+   * @example
+   * ```js
    *   NumberUtils.toInt(null, 1) = 1
    *   NumberUtils.toInt("", 1)   = 1
    *   NumberUtils.toInt("1", 0)  = 1
-   * </pre>
+   * ```
    *
    * @param str 要转换的字符串，可能为 null 或 undefined
-   * @param defaultValue 默认值
-   * @param radix 数字进制
-   * @return {} 由字符串表示的数字，如果转换失败，则为默认值
+   * @param defaultValue 默认值，默认为0
+   * @param radix 数字进制，默认为10
+   * @returns {} 由字符串表示的数字，如果转换失败，则为默认值
    */
   public static toInt(str: string, defaultValue = 0, radix = 10): number {
     if (ObjectUtils.isNull(str)) {
@@ -44,15 +43,16 @@ export class NumberUtils {
    *
    * <p>如果字符串为 null 或 undefined，则返回默认值。</p>
    *
-   * <pre>
+   * @example
+   * ```js
    *   NumberUtils.toFloat(null, 1.1f)   = 1.0f
    *   NumberUtils.toFloat("", 1.1f)     = 1.1f
    *   NumberUtils.toFloat("1.5", 0.0f)  = 1.5f
-   * </pre>
+   * ```
    *
    * @param str 要转换的字符串，可能为 null 或 undefined
-   * @param defaultValue 默认值
-   * @return 由字符串表示的浮点数，如果转换失败则为 defaultValue
+   * @param defaultValue 默认值，默认为0.0
+   * @returns {} 由字符串表示的浮点数，如果转换失败则为 defaultValue
    */
   public static toFloat(str: string, defaultValue = 0.0): number {
     if (ObjectUtils.isNull(str)) {
@@ -66,30 +66,10 @@ export class NumberUtils {
   }
 
   /**
-   * 返回数组中的最小值。
-   *
-   * @param array 一个数组，不能为 null 或为空
-   * @return {number} 数组中的最小值
-   * @throws {IllegalArgumentError} 如果数组为空、null 或 undefined
-   */
-  public static min(...array: number[]): number {
-    this.validateArray(array);
-
-    let min = array[0];
-    for (let j = 1; j < array.length; j++) {
-      if (array[j] < min) {
-        min = array[j];
-      }
-    }
-
-    return min;
-  }
-
-  /**
    * 返回一组数字相加的总和。
    *
    * @param array 一组数字，不能为 null 或 undefined
-   * @return {} 这组数字的总和
+   * @returns {} 这组数字的总和
    */
   public static sum(...array: number[]): number {
     return array.reduce((a, b) => a + b);
@@ -99,17 +79,17 @@ export class NumberUtils {
    * 返回一组数字的平均数。
    *
    * @param array 一组数字，不能为 null 或 undefined
-   * @return {number} 这组数字的平均数
+   * @returns {} 这组数字的平均数
    */
   public static average(...array: number[]): number {
     return this.sum(...array) / array.length;
   }
 
   /**
-   * 返回一组数字的众数（出现频率超过总数的 1/2 的数字），如果不存在则返回-1。
+   * 返回一组数字中的众数，如果不存在则返回 -1。
    *
    * @param array 一组数字，不能为 null 或 undefined
-   * @return {number} 这组数字的众数
+   * @returns {} 这组数字的众数
    */
   public static mode(array: number[]): number {
     let count = 0,
@@ -129,7 +109,10 @@ export class NumberUtils {
         ++count;
       }
     }
-    if (count <= array.length / 2) {
+    /*  if (count <= array.length / 2) {
+      tmp = -1;
+    }*/
+    if (count === 0) {
       tmp = -1;
     }
     return tmp;
@@ -151,26 +134,6 @@ export class NumberUtils {
     const rightIndex = array.length / 2;
     const leftIndex = rightIndex - 1;
     return (array[leftIndex] + array[rightIndex]) / 2;
-  }
-
-  /**
-   * 返回数组中的最大值。
-   *
-   * @param array 一个数组，不能为 null 或为空
-   * @return {number} 数组中的最大值
-   * @throws {IllegalArgumentError} 如果数组为空、null 或 undefined
-   */
-  public static max(...array: number[]): number {
-    this.validateArray(array);
-
-    let min = array[0];
-    for (let j = 1; j < array.length; j++) {
-      if (array[j] > min) {
-        min = array[j];
-      }
-    }
-
-    return min;
   }
 
   /**
@@ -209,12 +172,6 @@ export class NumberUtils {
     );
   }
 
-  private static validateArray(array: number[]): void {
-    if (ObjectUtils.isNull(array)) {
-      throw new IllegalArgumentError("参数不能为null");
-    }
-    if (array.length === 0) {
-      throw new IllegalArgumentError("数组不能为空");
-    }
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
 }

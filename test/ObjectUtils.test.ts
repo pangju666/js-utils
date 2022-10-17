@@ -422,4 +422,72 @@ describe("ObjectUtilsTest", () => {
       ObjectUtils.isAnyType(new Date(), Function, Array, Date)
     ).toBeTruthy();
   });
+
+  test("propertyNameToUnderLineTest", () => {
+    const obj = {
+      dateStr: "1",
+      dateTime: 11111,
+      "1111Adad": {
+        dateStr2: 1213123213,
+        "11111Aaaa": 12313123123,
+      },
+      "11111_arr": [1, 1, 1, 1, 1],
+      objArr: [
+        {
+          obj_aaa: 13132,
+          objaaa1Aaaasdad: 13132,
+        },
+      ],
+    };
+    expect(ObjectUtils.propertyNameToUnderLine(obj)).toStrictEqual({
+      date_str: "1",
+      date_time: 11111,
+      "1111_adad": {
+        date_str2: 1213123213,
+        "11111_aaaa": 12313123123,
+      },
+      "11111_arr": [1, 1, 1, 1, 1],
+      obj_arr: [
+        {
+          obj_aaa: 13132,
+          objaaa1_aaaasdad: 13132,
+        },
+      ],
+    });
+  });
+
+  test("propertyNameToCamlCaseTest", () => {
+    const obj = {
+      date_str: "1",
+      dateTime: 11111,
+      "date-str2": 11231313,
+      "1111_adad": {
+        date_str2: 1213123213,
+        "11111-aaaa": 12313123123,
+      },
+      "11111-arr": [1, 1, 1, 1, 1],
+      objArr: [
+        {
+          obj_aaa: 13132,
+          "objaaa1-aaaasdad": 13132,
+        },
+      ],
+    };
+    expect(ObjectUtils.propertyNameToCamlCase(obj)).toStrictEqual({
+      dateStr: "1",
+      dateTime: 11111,
+      dateStr2: 11231313,
+      "1111Adad": {
+        dateStr2: 1213123213,
+        "11111Aaaa": 12313123123,
+      },
+      "11111Arr": [1, 1, 1, 1, 1],
+      objArr: [
+        {
+          objAaa: 13132,
+          objaaa1Aaaasdad: 13132,
+        },
+      ],
+    });
+  });
 });

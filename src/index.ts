@@ -1,6 +1,5 @@
 export { ArrayUtils } from "./util/ArrayUtils";
 export { BooleanUtils } from "./util/BooleanUtils";
-export { ConvertUtils } from "./util/ConvertUtils";
 export { ComparableUtils } from "./util/ComparableUtils";
 export { DateFormatUtils } from "./util/DateFormatUtils";
 export { DateUtils } from "./util/DateUtils";
