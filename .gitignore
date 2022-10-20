@@ -106,3 +106,4 @@ lib
 .idea
 dist
 /node_modules/
+doc
